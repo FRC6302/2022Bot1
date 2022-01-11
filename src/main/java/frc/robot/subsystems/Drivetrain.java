@@ -49,22 +49,87 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class Drivetrain extends SubsystemBase {
+public class DriveTrain extends SubsystemBase {
+  private static DriveTrain driveTrain;
+
   WPI_TalonSRX motorL1 = new WPI_TalonSRX(Constants.motorL1Value);
   WPI_TalonSRX motorL2 = new WPI_TalonSRX(Constants.motorL2Value);
   WPI_TalonSRX motorR1 = new WPI_TalonSRX(Constants.motorR1Value);
   WPI_TalonSRX motorR2 = new WPI_TalonSRX(Constants.motorR2Value);
 
+  //brake mode reduces wheel slip
+  private final NeutralMode motorMode = NeutralMode.Brake;
+
   /** Creates a new Drivetrain. */
-  public Drivetrain() {}
+  private DriveTrain() {
+    motorL1.setNeutralMode(motorMode);
+    motorL2.setNeutralMode(motorMode);
+    motorR1.setNeutralMode(motorMode);
+    motorR2.setNeutralMode(motorMode);
+
+    motorL1.setSafetyEnabled(true);
+    motorL2.setSafetyEnabled(true);
+    motorR1.setSafetyEnabled(true);
+    motorR2.setSafetyEnabled(true);
+
+    //motorL1.setExpiration(30);
+    //motorL2.setExpiration(30);
+    //motorR1.setExpiration(10);
+    //motorR2.setExpiration(10);
+
+    //this is the deadzone for the motors. Any number below this get changed to zero.
+    //Note that the minimum motor input to overcome static friction is about 0.0015 ish
+    motorL1.configNeutralDeadband(0.001);
+    motorL2.configNeutralDeadband(0.001);
+    motorR1.configNeutralDeadband(0.001);
+    motorR2.configNeutralDeadband(0.001);
+    
+    //TODO: play with this
+    //motorL1.configPeakOutputForward(0.9);
+  }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+
+    //this is supposed to be so i dont get errors saying the motor output doesnt update enough,
+    //but i still get them
+    motorL1.feed();
+    motorL2.feed();
+    motorR1.feed();
+    motorR2.feed();
+  }
+
+  public static synchronized DriveTrain getInstance(){
+    if (driveTrain == null){
+      driveTrain = new DriveTrain();
+    }
+
+    return driveTrain;
+  }
+
+  public synchronized void setLeftMotors(double speed){
+    motorL1.set(ControlMode.PercentOutput, speed);
+    motorL2.set(ControlMode.PercentOutput, speed);
+  }
+
+  //right motors have inverted speed bc of how the motors are oriented on robot
+  public synchronized void setRightMotors(double speed){
+    motorR1.set(ControlMode.PercentOutput, -speed);
+    motorR2.set(ControlMode.PercentOutput, -speed);
+  }
+
+  public synchronized void stopDrive() {
+    motorL1.set(ControlMode.PercentOutput, 0);
+    motorL2.set(ControlMode.PercentOutput, 0);
+    motorR1.set(ControlMode.PercentOutput, 0);
+    motorR2.set(ControlMode.PercentOutput, 0);
   }
 }

@@ -4,11 +4,16 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.commands.ExampleCommand;
-import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.commands.DistanceToTarget;
+import frc.robot.commands.DriveGTA;
+import frc.robot.commands.Move;
+import frc.robot.subsystems.DriveTrain;
+import frc.robot.subsystems.Limelight;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -18,15 +23,72 @@ import edu.wpi.first.wpilibj2.command.Command;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
+  //private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
+  //private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 
-  private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
+
+  private XboxController driverController;
+  //public static XboxController operatorController;
+
+  private DriveTrain driveTrain;
+  private DriveGTA driveGTA;
+
+  private Limelight limelight;
+  private DistanceToTarget distanceToTarget;
+
+  private Move move;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    driverController = new XboxController(Constants.driverControllerPort);
+    //operatorController = new XboxController(Constants.operatorControllerPort);
+
+    driveTrain = DriveTrain.getInstance();
+    driveGTA = new DriveGTA();
+    driveGTA.addRequirements(driveTrain);
+    driveTrain.setDefaultCommand(driveGTA);
+
+    limelight = new Limelight();
+    distanceToTarget = new DistanceToTarget();
+    distanceToTarget.addRequirements(limelight);
+
+    move = new Move(driveTrain);
+    move.addRequirements(driveTrain);
+
+
     // Configure the button bindings
     configureButtonBindings();
   }
+
+
+
+  public double getDriverRawAxis(final int axis){
+    try {
+      return driverController.getRawAxis(axis);
+    }
+    catch(final RuntimeException exception) {
+      DriverStation.reportError("Error getting raw axis because: " + exception.getMessage(), true);
+    }
+    //this error might have something to do with the squared values in DriveGTA
+    return 0;
+  }
+
+  public double getDriverDeadzoneAxis(final int axis){
+    try {
+    final double rawValue = driverController.getRawAxis(axis);
+    return (Math.abs(rawValue) <= Constants.deadzone) ? 0.0 : rawValue;
+    }
+    catch(final RuntimeException exception) {
+      DriverStation.reportError("Error getting raw axis or returning deadzone axis because: " + exception.getMessage(), true);
+    }
+    return 0;
+  }
+  /*
+  public double getOperatorDeadzoneAxis(int axis){
+    double rawValue = operatorController.getRawAxis(axis);
+    return Math.abs(rawValue) < Constants.deadzone ? 0.0 : rawValue;
+  }
+  */
 
   /**
    * Use this method to define your button->command mappings. Buttons can be created by
@@ -34,7 +96,10 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
-  private void configureButtonBindings() {}
+  private void configureButtonBindings() {
+    final JoystickButton LLDistanceButton = new JoystickButton(driverController, Constants.LLDistanceButton);
+    LLDistanceButton.whileHeld(new DistanceToTarget());
+  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -43,6 +108,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return m_autoCommand;
+    return move;
   }
 }
