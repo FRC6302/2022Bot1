@@ -12,6 +12,7 @@ import frc.robot.commands.DriveGTA;
 import frc.robot.commands.Move;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.PneumaticsTest;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
@@ -36,6 +37,8 @@ public class RobotContainer {
   private Limelight limelight;
   private DistanceToTarget distanceToTarget;
 
+  private PneumaticsTest pneumaticsTest;
+
   private Move move;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -51,6 +54,8 @@ public class RobotContainer {
     limelight = new Limelight();
     distanceToTarget = new DistanceToTarget();
     distanceToTarget.addRequirements(limelight);
+
+    pneumaticsTest = new PneumaticsTest();
 
     move = new Move(driveTrain);
     move.addRequirements(driveTrain);
@@ -99,6 +104,15 @@ public class RobotContainer {
   private void configureButtonBindings() {
     final JoystickButton LLDistanceButton = new JoystickButton(driverController, Constants.LLDistanceButton);
     LLDistanceButton.whileHeld(new DistanceToTarget());
+
+    /*final JoystickButton PneumForwardButton = new JoystickButton(driverController, Constants.PneumForwardButton);
+    PneumForwardButton.whileHeld(pneumaticsTest::setForward);
+
+    final JoystickButton PneumReverseButton = new JoystickButton(driverController, Constants.PneumReverseButton);
+    PneumReverseButton.whileHeld(pneumaticsTest::setReverse);*/
+
+    final JoystickButton PneumToggleButton = new JoystickButton(driverController, Constants.PneumToggleButton);
+    PneumToggleButton.whenPressed(pneumaticsTest::toggle);
   }
 
   /**

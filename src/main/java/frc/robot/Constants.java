@@ -53,6 +53,9 @@ public final class Constants {
     //the angle the limelight is pointing relative to the ground, 0 = parallel to floor
     public static final double limelightMountDegreeOffset = 0; 
 
+    //pneumatics
+
+
     //move command
     public static final double leftMotorsMoveSpeed = 0.1;
     public static final double rightMotorsMoveSpeed = 0.1;
@@ -65,6 +68,9 @@ public final class Constants {
     //driver contoller buttons
     public static final int limelightTargetButton = Constants.aButton;
     public static final int LLDistanceButton = bButton;
+    public static final int PneumForwardButton = xButton;
+    public static final int PneumReverseButton = yButton;
+    public static final int PneumToggleButton = rightBumper;
     
     
 
