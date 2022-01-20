@@ -71,7 +71,7 @@ public class DriveTrain extends SubsystemBase {
   private final NeutralMode motorMode = NeutralMode.Brake;
 
   /** Creates a new Drivetrain. */
-  private Drivetrain() {
+  private DriveTrain() {
     motorL1.setNeutralMode(motorMode);
     //motorL2.setNeutralMode(motorMode);
     motorR1.setNeutralMode(motorMode);
@@ -110,9 +110,9 @@ public class DriveTrain extends SubsystemBase {
     //motorR2.feed();
   }
 
-  public static synchronized Drivetrain getInstance(){
+  public static synchronized DriveTrain getInstance(){
     if (driveTrain == null){
-      driveTrain = new Drivetrain();
+      driveTrain = new DriveTrain();
     }
 
     return driveTrain;
