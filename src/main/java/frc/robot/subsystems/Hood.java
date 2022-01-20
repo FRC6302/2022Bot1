@@ -10,22 +10,24 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class Turret extends SubsystemBase {
-  private WPI_TalonSRX motorTurret = new WPI_TalonSRX(Constants.motorTurret);
+public class Hood extends SubsystemBase {
+  WPI_TalonSRX motorHood = new WPI_TalonSRX(Constants.motorHood);
 
-  /** Creates a new Turret. */
-  public Turret() {
+  /** Creates a new Hood. */
+  public Hood() {
+
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+  }
 
+  public void setHoodAngle(double angle) {
 
   }
 
-  public synchronized void setMotor(double speed){
-    motorTurret.set(ControlMode.PercentOutput, speed);
-
+  public void setMotor(double speed) {
+    motorHood.set(ControlMode.PercentOutput, speed);
   }
 }

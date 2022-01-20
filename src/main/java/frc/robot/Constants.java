@@ -81,6 +81,9 @@ public final class Constants {
     public static final int PneumForwardButton = xButton;
     public static final int PneumReverseButton = yButton;
     public static final int PneumToggleButton = rightBumper;
+    public static final int motorHood = 0;
+    public static final int motorShooter = 0;
+    public static final int targetDeltaY = 0;
     
     
     
