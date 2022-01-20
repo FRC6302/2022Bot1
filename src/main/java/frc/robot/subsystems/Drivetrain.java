@@ -58,7 +58,6 @@ import frc.robot.Constants;
 
 //test commit 2
 //test from kaden 2
-//test branch example
 
 public class DriveTrain extends SubsystemBase {
   private static DriveTrain driveTrain;
@@ -71,7 +70,7 @@ public class DriveTrain extends SubsystemBase {
   //brake mode reduces wheel slip
   private final NeutralMode motorMode = NeutralMode.Brake;
 
-  /** Creates a new DriveTrain. */
+  /** Creates a new Drivetrain. */
   private DriveTrain() {
     motorL1.setNeutralMode(motorMode);
     //motorL2.setNeutralMode(motorMode);
