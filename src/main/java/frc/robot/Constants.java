@@ -19,6 +19,7 @@ public final class Constants {
     public static final int motorL2Value = 1;
     public static final int motorR1Value = 2;
     public static final int motorR2Value = 3;
+    public static final int motorTurret = 90;
 
     //controller values
     public static final int leftTrigger = 2;
@@ -39,8 +40,14 @@ public final class Constants {
     public static final int operatorControllerPort = 1;
 
     //drive
-    public static final double maxDriveSpeed = 0.9;
-	
+    public static final double maxDriveSpeed = 1.0;
+
+    //mecanum
+	public static final double maxMecSpeed = 0;
+
+    //gyro
+    public static final double jerkXCollisionThreshold = 1;
+
     //limelight
     public static final double limelightTXDeadzone = 0.5;
     public static final double limelightTargetXScaling = 1;
@@ -54,6 +61,9 @@ public final class Constants {
     public static final double limelightMountDegreeOffset = 0; 
 
     //pneumatics
+
+    //turret
+    public static final double turretSeekSpeed = 0;
 
 
     //move command
@@ -71,6 +81,9 @@ public final class Constants {
     public static final int PneumForwardButton = xButton;
     public static final int PneumReverseButton = yButton;
     public static final int PneumToggleButton = rightBumper;
+    
+    
+    
     
     
 

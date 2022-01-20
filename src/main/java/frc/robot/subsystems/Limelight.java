@@ -10,13 +10,16 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 //subsystem for the limelight camera on our robot. Used for vision tracking and stuff
 public class Limelight extends SubsystemBase {
   static double x = 0, y = 0, area = 0, targetFound = 0;
 
-  //TODO: make a method that returns distance from target and then use that distance
-  //to move to the right distance using MoveDistancePID
+  private static double height = 2.75; //of target
+  private static double distance; //to target
+
+  //TODO: use the distance to target to move to the right distance using MoveDistancePID
   /**
    * Creates a new Limelight.
    */
@@ -65,8 +68,8 @@ public class Limelight extends SubsystemBase {
     return y;
   }
 
-  public static double getTargetFound() {
-    return targetFound;
+  public static boolean getTargetFound() {
+    return targetFound == 1;
   }
 
   public static double getArea() {
@@ -78,6 +81,14 @@ public class Limelight extends SubsystemBase {
     //x as area and y as the distance measured by me. Might be polynomial.
     //Formula will change based on size of reflective target/tape.
     //Might be able to work out formula with math and the camera's field of view?
-    return area * 5;
+    //return area * 5;
+
+
+    //ty = Limelight.getY();
+    distance = height / Math.tan(Math.toRadians(Limelight.y + Constants.limelightMountDegreeOffset));
+    SmartDashboard.putNumber("target distance", distance);
+    return distance;
+
+    //TODO: test this and then delete DistanceToTarget command
   }
 }
