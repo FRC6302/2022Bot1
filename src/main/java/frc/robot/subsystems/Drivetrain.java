@@ -56,7 +56,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-//test commit
+//test commit 2
 //test from kaden
 
 public class DriveTrain extends SubsystemBase {
@@ -71,7 +71,7 @@ public class DriveTrain extends SubsystemBase {
   private final NeutralMode motorMode = NeutralMode.Brake;
 
   /** Creates a new Drivetrain. */
-  private DriveTrain() {
+  private Drivetrain() {
     motorL1.setNeutralMode(motorMode);
     //motorL2.setNeutralMode(motorMode);
     motorR1.setNeutralMode(motorMode);
@@ -110,9 +110,9 @@ public class DriveTrain extends SubsystemBase {
     //motorR2.feed();
   }
 
-  public static synchronized DriveTrain getInstance(){
+  public static synchronized Drivetrain getInstance(){
     if (driveTrain == null){
-      driveTrain = new DriveTrain();
+      driveTrain = new Drivetrain();
     }
 
     return driveTrain;
