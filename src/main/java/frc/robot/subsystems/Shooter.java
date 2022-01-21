@@ -21,10 +21,6 @@ public class Shooter extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  //hi
-  //asdf
-
-  //new feature 3
 
   public void shootWithInitialBallVelocity(double paraV, double perpV, double hoodAngle, double offsetAngle, double distance) {
     //offsetAngle = 10 * perpV;
