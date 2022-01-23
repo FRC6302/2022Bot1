@@ -9,9 +9,12 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.DistanceToTarget;
 import frc.robot.commands.DriveGTA;
+import frc.robot.commands.DriveMec;
 import frc.robot.commands.Move;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.MecDriveTrain;
+import frc.robot.subsystems.NavX;
 import frc.robot.subsystems.PneumaticsTest;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -32,10 +35,15 @@ public class RobotContainer {
   //public static XboxController operatorController;
 
   private DriveTrain driveTrain;
-  private DriveGTA driveGTA;
+  //private DriveGTA driveGTA;
+
+  private MecDriveTrain mecDriveTrain;
+  private DriveMec driveMec;
 
   private Limelight limelight;
   private DistanceToTarget distanceToTarget;
+
+  private NavX navX;
 
   private PneumaticsTest pneumaticsTest;
 
@@ -46,19 +54,28 @@ public class RobotContainer {
     driverController = new XboxController(Constants.driverControllerPort);
     //operatorController = new XboxController(Constants.operatorControllerPort);
 
-    driveTrain = DriveTrain.getInstance();
-    driveGTA = new DriveGTA();
-    driveGTA.addRequirements(driveTrain);
-    driveTrain.setDefaultCommand(driveGTA);
+    //driveTrain = DriveTrain.getInstance();
+    //driveGTA = new DriveGTA();
+    //driveGTA.addRequirements(driveTrain);
+    //driveTrain.setDefaultCommand(driveGTA);
 
-    limelight = new Limelight();
-    distanceToTarget = new DistanceToTarget();
-    distanceToTarget.addRequirements(limelight);
+    mecDriveTrain = new MecDriveTrain();
+    driveMec = new DriveMec(mecDriveTrain);
+    driveMec.addRequirements(mecDriveTrain);
+    mecDriveTrain.setDefaultCommand(driveMec);
 
-    pneumaticsTest = new PneumaticsTest();
 
-    move = new Move(driveTrain);
-    move.addRequirements(driveTrain);
+
+    //limelight = new Limelight();
+    //distanceToTarget = new DistanceToTarget();
+    //distanceToTarget.addRequirements(limelight);
+
+    navX = new NavX();
+
+    //pneumaticsTest = new PneumaticsTest();
+
+    //move = new Move(driveTrain);
+    //move.addRequirements(driveTrain);
 
 
     // Configure the button bindings
@@ -102,8 +119,11 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    final JoystickButton LLDistanceButton = new JoystickButton(driverController, Constants.LLDistanceButton);
-    LLDistanceButton.whileHeld(new DistanceToTarget());
+    //final JoystickButton LLDistanceButton = new JoystickButton(driverController, Constants.LLDistanceButton);
+    //LLDistanceButton.whileHeld(new DistanceToTarget());
+
+    final JoystickButton zeroYawButton = new JoystickButton(driverController, Constants.zeroYawButton);
+    zeroYawButton.whenPressed(NavX::zeroGyroYaw); //this is a method reference 
 
     /*final JoystickButton PneumForwardButton = new JoystickButton(driverController, Constants.PneumForwardButton);
     PneumForwardButton.whileHeld(pneumaticsTest::setForward);
@@ -111,8 +131,8 @@ public class RobotContainer {
     final JoystickButton PneumReverseButton = new JoystickButton(driverController, Constants.PneumReverseButton);
     PneumReverseButton.whileHeld(pneumaticsTest::setReverse);*/
 
-    final JoystickButton PneumToggleButton = new JoystickButton(driverController, Constants.PneumToggleButton);
-    PneumToggleButton.whenPressed(pneumaticsTest::toggle);
+    //final JoystickButton PneumToggleButton = new JoystickButton(driverController, Constants.PneumToggleButton);
+    //PneumToggleButton.whenPressed(pneumaticsTest::toggle);
   }
 
   /**

@@ -24,6 +24,18 @@ public class NavX extends SubsystemBase{
    */
   public NavX() { 
     //all methods are static so this constructor will never be called
+    new Thread( () -> { 
+      try {
+        Thread.sleep(1000); 
+      }
+      catch(InterruptedException e) {
+        SmartDashboard.putBoolean("interupted", true);
+        return;
+      }
+      
+      zeroGyroYaw(); 
+    });
+    
   }
 
   @Override

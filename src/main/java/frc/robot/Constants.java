@@ -17,8 +17,8 @@ public final class Constants {
     //motors
     public static final int motorL1Value = 0;
     public static final int motorL2Value = 1;
-    public static final int motorR1Value = 2;
-    public static final int motorR2Value = 3;
+    public static final int motorR1Value = 3;
+    public static final int motorR2Value = 2;
     public static final int motorTurret = 90;
 
     //controller values
@@ -43,7 +43,7 @@ public final class Constants {
     public static final double maxDriveSpeed = 1.0;
 
     //mecanum
-	public static final double maxMecSpeed = 0;
+	public static final double maxMecSpeed = 15;
 
     //gyro
     public static final double jerkXCollisionThreshold = 1;
@@ -73,7 +73,7 @@ public final class Constants {
 
     //miscellaneous
     public static final double turningRate = 0.5;
-    public static final double deadzone = 0.1;
+    public static final double deadzone = 0.01;
 
     //driver contoller buttons
     public static final int limelightTargetButton = Constants.aButton;
@@ -83,7 +83,8 @@ public final class Constants {
     public static final int PneumToggleButton = rightBumper;
     public static final int motorHood = 0;
     public static final int motorShooter = 0;
-    public static final int targetDeltaY = 0;
+    public static final int targetDeltaY = 2;
+    public static final int zeroYawButton = yButton;
     
     
     

@@ -12,6 +12,8 @@ import frc.robot.subsystems.MecDriveTrain;
 public class DriveMec extends CommandBase {
   private MecDriveTrain mecDriveTrain;
 
+  double x = 0, y = 0, z = 0;
+
   /** Creates a new DriveMec. */
   public DriveMec(MecDriveTrain mecDriveTrain) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -25,17 +27,21 @@ public class DriveMec extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    mecDriveTrain.setMotors(
-      Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftStickX), 
-      Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftStickY), 
-      Robot.robotContainer.getDriverDeadzoneAxis(Constants.rightTrigger)
-         - Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftTrigger), 
-      false);
+    z = 3 * (Robot.robotContainer.getDriverDeadzoneAxis(Constants.rightTrigger)
+    - Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftTrigger));
+    x = 3 * Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftStickY);
+    y = 3 * Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftStickX);
+
+    //mecDriveTrain.setMotorsSimple(x, y, z);
+
+    mecDriveTrain.setMotors(x, y, z, true);
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    mecDriveTrain.stopDrive();
+  }
 
   // Returns true when the command should end.
   @Override
