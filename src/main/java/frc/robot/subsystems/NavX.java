@@ -24,7 +24,7 @@ public class NavX extends SubsystemBase{
    */
   public NavX() { 
     //all methods are static so this constructor will never be called
-    new Thread( () -> { 
+    /*new Thread( () -> { 
       try {
         Thread.sleep(1000); 
       }
@@ -34,7 +34,7 @@ public class NavX extends SubsystemBase{
       }
       
       zeroGyroYaw(); 
-    });
+    });*/
     
   }
 
