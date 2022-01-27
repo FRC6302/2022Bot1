@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.DigitalSource;
-
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -72,7 +70,10 @@ public final class Constants {
 
     //shooter
     public static final double shootSpeed = 0.5;
-
+    public static final int topShooterEncA = 7;
+    public static final int topShooterEncB = 8;
+    public static final int bottomShooterEncA = 0;
+    public static final int bottomShooterEncB = 1;
 
     //move command
     public static final double leftMotorsMoveSpeed = 0.1;
@@ -82,21 +83,16 @@ public final class Constants {
     //miscellaneous
     public static final double turningRate = 0.5;
     public static final double deadzone = 0.1;
-
+    public static final int targetDeltaY = 2;
+    
     //driver contoller buttons
     public static final int limelightTargetButton = Constants.aButton;
     public static final int LLDistanceButton = bButton;
     public static final int PneumForwardButton = xButton;
     public static final int PneumReverseButton = yButton;
     public static final int PneumToggleButton = rightBumper;
-    
-    
-    public static final int targetDeltaY = 2;
     public static final int zeroYawButton = yButton;
-    public static final DigitalSource topShooterEncA = null;
-    public static final DigitalSource topShooterEncB = null;
-    public static final DigitalSource bottomShooterEncA = null;
-    public static final DigitalSource bottomShooterEncB = null;
+    public static final int shootButton = bButton;
     
     
     
