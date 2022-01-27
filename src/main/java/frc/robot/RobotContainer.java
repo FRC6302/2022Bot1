@@ -11,11 +11,13 @@ import frc.robot.commands.DistanceToTarget;
 import frc.robot.commands.DriveGTA;
 import frc.robot.commands.DriveMec;
 import frc.robot.commands.Move;
+import frc.robot.commands.Shoot;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.MecDriveTrain;
 import frc.robot.subsystems.NavX;
 import frc.robot.subsystems.PneumaticsTest;
+import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
@@ -34,11 +36,14 @@ public class RobotContainer {
   private XboxController driverController;
   //public static XboxController operatorController;
 
-  private DriveTrain driveTrain;
+  /*private DriveTrain driveTrain;
   //private DriveGTA driveGTA;
 
   private MecDriveTrain mecDriveTrain;
-  private DriveMec driveMec;
+  private DriveMec driveMec;*/
+
+  private Shooter shooter;
+  private Shoot shoot;
 
   private Limelight limelight;
   private DistanceToTarget distanceToTarget;
@@ -59,11 +64,14 @@ public class RobotContainer {
     //driveGTA.addRequirements(driveTrain);
     //driveTrain.setDefaultCommand(driveGTA);
 
-    mecDriveTrain = new MecDriveTrain();
+    /*mecDriveTrain = new MecDriveTrain();
     driveMec = new DriveMec(mecDriveTrain);
     driveMec.addRequirements(mecDriveTrain);
-    mecDriveTrain.setDefaultCommand(driveMec);
+    mecDriveTrain.setDefaultCommand(driveMec);*/
 
+    shooter = new Shooter();
+    shoot = new Shoot(shooter);
+    shoot.addRequirements(shooter);
 
 
     //limelight = new Limelight();
@@ -119,11 +127,14 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    final JoystickButton shootButton = new JoystickButton(driverController, Constants.shootButton);
+    shootButton.whileHeld(shoot); 
+    
     //final JoystickButton LLDistanceButton = new JoystickButton(driverController, Constants.LLDistanceButton);
     //LLDistanceButton.whileHeld(new DistanceToTarget());
 
-    final JoystickButton zeroYawButton = new JoystickButton(driverController, Constants.zeroYawButton);
-    zeroYawButton.whenPressed(NavX::zeroGyroYaw); //this is a method reference 
+    //final JoystickButton zeroYawButton = new JoystickButton(driverController, Constants.zeroYawButton);
+    //zeroYawButton.whenPressed(NavX::zeroGyroYaw); //this is a method reference 
 
     /*final JoystickButton PneumForwardButton = new JoystickButton(driverController, Constants.PneumForwardButton);
     PneumForwardButton.whileHeld(pneumaticsTest::setForward);
