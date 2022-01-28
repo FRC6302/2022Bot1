@@ -8,10 +8,12 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
-
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
+import edu.wpi.first.math.kinematics.MecanumDriveMotorVoltages;
 import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.Encoder;
@@ -27,10 +29,15 @@ public class MecDriveTrain extends SubsystemBase {
 
   //MecanumDrive mecDrive;
 
-  /*private Encoder encL1;
-  private Encoder encL2;
-  private Encoder encR1;
-  private Encoder encR2;*/
+  private Encoder encoderL1;
+  private Encoder encoderL2;
+  private Encoder encoderR1;
+  private Encoder encoderR2;
+
+  SimpleMotorFeedforward mecFeedforward = new SimpleMotorFeedforward(
+    Constants.ksMecFeedForward, 
+    Constants.kvMecFeedForward,
+    Constants.kaMecFeedForward);
 
   //remeasure
   private final Translation2d frontLeftLocation = new Translation2d(0.5, 0.5);
@@ -42,7 +49,7 @@ public class MecDriveTrain extends SubsystemBase {
       new MecanumDriveKinematics(
           frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
 
-  //private final MecanumDriveOdometry odometry = new MecanumDriveOdometry(kinematics, NavX.getGyroRotation2d());
+  private final MecanumDriveOdometry odometry = new MecanumDriveOdometry(kinematics, NavX.getGyroRotation2d());
 
   private final NeutralMode motorMode = NeutralMode.Coast;
 
@@ -67,10 +74,10 @@ public class MecDriveTrain extends SubsystemBase {
    motorR2.setInverted(false);
 
 
-   //encL1 = new Encoder(0, 1);
-   //encL2 = new Encoder(0, 1);
-   //encR1 = new Encoder(0, 1);
-   //encR2 = new Encoder(0, 1);
+   encoderL1 = new Encoder(Constants.encL1A, Constants.encL1B, false);
+   encoderL2 = new Encoder(Constants.encL2A, Constants.encL2B, false);
+   encoderR1 = new Encoder(Constants.encR1A, Constants.encR1B, false);
+   encoderR2 = new Encoder(Constants.encR2A, Constants.encR2B, false);
   }
 
   @Override
@@ -118,16 +125,67 @@ public class MecDriveTrain extends SubsystemBase {
     motorR2.set(ControlMode.PercentOutput, (xSpeed - ySpeed + rotSpeed) / maxMecSpeed);
   }
 
-  /*public MecanumDriveWheelSpeeds getCurrentState() {
+  public void setDriveMotorControllersVolts(MecanumDriveMotorVoltages volts) {
+    motorL1.setVoltage(volts.frontLeftVoltage);
+    motorL2.setVoltage(volts.rearLeftVoltage);
+    motorR1.setVoltage(volts.frontRightVoltage);
+    motorR2.setVoltage(volts.rearRightVoltage);
+  }
+
+  public MecanumDriveWheelSpeeds getCurrentWheelSpeeds() {
     return new MecanumDriveWheelSpeeds(
-        encL1.getRate(),
-        encL2.getRate(),
-        encR1.getRate(),
-        encR2.getRate());
-  }*/
+        encoderL1.getRate(),
+        encoderL2.getRate(),
+        encoderR1.getRate(),
+        encoderR2.getRate());
+  }
 
    /** Updates the field relative position of the robot. */
    public void updateOdometry() {
-    //odometry.update(NavX.getGyroRotation2d(), getCurrentState());
+    odometry.update(NavX.getGyroRotation2d(), getCurrentWheelSpeeds());
+  }
+
+
+  public void resetEncoders() {
+    encoderL1.reset();
+    encoderL2.reset();
+    encoderR1.reset();
+    encoderR2.reset();
+  }
+
+  public Encoder getEncoderL1() {
+    return encoderL1;
+  }
+
+  public Encoder getEncoderL2() {
+    return encoderL2;
+  }
+
+  public Encoder getEncoderR1() {
+    return encoderR1;
+  }
+
+  public Encoder getEncoderR2() {
+    return encoderR2;
+  }
+
+  public MecanumDriveKinematics getMecKinetimatics() {
+    return kinematics;
+  }
+
+  public SimpleMotorFeedforward getMecFeedforward() {
+    return mecFeedforward;
+  }
+
+  public Pose2d getPose() {
+    return odometry.getPoseMeters();
+  }
+
+  public double getParaV() {
+    return 0;
+  }
+
+  public double getPerpV() {
+    return 0;
   }
 }

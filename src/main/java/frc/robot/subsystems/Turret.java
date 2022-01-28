@@ -5,16 +5,30 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Turret extends SubsystemBase {
   private WPI_TalonSRX motorTurret = new WPI_TalonSRX(Constants.motorTurret);
 
+  private Encoder turretEncoder = new Encoder(Constants.encTurretA, Constants.encTurretB, false);
+
+  private double gearReduction = 10;
+
+  //360 degrees
+  //8192 for rev through bore encoder
+  private double distancePerPulse = (360 / 8192) / gearReduction;
+
   /** Creates a new Turret. */
   public Turret() {
+    motorTurret.setNeutralMode(NeutralMode.Brake);
+    motorTurret.setInverted(false);
+
+    turretEncoder.setDistancePerPulse(distancePerPulse);
   }
 
   @Override
@@ -27,5 +41,13 @@ public class Turret extends SubsystemBase {
   public synchronized void setMotor(double speed){
     motorTurret.set(ControlMode.PercentOutput, speed);
 
+  }
+
+  public void setAngle(double angleDegrees) {
+    //use PID to get to certain encoder values
+  }
+
+  public double getAngle() {
+    return turretEncoder.getDistance();
   }
 }

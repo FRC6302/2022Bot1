@@ -14,9 +14,8 @@ import frc.robot.Constants;
 
 //subsystem for the limelight camera on our robot. Used for vision tracking and stuff
 public class Limelight extends SubsystemBase {
-  static double x = 0, y = 0, area = 0, targetFound = 0;
+  private static double x = 0, y = 0, area = 0, targetFound = 0;
 
-  private static double height = 2.75; //of target
   private static double distance; //to target
 
   //TODO: use the distance to target to move to the right distance using MoveDistancePID
@@ -27,8 +26,10 @@ public class Limelight extends SubsystemBase {
     try {
       //camera controls
       NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(0);
-      NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").setNumber(0); //1 is light mode
+      
       //changing camMode can be used to switch between the normal cam and the darkened targeting mode
+      NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").setNumber(0); //1 is light mode
+      
       NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(0);
       NetworkTableInstance.getDefault().getTable("limelight").getEntry("stream").setNumber(0);
       }
@@ -85,7 +86,7 @@ public class Limelight extends SubsystemBase {
 
 
     //ty = Limelight.getY();
-    distance = height / Math.tan(Math.toRadians(Limelight.y + Constants.limelightMountDegreeOffset));
+    distance = Constants.targetDeltaY / Math.tan(Math.toRadians(y + Constants.limelightMountDegreeOffset));
     SmartDashboard.putNumber("target distance", distance);
     return distance;
 

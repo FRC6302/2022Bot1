@@ -11,7 +11,6 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -23,8 +22,10 @@ public class Shooter extends SubsystemBase {
   private WPI_TalonSRX motorShooterTop = new WPI_TalonSRX(Constants.motorShooterTop);
   private WPI_TalonSRX motorShooterBottom = new WPI_TalonSRX(Constants.motorShooterBottom);
 
-  private Encoder topShooterEncoder = new Encoder(Constants.topShooterEncA, Constants.topShooterEncB, false/*, EncodingType.k4X*/);
-  private Encoder bottomShooterEncoder = new Encoder(Constants.bottomShooterEncA, Constants.bottomShooterEncB, false/*, EncodingType.k4X*/);
+  private Encoder topShooterEncoder = new Encoder(Constants.topShooterEncA, Constants.topShooterEncB, 
+    false/*, EncodingType.k4X*/);
+  private Encoder bottomShooterEncoder = new Encoder(Constants.bottomShooterEncA, Constants.bottomShooterEncB, 
+    true/*, EncodingType.k4X*/);
 
   private BangBangController bangBangTop = new BangBangController(0.5);
   private BangBangController bangBangBottom = new BangBangController(0.5);
@@ -34,13 +35,10 @@ public class Shooter extends SubsystemBase {
   private SimpleMotorFeedforward bottomFeedforward = new SimpleMotorFeedforward(bottomkS, bottomkV, bottomkA);
   
   /*
-    Distance Per Pulse (dpp) calculation explanation:
-    distance per pulse is pi * (wheel diameter / counts per revolution) according to Andymark example code
-    i think then you divide by gear reduction
-    counts per rev is 1024 for our encoder according to Andymark example code
-    rev through bore encoder says 8192 counts per rev
+    distance per pulse = pi * (wheel diameter / counts per revolution) / gear reduction
+    rev through bore encoder is 8192 counts per rev?
     */
-  private final double distancePerPulse = (Math.PI * 0.1524 / 8192) / 1; //blue wheel diam is 6 inches or 0.1524 meters
+  private final double distancePerPulse = (Math.PI * 0.1524 / 8192) / 4; //blue wheel diam is 6 inches or 0.1524 meters
   
 
   /** Creates a new Shooter. */
@@ -52,6 +50,9 @@ public class Shooter extends SubsystemBase {
 
     topShooterEncoder.setDistancePerPulse(distancePerPulse);
     bottomShooterEncoder.setDistancePerPulse(distancePerPulse);
+
+    motorShooterTop.setInverted(false);
+    motorShooterBottom.setInverted(true);
   }
 
   @Override
