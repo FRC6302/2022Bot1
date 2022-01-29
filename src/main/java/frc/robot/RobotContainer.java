@@ -47,14 +47,14 @@ public class RobotContainer {
   private XboxController driverController;
   //public static XboxController operatorController;
 
-  private DriveTrain driveTrain;
+  /*private DriveTrain driveTrain;
   //private DriveGTA driveGTA;
 
   private MecDriveTrain mecDriveTrain;
-  private DriveMec driveMec;
+  private DriveMec driveMec;*/
 
-  /*private Shooter shooter;
-  private Shoot shoot;*/
+  private Shooter shooter;
+  private Shoot shoot;
 
   private Limelight limelight;
   private DistanceToTarget distanceToTarget;
@@ -75,14 +75,14 @@ public class RobotContainer {
     //driveGTA.addRequirements(driveTrain);
     //driveTrain.setDefaultCommand(driveGTA);
 
-    mecDriveTrain = new MecDriveTrain();
+    /*mecDriveTrain = new MecDriveTrain();
     driveMec = new DriveMec(mecDriveTrain);
     driveMec.addRequirements(mecDriveTrain);
-    mecDriveTrain.setDefaultCommand(driveMec);
+    mecDriveTrain.setDefaultCommand(driveMec);*/
 
-    /*shooter = new Shooter();
+    shooter = new Shooter();
     shoot = new Shoot(shooter);
-    shoot.addRequirements(shooter);*/
+    shoot.addRequirements(shooter);
 
 
     //limelight = new Limelight();
@@ -138,8 +138,8 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    //final JoystickButton shootButton = new JoystickButton(driverController, Constants.shootButton);
-    //shootButton.whileHeld(new Shoot(shooter)); 
+    final JoystickButton shootButton = new JoystickButton(driverController, Constants.shootButton);
+    shootButton.whileHeld(new Shoot(shooter)); 
     
     //final JoystickButton LLDistanceButton = new JoystickButton(driverController, Constants.LLDistanceButton);
     //LLDistanceButton.whileHeld(new DistanceToTarget());
@@ -167,7 +167,7 @@ public class RobotContainer {
     return move;
   }
 
-  public Command getMecControllerCommand() {
+  /*public Command getMecControllerCommand() {
     // Create config for trajectory
     TrajectoryConfig config =
         new TrajectoryConfig(Constants.maxMecSpeed,Constants.maxMecAcceleration)
@@ -210,5 +210,5 @@ public class RobotContainer {
         mecDriveTrain);
 
     return mecanumControllerCommand;
-  }
+  }*/
 }

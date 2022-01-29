@@ -59,25 +59,30 @@ public class MecDriveTrain extends SubsystemBase {
     motorL1 = new WPI_TalonSRX(Constants.motorL1Value);
     motorL2 = new WPI_TalonSRX(Constants.motorL2Value);
     motorR1 = new WPI_TalonSRX(Constants.motorR1Value);
-    motorR2 = new WPI_TalonSRX(Constants.motorR2Value);
+    motorR2 = new WPI_TalonSRX(Constants.motorR2Value);    
 
-   // mecDrive = new MecanumDrive(motorL1, motorL2, motorR1, motorR2);
+    motorL1.configFactoryDefault();
+    motorL2.configFactoryDefault();
+    motorR1.configFactoryDefault();
+    motorR2.configFactoryDefault();
 
-   motorL1.setNeutralMode(motorMode);
-   motorL2.setNeutralMode(motorMode);
-   motorR1.setNeutralMode(motorMode);
-   motorR2.setNeutralMode(motorMode);
+    motorL1.setNeutralMode(motorMode);
+    motorL2.setNeutralMode(motorMode);
+    motorR1.setNeutralMode(motorMode);
+    motorR2.setNeutralMode(motorMode);
 
-   motorL1.setInverted(true);
-   motorL2.setInverted(true);
-   motorR1.setInverted(false);
-   motorR2.setInverted(false);
+    motorL1.setInverted(true);
+    motorL2.setInverted(true);
+    motorR1.setInverted(false);
+    motorR2.setInverted(false);
 
-
-   encoderL1 = new Encoder(Constants.encL1A, Constants.encL1B, false);
-   encoderL2 = new Encoder(Constants.encL2A, Constants.encL2B, false);
-   encoderR1 = new Encoder(Constants.encR1A, Constants.encR1B, false);
-   encoderR2 = new Encoder(Constants.encR2A, Constants.encR2B, false);
+    
+    encoderL1 = new Encoder(Constants.encL1A, Constants.encL1B, false);
+    encoderL2 = new Encoder(Constants.encL2A, Constants.encL2B, false);
+    encoderR1 = new Encoder(Constants.encR1A, Constants.encR1B, false);
+    encoderR2 = new Encoder(Constants.encR2A, Constants.encR2B, false);
+    
+    //mecDrive = new MecanumDrive(motorL1, motorL2, motorR1, motorR2);
   }
 
   @Override

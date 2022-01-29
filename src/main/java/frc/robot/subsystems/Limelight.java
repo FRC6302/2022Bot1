@@ -15,6 +15,7 @@ import frc.robot.Constants;
 //subsystem for the limelight camera on our robot. Used for vision tracking and stuff
 public class Limelight extends SubsystemBase {
   private static double x = 0, y = 0, area = 0, targetFound = 0;
+  private static double lastX = 0, lastY = 0;
 
   private static double distance; //to target
 
@@ -54,6 +55,13 @@ public class Limelight extends SubsystemBase {
     double area = ta.getDouble(0.0); //ranges from 0 to 100% of image
     Limelight.targetFound = tv.getDouble(0.0);
 
+    if (x != 0) {
+      lastX = x;
+    }
+    if (y != 0) {
+      lastY = y;
+    }
+
     //posts to smart dashboard periodically
     SmartDashboard.putNumber("LimelightX", x);
     SmartDashboard.putNumber("LimelightY", y);
@@ -67,6 +75,14 @@ public class Limelight extends SubsystemBase {
 
   public static double getY() {
     return y;
+  }
+
+  public static double getLastX() {
+    return lastX;
+  }
+
+  public static double getLastY() {
+    return lastY;
   }
 
   public static boolean getTargetFound() {

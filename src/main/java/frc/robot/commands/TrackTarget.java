@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Hood;
@@ -18,12 +20,16 @@ public class TrackTarget extends CommandBase {
   Hood hood;
   Shooter shooter;
 
-  double turretAdjust = 0;
-  double hoodAdjust = 0;
+  //outputs of command
+  double turretAdjust = 0, desiredTurretAngle = 0;
+  double hoodAdjust = 0, desiredHoodAngle = 0;
 
-  double paraV = 0, perpV = 0, distance = 0;
+  //from chassis
+  double paraV = 0, perpV = 0;
+  
+  //from limelight
+  double distance = 0, x = 0, y = 0, lastX = 0, lastY = 0;
 
-  double desiredHoodAngle = 0, desiredTurretAngle = 0;
   
   /** Creates a new TrackTarget. */
   public TrackTarget(MecDriveTrain mecDriveTrain, Turret turret, Hood hood, Shooter shooter) {
@@ -43,28 +49,47 @@ public class TrackTarget extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (!Limelight.getTargetFound()) { //if target not found
-      turret.setMotor(Constants.turretSeekSpeed);
-      shooter.setBothMotors(Constants.defaultShooterSpeed);
-    }
-    else //this runs when the target is in view of camera
-    {
+    if (Limelight.getTargetFound()) { //if target is found
       distance = Limelight.getTargetDistance();
+      x = Limelight.getX();
+
+      paraV = mecDriveTrain.getParaV();
+      perpV = mecDriveTrain.getPerpV();
 
       desiredHoodAngle = -3 * distance + 85;
       hood.setHoodAngle(desiredHoodAngle);
 
-      perpV = mecDriveTrain.getPerpV();
-      if (Math.abs(perpV) < 0.3) {
-        desiredTurretAngle = Limelight.getX() / 100;
-        turret.setAngle(desiredTurretAngle);
-      }
-      else {
-        turret.setAngle(perpV * -3);
-      }
-
-      paraV = mecDriveTrain.getParaV();
+      turretAdjust = x / 100 - 3 * perpV;
+      turret.setMotor(turretAdjust);      
+      
       shooter.shootWithInitialBallVelocity(paraV, perpV, desiredHoodAngle, desiredTurretAngle, distance);
+    }
+    else //this runs when the target is not in view of camera
+    {
+      //maybe base shooter speed on last distance value?
+      shooter.setMotors(Constants.defaultShooterSpeed);
+      
+      lastX = Limelight.getLastX();
+      lastY = Limelight.getLastY();
+      if (lastX < -29) { //happens when we turn too far to the right
+        turret.setMotor(Constants.turretSeekSpeed);
+      }
+      else if (lastX > 29) { //happens when we turn too far to the left
+        turret.setMotor(-Constants.turretSeekSpeed);
+      }
+      else if (Math.abs(lastY) > 24) { //happens when we got too close or far and target is out of view.
+        turret.setMotor(0); //because target is out of view vertically, rotating turret wont change anything
+      }
+      else{ 
+        /*happens when the target was not on the edge of field of view when target become out of sight,
+        which would only happen if the LL disconnected or something */
+        turret.setMotor(0);
+
+        for (int i = 0; i < 3; i++) { //repeated to emphasize to driver
+          DriverStation.reportWarning("LIMELIGHT CANNOT FIND TARGET, REASON UNKNOWN", false);
+        }
+      }
+      
     }
 
     //hood.setHoodAngle(hoodAdjust);

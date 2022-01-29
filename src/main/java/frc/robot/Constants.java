@@ -101,7 +101,7 @@ public final class Constants {
     public static final double turretSeekSpeed = 0.2;
 
     //shooter
-    public static final double shootSpeed = 1.0;
+    public static final double shootSpeed = 0.65;
     public static final int topShooterEncA = 7;
     public static final int topShooterEncB = 8;
     public static final int bottomShooterEncA = 0;
