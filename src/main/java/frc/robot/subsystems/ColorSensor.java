@@ -8,12 +8,14 @@ import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorSensorV3;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ColorSensor extends SubsystemBase {
+
   //change the I2C port below to match the connection of your color sensor to the rio
   private final I2C.Port i2cPort = I2C.Port.kOnboard;
 
@@ -41,6 +43,10 @@ public class ColorSensor extends SubsystemBase {
   private final Color red = new Color(0.561, 0.232, 0.114);
   private final Color yellow = new Color(0.361, 0.524, 0.113);
 
+  private final DriverStation.Alliance alliance;
+  private final Color allianceColor;
+  
+  private static double ballsPickedUp;
 
 
   /** Creates a new ColorSensor. */
@@ -48,7 +54,19 @@ public class ColorSensor extends SubsystemBase {
     colorMatcher.addColorMatch(blue);
     colorMatcher.addColorMatch(green);
     colorMatcher.addColorMatch(red);
-    colorMatcher.addColorMatch(yellow);   
+    colorMatcher.addColorMatch(yellow);
+
+    alliance = DriverStation.getAlliance();
+    if (alliance == DriverStation.Alliance.Blue) {
+      allianceColor = blue;
+    }
+    else if (alliance == DriverStation.Alliance.Red) {
+      allianceColor = red;
+    }
+    else {
+      DriverStation.reportWarning("COULD NOT GET ALLIANCE COLOR, DEFAULTING TO RED", false);
+      allianceColor = red;
+    }
   }
 
   @Override
@@ -70,10 +88,11 @@ public class ColorSensor extends SubsystemBase {
     /**
      * Run the color match algorithm on our detected color
      */
-    String colorString;
+    String colorString = "";
     ColorMatchResult match = colorMatcher.matchClosestColor(detectedColor);
-
-    if (match.color == blue) {
+    if (match.color == allianceColor) {
+      ballsPickedUp++;
+    } else if (match.color == blue) {
       colorString = "Blue";
     } else if (match.color == red) {
       colorString = "Red";
@@ -90,5 +109,11 @@ public class ColorSensor extends SubsystemBase {
     SmartDashboard.putNumber("Blue", detectedColor.blue);
     SmartDashboard.putNumber("Confidence", match.confidence);
     SmartDashboard.putString("Detected Color", colorString);
+
+    
+  }
+
+  public static double getBallsPickedUp() {
+    return ballsPickedUp;
   }
 }

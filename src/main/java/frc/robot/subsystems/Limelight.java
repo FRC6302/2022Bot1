@@ -18,8 +18,7 @@ public class Limelight extends SubsystemBase {
   private static double lastX = 0, lastY = 0;
 
   private static double distance; //to target
-
-  //TODO: use the distance to target to move to the right distance using MoveDistancePID
+  
   /**
    * Creates a new Limelight.
    */
