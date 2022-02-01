@@ -23,4 +23,17 @@ public class Indexer extends SubsystemBase {
 
     SmartDashboard.putNumber("balls holding", ballsHolding);
   }
+
+  public boolean getLastestBallIsAlliance() {
+    if (ballsHolding <= 0) {
+      return true;
+    }
+    else if (ballsHolding == 1) {
+      return ColorSensor.getLastestBallIsAlliance();
+    }
+    else {
+      return true;
+    }
+
+  }
 }

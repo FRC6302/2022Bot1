@@ -92,19 +92,29 @@ public class Limelight extends SubsystemBase {
     return area;
   }
 
-  public static double getTargetDistance() {
-    //figure out the formula based on linear regresion of data table with
-    //x as area and y as the distance measured by me. Might be polynomial.
-    //Formula will change based on size of reflective target/tape.
-    //Might be able to work out formula with math and the camera's field of view?
-    //return area * 5;
-
-
-    //ty = Limelight.getY();
-    distance = Constants.targetDeltaY / Math.tan(Math.toRadians(y + Constants.limelightMountDegreeOffset));
-    SmartDashboard.putNumber("target distance", distance);
+  
+  public static double getTargetDistanceSimple() {
+    /*This is the formula presented in the limelight documentation and can be verified with simple trig.
+    However, this only works if the LL is pointed right at the target (x=0). If it isnt, the distance wont be
+    accurate due to how the camera works. See other method for more explanation.
+    Limelight docs: https://docs.limelightvision.io/en/latest/cs_estimating_distance.html
+    */
+    distance = Constants.targetDeltaY / Math.tan(Math.toRadians(lastY + Constants.limelightMountDegreeOffset));
+    SmartDashboard.putNumber("target distance simple", distance);
     return distance;
 
-    //TODO: test this and then delete DistanceToTarget command
+  }
+
+  //TODO test the differences here
+
+  public static double getTargetDistance() {
+    /*Why the simple method above doesn't always work: 
+    https://www.chiefdelphi.com/t/what-does-limelight-skew-actually-measure/381167/7?u=frc6302
+    and see here for the formula I used:
+    https://www.chiefdelphi.com/t/calculating-distance-to-vision-target/387183/6?u=frc6302
+    */
+    distance = Constants.targetDeltaY / (Math.tan(Math.toRadians(lastY)) * Math.cos(Math.toRadians(lastX)));
+    SmartDashboard.putNumber("target distance", distance);
+    return distance;
   }
 }

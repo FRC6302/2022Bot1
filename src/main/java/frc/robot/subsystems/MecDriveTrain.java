@@ -39,11 +39,13 @@ public class MecDriveTrain extends SubsystemBase {
     Constants.kvMecFeedForward,
     Constants.kaMecFeedForward);
 
-  //remeasure
-  private final Translation2d frontLeftLocation = new Translation2d(0.5, 0.5);
-  private final Translation2d frontRightLocation = new Translation2d(0.5, -0.5);
-  private final Translation2d backLeftLocation = new Translation2d(-0.5, 0.5);
-  private final Translation2d backRightLocation = new Translation2d(-0.5, -0.5);
+  //robot width wheel-to-wheel is 0.584 m, length wheel-to-wheel is 0.521 m
+  //0.584/2 = 0.292, 0.521/2 = 0.2605
+  //use (y, -x) if using normal math graphs, the origin is center of robot
+  private final Translation2d frontLeftLocation = new Translation2d(0.2605, 0.292);
+  private final Translation2d frontRightLocation = new Translation2d(0.2605, -0.292);
+  private final Translation2d backLeftLocation = new Translation2d(-0.2605, 0.292);
+  private final Translation2d backRightLocation = new Translation2d(-0.2605, -0.292);
 
   private final MecanumDriveKinematics kinematics =
       new MecanumDriveKinematics(
@@ -51,7 +53,12 @@ public class MecDriveTrain extends SubsystemBase {
 
   private final MecanumDriveOdometry odometry = new MecanumDriveOdometry(kinematics, NavX.getGyroRotation2d());
 
-  private final NeutralMode motorMode = NeutralMode.Coast;
+  private final NeutralMode motorMode = NeutralMode.Brake;
+
+  //distance per pulse = pi * (wheel diameter / counts per revolution) / gear reduction
+  //rev through bore encoder is 8192 counts per rev? or use 2048 cycles per rev?
+  //ctre mag encoder is 4096
+  private final double distancePerPulse = (Math.PI * 0.1524 / 2048) / 1; //mec wheel diam is 6 in or 0.1524 m
 
 
   /** Creates a new MecDriveTrain. */
@@ -77,10 +84,15 @@ public class MecDriveTrain extends SubsystemBase {
     motorR2.setInverted(false);
 
     
-    encoderL1 = new Encoder(Constants.encL1A, Constants.encL1B, false);
-    encoderL2 = new Encoder(Constants.encL2A, Constants.encL2B, false);
+    encoderL1 = new Encoder(Constants.encL1A, Constants.encL1B, true);
+    encoderL2 = new Encoder(Constants.encL2A, Constants.encL2B, true);
     encoderR1 = new Encoder(Constants.encR1A, Constants.encR1B, false);
     encoderR2 = new Encoder(Constants.encR2A, Constants.encR2B, false);
+
+    encoderL1.setDistancePerPulse(distancePerPulse);
+    encoderL2.setDistancePerPulse(distancePerPulse);
+    encoderR1.setDistancePerPulse(distancePerPulse);
+    encoderR2.setDistancePerPulse(distancePerPulse);
     
     //mecDrive = new MecanumDrive(motorL1, motorL2, motorR1, motorR2);
   }
@@ -88,7 +100,13 @@ public class MecDriveTrain extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("enc L1", encoderL1.getDistance());
+    SmartDashboard.putNumber("enc L2", encoderL2.getDistance());
+    SmartDashboard.putNumber("enc R1", encoderR1.getDistance());
+    SmartDashboard.putNumber("enc R2", encoderR2.getDistance());
   }
+  
+  
 
   /*public static MecanumDrive.WheelSpeeds driveCartesianIK(double ySpeed, 
   double xSpeed, double zRotation, double gyroAngle) {
@@ -97,15 +115,15 @@ public class MecDriveTrain extends SubsystemBase {
 
   public void setMotors(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
     MecanumDriveWheelSpeeds mecanumDriveWheelSpeeds =
-        kinematics.toWheelSpeeds(
-            fieldRelative
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, NavX.getGyroRotation2d())
-                : new ChassisSpeeds(xSpeed, ySpeed, rot));
+      kinematics.toWheelSpeeds(
+        fieldRelative
+          ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, NavX.getGyroRotation2d())
+          : new ChassisSpeeds(xSpeed, ySpeed, rot));
     //mecanumDriveWheelSpeeds.desaturate(Constants.maxMecSpeed);
     setSpeeds(mecanumDriveWheelSpeeds); 
   }
 
-  private void setSpeeds(MecanumDriveWheelSpeeds speeds) {
+  public void setSpeeds(MecanumDriveWheelSpeeds speeds) {
     motorL1.setVoltage(speeds.frontLeftMetersPerSecond);
     motorL2.setVoltage(speeds.rearLeftMetersPerSecond);
     motorR1.setVoltage(speeds.frontRightMetersPerSecond);
@@ -130,7 +148,7 @@ public class MecDriveTrain extends SubsystemBase {
     motorR2.set(ControlMode.PercentOutput, (xSpeed - ySpeed + rotSpeed) / maxMecSpeed);
   }
 
-  public void setDriveMotorControllersVolts(MecanumDriveMotorVoltages volts) {
+  public void setMotorVolts(MecanumDriveMotorVoltages volts) {
     motorL1.setVoltage(volts.frontLeftVoltage);
     motorL2.setVoltage(volts.rearLeftVoltage);
     motorR1.setVoltage(volts.frontRightVoltage);
@@ -139,10 +157,10 @@ public class MecDriveTrain extends SubsystemBase {
 
   public MecanumDriveWheelSpeeds getCurrentWheelSpeeds() {
     return new MecanumDriveWheelSpeeds(
-        encoderL1.getRate(),
-        encoderL2.getRate(),
-        encoderR1.getRate(),
-        encoderR2.getRate());
+      encoderL1.getRate(),
+      encoderL2.getRate(),
+      encoderR1.getRate(),
+      encoderR2.getRate());
   }
 
    /** Updates the field relative position of the robot. */
@@ -186,11 +204,19 @@ public class MecDriveTrain extends SubsystemBase {
     return odometry.getPoseMeters();
   }
 
-  public double getParaV() {
-    return 0;
+  public double getParaV(double gyroAngleDeg, double turretAngleDeg) {
+    double vz = odometry.getPoseMeters().getX();
+    double vx = odometry.getPoseMeters().getY();
+    double theta = Math.toRadians(gyroAngleDeg + turretAngleDeg - 90);
+
+    return vx * Math.cos(theta) + vz * Math.sin(theta);
   }
 
-  public double getPerpV() {
-    return 0;
+  public double getPerpV(double gyroAngleDeg, double turretAngleDeg) {
+    double vz = odometry.getPoseMeters().getX();
+    double vx = odometry.getPoseMeters().getY();
+    double theta = Math.toRadians(gyroAngleDeg + turretAngleDeg - 90);
+
+    return -vx * Math.sin(theta) + vz * Math.cos(theta);
   }
 }

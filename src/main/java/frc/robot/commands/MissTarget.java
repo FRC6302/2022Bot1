@@ -7,7 +7,6 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.subsystems.ColorSensor;
 import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.MecDriveTrain;
@@ -15,7 +14,9 @@ import frc.robot.subsystems.NavX;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Turret;
 
-public class TrackTarget extends CommandBase {
+
+public class MissTarget extends CommandBase {
+  /** Creates a new MissTarget. */
   MecDriveTrain mecDriveTrain;
   Turret turret;
   Hood hood;
@@ -38,7 +39,7 @@ public class TrackTarget extends CommandBase {
 
   
   /** Creates a new TrackTarget. */
-  public TrackTarget(MecDriveTrain mecDriveTrain, Turret turret, Hood hood, Shooter shooter) {
+  public MissTarget(MecDriveTrain mecDriveTrain, Turret turret, Hood hood, Shooter shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.mecDriveTrain = mecDriveTrain;
     this.turret = turret;
@@ -67,6 +68,7 @@ public class TrackTarget extends CommandBase {
 
       //isAllianceBall = ColorSensor.getLastestBallIsAlliance();
 
+      //TODO figure out how to change this so that we miss
       desiredHoodAngle = -3 * distance + 85;
       turretAdjust = x / 100 - 3 * perpV;
 

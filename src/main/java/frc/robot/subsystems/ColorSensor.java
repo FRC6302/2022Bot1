@@ -47,6 +47,8 @@ public class ColorSensor extends SubsystemBase {
   private final Color allianceColor;
   
   private static double ballsPickedUp;
+  private static String latestBall = "hey";
+  private static String allianceColorStr = "girl";
 
 
   /** Creates a new ColorSensor. */
@@ -59,13 +61,16 @@ public class ColorSensor extends SubsystemBase {
     alliance = DriverStation.getAlliance();
     if (alliance == DriverStation.Alliance.Blue) {
       allianceColor = blue;
+      allianceColorStr = "blue";
     }
     else if (alliance == DriverStation.Alliance.Red) {
       allianceColor = red;
+      allianceColorStr = "red";
     }
     else {
-      DriverStation.reportWarning("COULD NOT GET ALLIANCE COLOR, DEFAULTING TO RED", false);
-      allianceColor = red;
+      DriverStation.reportWarning("COULD NOT GET ALLIANCE COLOR, DEFAULTING TO YELLOW", false);
+      allianceColor = yellow;
+      allianceColorStr = "yellow";
     }
   }
 
@@ -90,18 +95,26 @@ public class ColorSensor extends SubsystemBase {
      */
     String colorString = "";
     ColorMatchResult match = colorMatcher.matchClosestColor(detectedColor);
-    if (match.color == allianceColor) {
+
+    /*if (match.color == allianceColor) {
       ballsPickedUp++;
-    } else if (match.color == blue) {
-      colorString = "Blue";
+    }*/
+    
+    if (match.color == blue) {
+      colorString = "blue";
+      latestBall = "blue";
+      ballsPickedUp++;
     } else if (match.color == red) {
-      colorString = "Red";
-    } else if (match.color == green) {
+      colorString = "red";
+      latestBall = "red";
+      ballsPickedUp++;
+    /*} else if (match.color == green) {
       colorString = "Green";
     } else if (match.color == yellow) {
-      colorString = "Yellow";
+      colorString = "Yellow";*/
     } else {
-      colorString = "Unknown";
+      colorString = "unknown";
+      //i dont update lastestBall here because the whole point of the variable is to have the lastest ball
     }
 
     SmartDashboard.putNumber("Red", detectedColor.red);
@@ -115,5 +128,9 @@ public class ColorSensor extends SubsystemBase {
 
   public static double getBallsPickedUp() {
     return ballsPickedUp;
+  }
+
+  public static boolean getLastestBallIsAlliance() {
+    return latestBall == allianceColorStr;
   }
 }

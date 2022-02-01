@@ -4,21 +4,21 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.MecDriveTrain;
 
-public class DistanceToTarget extends CommandBase {
-  double ty;
-  double distance;
+public class DriveMecTrackTarget extends CommandBase {
+  private MecDriveTrain mecDriveTrain;
 
-  double height = 2.75; //of target
+  double x = 0, y = 0, z = 0;
 
-  /** Creates a new DistanceToTarget. */
-  public DistanceToTarget() {
+  /** Creates a new DriveMecTrackTarget. */
+  public DriveMecTrackTarget(MecDriveTrain mecDriveTrain) {
     // Use addRequirements() here to declare subsystem dependencies.
-    
+    this.mecDriveTrain = mecDriveTrain;
   }
 
   // Called when the command is initially scheduled.
@@ -28,9 +28,11 @@ public class DistanceToTarget extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    ty = Limelight.getY();
-    distance = height / Math.tan(Math.toRadians(ty + Constants.limelightMountDegreeOffset));
-    SmartDashboard.putNumber("target distance", distance);
+    x = 3 * Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftStickY);
+    y = 3 * Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftStickX);
+    z = Limelight.getX() / 2;
+
+    mecDriveTrain.setMotors(x, y, z, true);
   }
 
   // Called once the command ends or is interrupted.

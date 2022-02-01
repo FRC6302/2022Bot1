@@ -17,10 +17,14 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.commands.DistanceToTarget;
+import frc.robot.Utilities.InterpolatingDouble;
+import frc.robot.Utilities.InterpolatingTreeMap;
 import frc.robot.commands.DriveGTA;
 import frc.robot.commands.DriveMec;
+import frc.robot.commands.DriveMecTrackTarget;
+import frc.robot.commands.MissTarget;
 import frc.robot.commands.Move;
+import frc.robot.commands.PPMecanumControllerCommand;
 import frc.robot.commands.Shoot;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Limelight;
@@ -28,6 +32,7 @@ import frc.robot.subsystems.MecDriveTrain;
 import frc.robot.subsystems.NavX;
 import frc.robot.subsystems.PneumaticsTest;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.TouchSensor;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.MecanumControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -47,23 +52,28 @@ public class RobotContainer {
   private XboxController driverController;
   //public static XboxController operatorController;
 
-  /*private DriveTrain driveTrain;
+  private DriveTrain driveTrain;
   //private DriveGTA driveGTA;
 
   private MecDriveTrain mecDriveTrain;
-  private DriveMec driveMec;*/
+  private DriveMec driveMec;
+  private DriveMecTrackTarget driveMecTrackTarget;
 
-  private Shooter shooter;
-  private Shoot shoot;
+
+  /*private Shooter shooter;
+  private Shoot shoot;*/
 
   private Limelight limelight;
-  private DistanceToTarget distanceToTarget;
 
   private NavX navX;
 
   private PneumaticsTest pneumaticsTest;
 
+  private TouchSensor touchSensor;
+
   private Move move;
+
+  public InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> distanceVelocityMap;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -75,27 +85,38 @@ public class RobotContainer {
     //driveGTA.addRequirements(driveTrain);
     //driveTrain.setDefaultCommand(driveGTA);
 
-    /*mecDriveTrain = new MecDriveTrain();
+    mecDriveTrain = new MecDriveTrain();
     driveMec = new DriveMec(mecDriveTrain);
     driveMec.addRequirements(mecDriveTrain);
-    mecDriveTrain.setDefaultCommand(driveMec);*/
+    driveMecTrackTarget = new DriveMecTrackTarget(mecDriveTrain);
+    driveMecTrackTarget.addRequirements(mecDriveTrain);
+    //mecDriveTrain.setDefaultCommand(driveMec);
+    mecDriveTrain.setDefaultCommand(driveMecTrackTarget);
 
-    shooter = new Shooter();
+    /*shooter = new Shooter();
     shoot = new Shoot(shooter);
-    shoot.addRequirements(shooter);
+    shoot.addRequirements(shooter);*/
+    //shooter.setDefaultCommand(trackTarget);
 
 
-    //limelight = new Limelight();
-    //distanceToTarget = new DistanceToTarget();
-    //distanceToTarget.addRequirements(limelight);
+    limelight = new Limelight();
 
     navX = new NavX();
 
     //pneumaticsTest = new PneumaticsTest();
 
+    touchSensor = new TouchSensor();
+
     //move = new Move(driveTrain);
     //move.addRequirements(driveTrain);
 
+
+    distanceVelocityMap = new InterpolatingTreeMap<>(100);
+
+    //when distance is 10 m, velocity should be 16 m/s ??
+    //TODO give more values and test output with smart dashboard
+    distanceVelocityMap.put(new InterpolatingDouble(10.), new InterpolatingDouble(16.)); 
+    distanceVelocityMap.put(new InterpolatingDouble(11.), new InterpolatingDouble(16.5)); 
 
     // Configure the button bindings
     configureButtonBindings();
@@ -104,6 +125,7 @@ public class RobotContainer {
 
 
   public double getDriverRawAxis(final int axis){
+    //try to make it easier to adjust using that fancy stuff
     try {
       return driverController.getRawAxis(axis);
     }
@@ -138,14 +160,20 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    final JoystickButton shootButton = new JoystickButton(driverController, Constants.shootButton);
-    shootButton.whileHeld(new Shoot(shooter)); 
+    //final JoystickButton shootButton = new JoystickButton(driverController, Constants.shootButton);
+    //shootButton.whileHeld(new Shoot(shooter)); 
     
-    //final JoystickButton LLDistanceButton = new JoystickButton(driverController, Constants.LLDistanceButton);
-    //LLDistanceButton.whileHeld(new DistanceToTarget());
+    final JoystickButton LLDistanceButton = new JoystickButton(driverController, Constants.LLDistanceButton);
+    LLDistanceButton.whileHeld(Limelight::getTargetDistance);
 
-    //final JoystickButton zeroYawButton = new JoystickButton(driverController, Constants.zeroYawButton);
-    //zeroYawButton.whenPressed(NavX::zeroGyroYaw); //this is a method reference 
+    final JoystickButton zeroYawButton = new JoystickButton(driverController, Constants.zeroYawButton);
+    zeroYawButton.whenPressed(NavX::zeroGyroYaw); //this is a method reference 
+
+    final JoystickButton zeroEncButton = new JoystickButton(driverController, Constants.zeroEncButton);
+    zeroEncButton.whenPressed(mecDriveTrain::resetEncoders);
+
+    final JoystickButton driveNormalButton = new JoystickButton(driverController, Constants.driveNormalButton);
+    driveNormalButton.whileHeld(new DriveMec(mecDriveTrain));
 
     /*final JoystickButton PneumForwardButton = new JoystickButton(driverController, Constants.PneumForwardButton);
     PneumForwardButton.whileHeld(pneumaticsTest::setForward);
@@ -155,6 +183,9 @@ public class RobotContainer {
 
     //final JoystickButton PneumToggleButton = new JoystickButton(driverController, Constants.PneumToggleButton);
     //PneumToggleButton.whenPressed(pneumaticsTest::toggle);
+
+    //final JoystickButton missTargetButton = new JoystickButton(driverController, Constants.missTargetButton);
+    //missTargetButton.whileHeld(new MissTarget(mecDriveTrain, turret, hood, shooter));
   }
 
   /**
@@ -167,9 +198,9 @@ public class RobotContainer {
     return move;
   }
 
-  /*public Command getMecControllerCommand() {
+  public Command getMecControllerCommand() {
     // Create config for trajectory
-    TrajectoryConfig config =
+    /*TrajectoryConfig config =
         new TrajectoryConfig(Constants.maxMecSpeed,Constants.maxMecAcceleration)
           // Add kinematics to ensure max speed is actually obeyed
           .setKinematics(mecDriveTrain.getMecKinetimatics());
@@ -183,12 +214,12 @@ public class RobotContainer {
             List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
             // End 3 meters straight ahead of where we started, facing forward
             new Pose2d(3, 0, new Rotation2d(0)),
-            config);
+            config);*/
 
-    MecanumControllerCommand mecanumControllerCommand = new MecanumControllerCommand(
-        exampleTrajectory,
+    PPMecanumControllerCommand mecanumControllerCommand = new PPMecanumControllerCommand(
+        Robot.testPath,
         mecDriveTrain::getPose,
-        mecDriveTrain.getMecFeedforward(),
+        //mecDriveTrain.getMecFeedforward(),
         mecDriveTrain.getMecKinetimatics(),
 
         // Position contollers
@@ -198,17 +229,17 @@ public class RobotContainer {
             Constants.kpMecThetaController, 0, 0, Constants.mecThetaControllerConstraints),
 
         // Needed for normalizing wheel speeds
-        Constants.maxMecSpeed,
+        //Constants.maxMecSpeed,
 
         // Velocity PID's
-        new PIDController(Constants.kpMecL1Velocity, 0, 0),
+        /*new PIDController(Constants.kpMecL1Velocity, 0, 0),
         new PIDController(Constants.kpMecL2Velocity, 0, 0),
         new PIDController(Constants.kpMecR1Velocity, 0, 0),
-        new PIDController(Constants.kpMecR2Velocity, 0, 0),
-        mecDriveTrain::getCurrentWheelSpeeds,
-        mecDriveTrain::setDriveMotorControllersVolts, // Consumer for the output motor voltages
+        new PIDController(Constants.kpMecR2Velocity, 0, 0),*/
+        //mecDriveTrain::getCurrentWheelSpeeds,
+        mecDriveTrain::setSpeeds, // Consumer for the output motor voltages
         mecDriveTrain);
 
-    return mecanumControllerCommand;
-  }*/
+    return mecanumControllerCommand.andThen(mecDriveTrain::stopDrive);
+  }
 }

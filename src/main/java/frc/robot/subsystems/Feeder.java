@@ -16,6 +16,6 @@ public class Feeder extends SubsystemBase {
   }
 
   public static double getBallsShot() {
-      return 0;
+    return 0;
   }
 }

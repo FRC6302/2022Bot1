@@ -5,7 +5,6 @@
 package frc.robot;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.wpilibj.DigitalSource;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -49,14 +48,14 @@ public final class Constants {
     public static final double maxDriveSpeed = 1.0;
 
     //mecanum
-    public static final int encL1A = 90;
-    public static final int encL1B = 91;
-    public static final int encL2A = 92;
-    public static final int encL2B = 93;
-    public static final int encR1A = 94;
-    public static final int encR1B = 95;
-    public static final int encR2A = 96;
-    public static final int encR2B = 97;
+    public static final int encL1A = 0;
+    public static final int encL1B = 1;
+    public static final int encL2A = 2;
+    public static final int encL2B = 3;
+    public static final int encR1A = 5;
+    public static final int encR1B = 6;
+    public static final int encR2A = 8;
+    public static final int encR2B = 9;
 
     //mecanum trajectory
     public static final double maxMecSpeed = 5; //meters per second
@@ -99,9 +98,17 @@ public final class Constants {
 
     //turret
     public static final double turretSeekSpeed = 0.2;
+    public static final double turretCircumference = 0;
+    public static final int encTurretA = 90;
+    public static final int encTurretB = 90;
+    
+    //hood
+    public static final int encHoodA = 90;
+    public static final int encHoodB = 90;
 
     //shooter
     public static final double shootSpeed = 0.65;
+    public static final double defaultShooterSpeed = 0.8;
     public static final int topShooterEncA = 7;
     public static final int topShooterEncB = 8;
     public static final int bottomShooterEncA = 0;
@@ -117,22 +124,19 @@ public final class Constants {
     public static final double deadzone = 0.1;
 
     //field
-    public static final double targetDeltaY = 2.5;
+    public static final double targetDeltaY = 2.64;
     
     //driver contoller buttons
-    public static final int limelightTargetButton = Constants.aButton;
+    public static final int limelightTargetButton = rightBumper;
     public static final int LLDistanceButton = bButton;
     public static final int PneumForwardButton = xButton;
     public static final int PneumReverseButton = yButton;
     public static final int PneumToggleButton = rightBumper;
     public static final int zeroYawButton = yButton;
     public static final int shootButton = bButton;
-    public static final DigitalSource encTurretA = null;
-    public static final DigitalSource encTurretB = null;
-    public static final double turretCircumference = 0;
-    public static final DigitalSource encHoodA = null;
-    public static final DigitalSource encHoodB = null;
-    public static final double defaultShooterSpeed = 0;
+    public static final int zeroEncButton = xButton;
+    public static final int driveNormalButton = aButton;
+    public static final int missTargetButton = 0;
 	
 	
     

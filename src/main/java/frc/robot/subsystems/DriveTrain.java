@@ -53,8 +53,11 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Robot;
+import frc.robot.Utilities.InterpolatingDouble;
 
 //test commit 2
 //test from kaden 2
@@ -109,6 +112,10 @@ public class DriveTrain extends SubsystemBase {
     //motorL2.feed();
     motorR1.feed();
     //motorR2.feed();
+
+    //should print out 16.25
+    SmartDashboard.putNumber("interpolating test", 
+      Robot.robotContainer.distanceVelocityMap.getInterpolated(new InterpolatingDouble(10.5)).value);
   }
 
   public static synchronized DriveTrain getInstance(){

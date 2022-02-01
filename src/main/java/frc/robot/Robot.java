@@ -4,10 +4,16 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
+
+import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.NavX;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -20,6 +26,8 @@ public class Robot extends TimedRobot {
 
   public static RobotContainer robotContainer;
 
+  public static PathPlannerTrajectory testPath;
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -31,6 +39,13 @@ public class Robot extends TimedRobot {
     robotContainer = new RobotContainer();
 
     DriverStation.silenceJoystickConnectionWarning(true);
+
+    // Since a PathPlannerTrajectory extends the WPILib Trajectory, it can be referenced as one
+    // This will load the file "Example Path.path" and generate it with a max velocity of 8 m/s and a max acceleration of 5 m/s^2
+    testPath = PathPlanner.loadPath("Test Path", 8, 5);
+
+    NavX.zeroGyroYaw();
+
   }
 
   /**
