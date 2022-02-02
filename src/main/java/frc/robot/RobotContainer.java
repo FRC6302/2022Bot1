@@ -220,7 +220,7 @@ public class RobotContainer {
         Robot.testPath,
         mecDriveTrain::getPose,
         //mecDriveTrain.getMecFeedforward(),
-        mecDriveTrain.getMecKinetimatics(),
+        mecDriveTrain.getMecKinematics(),
 
         // Position contollers
         new PIDController(Constants.kpMecXController, 0, 0),

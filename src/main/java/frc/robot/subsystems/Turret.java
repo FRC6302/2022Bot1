@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -17,7 +18,11 @@ public class Turret extends SubsystemBase {
 
   private Encoder turretEncoder = new Encoder(Constants.encTurretA, Constants.encTurretB, false);
 
+  //private ProfiledPIDController controller = new ProfiledPIDController(kp, ki, kd, constraints);
+
   private double gearReduction = 10;
+
+  private double angleSetpoint = 0;
 
   //360 degrees
   //8192 for rev through bore encoder
@@ -43,11 +48,16 @@ public class Turret extends SubsystemBase {
 
   }
 
-  public void setAngle(double angleDegrees) {
+  public void setAngle(double angleDeg) {
     //use PID to get to certain encoder values
+    angleSetpoint = angleDeg;
   }
 
   public double getAngle() {
     return turretEncoder.getDistance();
+  }
+
+  public double getAngleSetpoint() {
+    return angleSetpoint;
   }
 }

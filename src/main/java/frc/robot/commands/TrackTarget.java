@@ -7,11 +7,9 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.subsystems.ColorSensor;
 import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.MecDriveTrain;
-import frc.robot.subsystems.NavX;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Turret;
 
@@ -59,11 +57,11 @@ public class TrackTarget extends CommandBase {
       distance = Limelight.getTargetDistance();
       x = Limelight.getX();
 
-      gyroYaw = NavX.getGyroYaw();
+      //gyroYaw = NavX.getGyroYaw();
       turretAngle = turret.getAngle();
 
-      paraV = mecDriveTrain.getParaV(gyroYaw, turretAngle);
-      perpV = mecDriveTrain.getPerpV(gyroYaw, turretAngle);
+      paraV = mecDriveTrain.getParaV(turretAngle);
+      perpV = mecDriveTrain.getPerpV(turretAngle);
 
       //isAllianceBall = ColorSensor.getLastestBallIsAlliance();
 

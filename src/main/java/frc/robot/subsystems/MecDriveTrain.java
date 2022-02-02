@@ -60,6 +60,7 @@ public class MecDriveTrain extends SubsystemBase {
   //ctre mag encoder is 4096
   private final double distancePerPulse = (Math.PI * 0.1524 / 2048) / 1; //mec wheel diam is 6 in or 0.1524 m
 
+  private ChassisSpeeds curChassisSpeeds = new ChassisSpeeds();
 
   /** Creates a new MecDriveTrain. */
   public MecDriveTrain() {
@@ -104,6 +105,12 @@ public class MecDriveTrain extends SubsystemBase {
     SmartDashboard.putNumber("enc L2", encoderL2.getDistance());
     SmartDashboard.putNumber("enc R1", encoderR1.getDistance());
     SmartDashboard.putNumber("enc R2", encoderR2.getDistance());
+
+    updateOdometry();
+
+    //used for converting robot velocity into target-relative velocity
+    curChassisSpeeds = kinematics.toChassisSpeeds(getCurrentWheelSpeeds());
+    
   }
   
   
@@ -128,6 +135,7 @@ public class MecDriveTrain extends SubsystemBase {
     motorL2.setVoltage(speeds.rearLeftMetersPerSecond);
     motorR1.setVoltage(speeds.frontRightMetersPerSecond);
     motorR2.setVoltage(speeds.rearRightMetersPerSecond);
+    //TODO use pid here somehow with PPMecCommand and also dont use setVoltage?
 
     SmartDashboard.putNumber("motorL1", speeds.frontLeftMetersPerSecond);
     SmartDashboard.putNumber("motorR1", speeds.frontRightMetersPerSecond);
@@ -192,7 +200,7 @@ public class MecDriveTrain extends SubsystemBase {
     return encoderR2;
   }
 
-  public MecanumDriveKinematics getMecKinetimatics() {
+  public MecanumDriveKinematics getMecKinematics() {
     return kinematics;
   }
 
@@ -204,18 +212,42 @@ public class MecDriveTrain extends SubsystemBase {
     return odometry.getPoseMeters();
   }
 
-  public double getParaV(double gyroAngleDeg, double turretAngleDeg) {
-    double vz = odometry.getPoseMeters().getX();
-    double vx = odometry.getPoseMeters().getY();
+  /*public double getParaVFromFieldRelative(double gyroAngleDeg, double turretAngleDeg) {
+    //converts velocities from robot-relative to field-relative then to target-relative
+    double vz = curChassisSpeeds.vxMetersPerSecond;
+    double vx = curChassisSpeeds.vyMetersPerSecond;
+    //use gyro to convert these to field relative speeds
+
     double theta = Math.toRadians(gyroAngleDeg + turretAngleDeg - 90);
 
     return vx * Math.cos(theta) + vz * Math.sin(theta);
   }
 
-  public double getPerpV(double gyroAngleDeg, double turretAngleDeg) {
-    double vz = odometry.getPoseMeters().getX();
-    double vx = odometry.getPoseMeters().getY();
+  public double getPerpVFromFieldRelative(double gyroAngleDeg, double turretAngleDeg) {
+    //converts velocities from robot-relative to field-relative then to target-relative
+    double vz = curChassisSpeeds.vxMetersPerSecond;
+    double vx = curChassisSpeeds.vyMetersPerSecond;
+    //use gyro to convert these to field relative speeds 
+
     double theta = Math.toRadians(gyroAngleDeg + turretAngleDeg - 90);
+
+    return -vx * Math.sin(theta) + vz * Math.cos(theta);
+  }*/
+
+  public double getParaV(double turretAngleDeg) {
+    //converts from robot-relative velocities directly to target relative velocities
+    double vz = curChassisSpeeds.vxMetersPerSecond; //velocity in the foward direction, relative to robot
+    double vx = -curChassisSpeeds.vyMetersPerSecond; //velocity towards the right, relative to robot
+    double theta = Math.toRadians(90 - turretAngleDeg);
+
+    return vx * Math.cos(theta) + vz * Math.sin(theta);
+  }
+
+  public double getPerpV(double turretAngleDeg) {
+    //converts from robot-relative velocities directly to target relative velocities
+    double vz = curChassisSpeeds.vxMetersPerSecond; //velocity in the foward direction, relative to robot
+    double vx = -curChassisSpeeds.vyMetersPerSecond; //velocity towards the right, relative to robot
+    double theta = Math.toRadians(90 - turretAngleDeg);
 
     return -vx * Math.sin(theta) + vz * Math.cos(theta);
   }
