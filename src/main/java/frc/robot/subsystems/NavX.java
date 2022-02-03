@@ -62,7 +62,7 @@ public class NavX extends SubsystemBase{
 
   public static double getGyroYaw() { //yaw is rotation (turning) left or right
     //negative because trajectory requires counterclockwise rotation to be positive
-    return -gyro.getYaw() * gyroReverser; 
+    return gyro.getYaw() * gyroReverser; 
   }
 
   //navx didnt have a built in getRotation2d method (in this WPILIB version) so i had to get it like this

@@ -69,7 +69,7 @@ public final class Constants {
     public static final double kpMecYController = 0.1;
     public static final double kpMecThetaController = 0.1;
 
-    private static final double maxMecRotationVelocity = 5; //what units??
+    private static final double maxMecRotationVelocity = 2; //what units??
     private static final double maxMecRotationAccel = 2; 
     public static final Constraints mecThetaControllerConstraints = 
         new Constraints(maxMecRotationVelocity, maxMecRotationAccel);

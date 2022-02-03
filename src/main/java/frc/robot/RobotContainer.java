@@ -88,10 +88,10 @@ public class RobotContainer {
     mecDriveTrain = new MecDriveTrain();
     driveMec = new DriveMec(mecDriveTrain);
     driveMec.addRequirements(mecDriveTrain);
-    driveMecTrackTarget = new DriveMecTrackTarget(mecDriveTrain);
-    driveMecTrackTarget.addRequirements(mecDriveTrain);
-    //mecDriveTrain.setDefaultCommand(driveMec);
-    mecDriveTrain.setDefaultCommand(driveMecTrackTarget);
+    //driveMecTrackTarget = new DriveMecTrackTarget(mecDriveTrain);
+    //driveMecTrackTarget.addRequirements(mecDriveTrain);
+    mecDriveTrain.setDefaultCommand(driveMec);
+    //mecDriveTrain.setDefaultCommand(driveMecTrackTarget);
 
     /*shooter = new Shooter();
     shoot = new Shoot(shooter);
@@ -99,24 +99,24 @@ public class RobotContainer {
     //shooter.setDefaultCommand(trackTarget);
 
 
-    limelight = new Limelight();
+    //limelight = new Limelight();
 
     navX = new NavX();
 
     //pneumaticsTest = new PneumaticsTest();
 
-    touchSensor = new TouchSensor();
+    //touchSensor = new TouchSensor();
 
     //move = new Move(driveTrain);
     //move.addRequirements(driveTrain);
 
 
-    distanceVelocityMap = new InterpolatingTreeMap<>(100);
+    //distanceVelocityMap = new InterpolatingTreeMap<>(100);
 
     //when distance is 10 m, velocity should be 16 m/s ??
     //TODO give more values and test output with smart dashboard
-    distanceVelocityMap.put(new InterpolatingDouble(10.), new InterpolatingDouble(16.)); 
-    distanceVelocityMap.put(new InterpolatingDouble(11.), new InterpolatingDouble(16.5)); 
+    //distanceVelocityMap.put(new IntesrpolatingDouble(10.), new InterpolatingDouble(16.)); 
+    //distanceVelocityMap.put(new InterpolatingDouble(11.), new InterpolatingDouble(16.5)); 
 
     // Configure the button bindings
     configureButtonBindings();
@@ -163,8 +163,8 @@ public class RobotContainer {
     //final JoystickButton shootButton = new JoystickButton(driverController, Constants.shootButton);
     //shootButton.whileHeld(new Shoot(shooter)); 
     
-    final JoystickButton LLDistanceButton = new JoystickButton(driverController, Constants.LLDistanceButton);
-    LLDistanceButton.whileHeld(Limelight::getTargetDistance);
+    //final JoystickButton LLDistanceButton = new JoystickButton(driverController, Constants.LLDistanceButton);
+    //LLDistanceButton.whileHeld(Limelight::getTargetDistance);
 
     final JoystickButton zeroYawButton = new JoystickButton(driverController, Constants.zeroYawButton);
     zeroYawButton.whenPressed(NavX::zeroGyroYaw); //this is a method reference 
@@ -172,8 +172,8 @@ public class RobotContainer {
     final JoystickButton zeroEncButton = new JoystickButton(driverController, Constants.zeroEncButton);
     zeroEncButton.whenPressed(mecDriveTrain::resetEncoders);
 
-    final JoystickButton driveNormalButton = new JoystickButton(driverController, Constants.driveNormalButton);
-    driveNormalButton.whileHeld(new DriveMec(mecDriveTrain));
+    //final JoystickButton driveNormalButton = new JoystickButton(driverController, Constants.driveNormalButton);
+    //driveNormalButton.whileHeld(new DriveMec(mecDriveTrain));
 
     /*final JoystickButton PneumForwardButton = new JoystickButton(driverController, Constants.PneumForwardButton);
     PneumForwardButton.whileHeld(pneumaticsTest::setForward);
@@ -195,7 +195,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return move;
+    return getMecControllerCommand();
   }
 
   public Command getMecControllerCommand() {

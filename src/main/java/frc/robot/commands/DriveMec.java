@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
@@ -27,14 +28,17 @@ public class DriveMec extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    z = 3 * (Robot.robotContainer.getDriverDeadzoneAxis(Constants.rightTrigger)
+    z = -3 * (Robot.robotContainer.getDriverDeadzoneAxis(Constants.rightTrigger)
     - Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftTrigger));
-    x = 3 * Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftStickY);
-    y = 3 * Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftStickX);
+    x = -3 * Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftStickY);
+    y = -3 * Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftStickX);
+
+    SmartDashboard.putNumber("forward input joystick", x);
+    SmartDashboard.putNumber("sideways input joystick", y);
 
     //mecDriveTrain.setMotorsSimple(x, y, z);
 
-    mecDriveTrain.setMotors(x, y, z, true);
+    mecDriveTrain.setMotors(x, y, z, false); 
   }
 
   // Called once the command ends or is interrupted.

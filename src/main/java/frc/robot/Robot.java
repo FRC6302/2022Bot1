@@ -42,7 +42,7 @@ public class Robot extends TimedRobot {
 
     // Since a PathPlannerTrajectory extends the WPILib Trajectory, it can be referenced as one
     // This will load the file "Example Path.path" and generate it with a max velocity of 8 m/s and a max acceleration of 5 m/s^2
-    testPath = PathPlanner.loadPath("Test Path", 8, 5);
+    testPath = PathPlanner.loadPath("Test Path", 8, 4);
 
     NavX.zeroGyroYaw();
 

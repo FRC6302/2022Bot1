@@ -79,10 +79,10 @@ public class MecDriveTrain extends SubsystemBase {
     motorR1.setNeutralMode(motorMode);
     motorR2.setNeutralMode(motorMode);
 
-    motorL1.setInverted(true);
-    motorL2.setInverted(true);
-    motorR1.setInverted(false);
-    motorR2.setInverted(false);
+    motorL1.setInverted(false);
+    motorL2.setInverted(false);
+    motorR1.setInverted(true);
+    motorR2.setInverted(true);
 
     
     encoderL1 = new Encoder(Constants.encL1A, Constants.encL1B, true);
@@ -148,12 +148,16 @@ public class MecDriveTrain extends SubsystemBase {
     motorR2.set(ControlMode.PercentOutput, 0);
   }
 
-  double maxMecSpeed = 3;
+  double maxMecSpeed = 9;
   public void setMotorsSimple(double xSpeed, double ySpeed, double rotSpeed) {
     motorL1.set(ControlMode.PercentOutput, (xSpeed - ySpeed - rotSpeed) / maxMecSpeed);
     motorL2.set(ControlMode.PercentOutput, (xSpeed + ySpeed - rotSpeed) / maxMecSpeed);
     motorR1.set(ControlMode.PercentOutput, (xSpeed + ySpeed + rotSpeed) / maxMecSpeed);
     motorR2.set(ControlMode.PercentOutput, (xSpeed - ySpeed + rotSpeed) / maxMecSpeed);
+
+    SmartDashboard.putNumber("motorL1", (xSpeed - ySpeed - rotSpeed) / maxMecSpeed);
+    SmartDashboard.putNumber("motorR1", (xSpeed + ySpeed + rotSpeed) / maxMecSpeed);
+
   }
 
   public void setMotorVolts(MecanumDriveMotorVoltages volts) {
