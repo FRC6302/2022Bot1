@@ -255,4 +255,8 @@ public class MecDriveTrain extends SubsystemBase {
 
     return -vx * Math.sin(theta) + vz * Math.cos(theta);
   }
+
+  public double getAngV() {
+    return Math.toDegrees(curChassisSpeeds.omegaRadiansPerSecond);
+  }
 }

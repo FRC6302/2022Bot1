@@ -9,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -18,7 +19,13 @@ public class Turret extends SubsystemBase {
 
   private Encoder turretEncoder = new Encoder(Constants.encTurretA, Constants.encTurretB, false);
 
-  //private ProfiledPIDController controller = new ProfiledPIDController(kp, ki, kd, constraints);
+  private ProfiledPIDController pidController = new ProfiledPIDController(Constants.kpTurret, 0, 0, Constants.turretConstraints);
+
+  private SimpleMotorFeedforward simpleFeedforward = new SimpleMotorFeedforward(
+    Constants.ksTurret, Constants.kvTurret, Constants.kaTurret);
+
+  double tangentialFeedforward = 0;
+  double rotationalFeedforward = 0;
 
   private double gearReduction = 10;
 
@@ -39,18 +46,25 @@ public class Turret extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-
+    //tangentialFeedforward = 
 
   }
 
-  public synchronized void setMotor(double speed){
+  public void setMotor(double speed) {
     motorTurret.set(ControlMode.PercentOutput, speed);
+  }
 
+  public void setMotor(double setpoint, double perpV, double distance, double angV){
+    tangentialFeedforward = perpV / distance;
+    rotationalFeedforward = -angV;
+
+    motorTurret.setVoltage(pidController.calculate(getEncVelocity(), setpoint) + simpleFeedforward.calculate(setpoint) + tangentialFeedforward + rotationalFeedforward);
   }
 
   public void setAngle(double angleDeg) {
     //use PID to get to certain encoder values
     angleSetpoint = angleDeg;
+    //motorTurret.setVoltage();
   }
 
   public double getAngle() {
@@ -59,5 +73,13 @@ public class Turret extends SubsystemBase {
 
   public double getAngleSetpoint() {
     return angleSetpoint;
+  }
+
+  public double getEncVelocity() {
+    return turretEncoder.getRate();
+  }
+
+  public double getEncPosition() {
+    return turretEncoder.getDistance();
   }
 }

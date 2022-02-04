@@ -137,6 +137,11 @@ public final class Constants {
     public static final int zeroEncButton = xButton;
     public static final int driveNormalButton = aButton;
     public static final int missTargetButton = 0;
+    public static final double ksTurret = 0;
+    public static final double kvTurret = 0;
+    public static final double kaTurret = 0;
+    public static final double kpTurret = 0;
+    public static final Constraints turretConstraints = null;
 	
 	
     

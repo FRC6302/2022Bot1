@@ -24,12 +24,12 @@ public class TrackTarget extends CommandBase {
   double hoodAdjust = 0, desiredHoodAngle = 0;
 
   //from chassis
-  double paraV = 0, perpV = 0;
+  double paraV = 0, perpV = 0, angV = 0;
   
   //from limelight
   double distance = 0, x = 0, y = 0, lastX = 0, lastY = 0;
 
-  double gyroYaw = 0;
+  //double gyroYaw = 0;
 
   double turretAngle = 0;
   //boolean isAllianceBall = true;
@@ -43,7 +43,7 @@ public class TrackTarget extends CommandBase {
     this.hood = hood;
     this.shooter = shooter;
 
-    addRequirements(mecDriveTrain, turret, hood);
+    addRequirements(mecDriveTrain, turret, hood, shooter);
   }
 
   // Called when the command is initially scheduled.
@@ -60,16 +60,19 @@ public class TrackTarget extends CommandBase {
       //gyroYaw = NavX.getGyroYaw();
       turretAngle = turret.getAngle();
 
+      //velocities with respect to target
       paraV = mecDriveTrain.getParaV(turretAngle);
       perpV = mecDriveTrain.getPerpV(turretAngle);
+      
+      angV = mecDriveTrain.getAngV();
 
       //isAllianceBall = ColorSensor.getLastestBallIsAlliance();
 
-      desiredHoodAngle = -3 * distance + 85;
+      desiredHoodAngle = -3 * distance + 85; //degrees
       turretAdjust = x / 100 - 3 * perpV;
 
       hood.setHoodAngle(desiredHoodAngle);
-      turret.setMotor(turretAdjust);
+      turret.setMotor(turretAdjust, perpV, distance, angV);
 
       shooter.shootWithInitialBallVelocity(paraV, perpV, desiredHoodAngle, desiredTurretAngle, distance);
     }
@@ -78,6 +81,8 @@ public class TrackTarget extends CommandBase {
       //maybe base shooter speed on last distance value?
       shooter.setMotors(Constants.defaultShooterSpeed);
       
+      //if target is out of view, x and y will default to zero, so we have to use the last values of them
+      //from before they went out of sight
       lastX = Limelight.getLastX();
       lastY = Limelight.getLastY();
       if (lastX < -29) { //happens when we turn too far to the right
