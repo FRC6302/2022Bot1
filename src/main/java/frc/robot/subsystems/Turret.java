@@ -54,17 +54,24 @@ public class Turret extends SubsystemBase {
     motorTurret.set(ControlMode.PercentOutput, speed);
   }
 
-  public void setMotor(double setpoint, double perpV, double distance, double angV){
+  public void setMotor(double setpointV, double perpV, double distance, double angV){
     tangentialFeedforward = perpV / distance;
     rotationalFeedforward = -angV;
+    setpointV = setpointV + tangentialFeedforward + rotationalFeedforward;
 
-    motorTurret.setVoltage(pidController.calculate(getEncVelocity(), setpoint) + simpleFeedforward.calculate(setpoint) + tangentialFeedforward + rotationalFeedforward);
+    motorTurret.setVoltage(pidController.calculate(getEncVelocity(), setpointV) + simpleFeedforward.calculate(setpointV));
   }
+
+  public void setMotorVelocityPID(double velocitySetpoint) {
+    motorTurret.setVoltage(pidController.calculate(getEncVelocity(), velocitySetpoint));
+  }
+
 
   public void setAngle(double angleDeg) {
     //use PID to get to certain encoder values
     angleSetpoint = angleDeg;
-    //motorTurret.setVoltage();
+
+    motorTurret.setVoltage(pidController.calculate(getAngle(), angleDeg));
   }
 
   public double getAngle() {
@@ -79,7 +86,4 @@ public class Turret extends SubsystemBase {
     return turretEncoder.getRate();
   }
 
-  public double getEncPosition() {
-    return turretEncoder.getDistance();
-  }
 }
