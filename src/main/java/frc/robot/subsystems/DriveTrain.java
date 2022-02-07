@@ -114,8 +114,8 @@ public class DriveTrain extends SubsystemBase {
     //motorR2.feed();
 
     //should print out 16.25
-    SmartDashboard.putNumber("interpolating test", 
-      Robot.robotContainer.distanceVelocityMap.getInterpolated(new InterpolatingDouble(10.5)).value);
+    //SmartDashboard.putNumber("interpolating test", 
+      //Robot.robotContainer.distanceVelocityMap.getInterpolated(new InterpolatingDouble(10.5)).value);
   }
 
   public static synchronized DriveTrain getInstance(){

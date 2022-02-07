@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
@@ -62,15 +63,30 @@ public class Turret extends SubsystemBase {
     motorTurret.setVoltage(pidController.calculate(getEncVelocity(), setpointV) + simpleFeedforward.calculate(setpointV));
   }
 
-  public void setMotorVelocityPID(double velocitySetpoint) {
-    motorTurret.setVoltage(pidController.calculate(getEncVelocity(), velocitySetpoint));
+  public void setMotorPosPID(double tx, double perpV, double distance, double angV){
+    tangentialFeedforward = perpV / distance;
+    rotationalFeedforward = -angV;
+    //double angle = getAngle();
+    //double setpoint = angle - tx;
+    double pidOutput = pidController.calculate(tx, 0);
+
+    motorTurret.setVoltage(pidOutput + simpleFeedforward.calculate(
+      tangentialFeedforward + rotationalFeedforward));
   }
 
+  public void setMotorVelPID(double tx, double perpV, double distance, double angV) {
+    tangentialFeedforward = perpV / distance;
+    rotationalFeedforward = -angV;
+
+    double setpointV = tx / 10 + tangentialFeedforward + rotationalFeedforward;
+    motorTurret.setVoltage(pidController.calculate(getEncVelocity(), setpointV) 
+      + simpleFeedforward.calculate(setpointV));
+  }
 
   public void setAngle(double angleDeg) {
-    //use PID to get to certain encoder values
     angleSetpoint = angleDeg;
 
+    //use PID to get to certain encoder values
     motorTurret.setVoltage(pidController.calculate(getAngle(), angleDeg));
   }
 

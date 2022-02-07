@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -38,6 +39,8 @@ public class MecDriveTrain extends SubsystemBase {
     Constants.ksMecFeedForward, 
     Constants.kvMecFeedForward,
     Constants.kaMecFeedForward);
+
+  ProfiledPIDController pidController = new ProfiledPIDController(Constants.kpMecV, 0, 0, Constants.mecVConstraints);
 
   //robot width wheel-to-wheel is 0.584 m, length wheel-to-wheel is 0.521 m
   //0.584/2 = 0.292, 0.521/2 = 0.2605

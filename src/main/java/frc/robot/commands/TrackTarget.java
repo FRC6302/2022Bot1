@@ -68,11 +68,11 @@ public class TrackTarget extends CommandBase {
 
       //isAllianceBall = ColorSensor.getLastestBallIsAlliance();
 
-      desiredHoodAngle = -3 * distance + 85; //degrees
-      desiredTurretV = x / 100; //- 3 * perpV;
+      //desiredHoodAngle = -3 * distance + 85; //degrees
+      //desiredTurretV = x / 100; //- 3 * perpV;
 
-      hood.setHoodAngle(desiredHoodAngle);
-      turret.setMotor(desiredTurretV, perpV, distance, angV);
+      hood.setMotorPosPID(distance, paraV);
+      turret.setMotor(x, perpV, distance, angV);
 
       shooter.shootWithInitialBallVelocity(paraV, perpV, desiredHoodAngle, desiredTurretAngle, distance);
     }

@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Utilities.InterpolatingDouble;
 import frc.robot.Utilities.InterpolatingTreeMap;
+import frc.robot.Utilities.LinearInterpolator;
 import frc.robot.commands.DriveGTA;
 import frc.robot.commands.DriveMec;
 import frc.robot.commands.DriveMecTrackTarget;
@@ -72,7 +73,12 @@ public class RobotContainer {
 
   private Move move;
 
-  public InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> distanceVelocityMap;
+  //public InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> distanceVelocityMap;
+  public LinearInterpolator distanceVelocityMap;
+  private double[][] distanceVelocityData = { 
+    {1.0, 10.0}, //{distance, velocity} format
+    {3.0, 11.0}, 
+    {10, 13.0} };
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -111,6 +117,7 @@ public class RobotContainer {
 
 
     //distanceVelocityMap = new InterpolatingTreeMap<>(100);
+    distanceVelocityMap = new LinearInterpolator(distanceVelocityData);
 
     //when distance is 10 m, velocity should be 16 m/s ??
     //TODO give more values and test output with smart dashboard
@@ -218,6 +225,8 @@ public class RobotContainer {
     PPMecanumControllerCommand mecanumControllerCommand = new PPMecanumControllerCommand(
         Robot.testPath,
         mecDriveTrain::getPose,
+        //TODO go to WPILIB source code for mecControlCommand and see how they use this feedforward
+        //and then use that in the mecDriveTrain.setSpeeds() method
         //mecDriveTrain.getMecFeedforward(),
         mecDriveTrain.getMecKinematics(),
 

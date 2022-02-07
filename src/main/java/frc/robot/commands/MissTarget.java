@@ -71,7 +71,7 @@ public class MissTarget extends CommandBase {
       desiredHoodAngle = -3 * distance + 85;
       turretAdjust = x / 100 - 3 * perpV;
 
-      hood.setHoodAngle(desiredHoodAngle);
+      hood.setMotorPosPID(distance, paraV);
       turret.setMotor(turretAdjust);
 
       shooter.shootWithInitialBallVelocity(paraV, perpV, desiredHoodAngle, desiredTurretAngle, distance);

@@ -102,9 +102,22 @@ public final class Constants {
     public static final int encTurretA = 90;
     public static final int encTurretB = 90;
     
+    public static final double ksTurret = 0;
+    public static final double kvTurret = 0;
+    public static final double kaTurret = 0;
+    public static final double kpTurret = 0;
+    public static final Constraints turretConstraints = null;
+    
     //hood
     public static final int encHoodA = 90;
     public static final int encHoodB = 90;
+    
+    public static final double ksHood = 0;
+    public static final double kvHood = 0;
+    public static final double kaHood = 0;
+    public static final double kpHood = 0;
+    public static final Constraints hoodConstraints = null;
+	
 
     //shooter
     public static final double shootSpeed = 0.65;
@@ -137,12 +150,10 @@ public final class Constants {
     public static final int zeroEncButton = xButton;
     public static final int driveNormalButton = aButton;
     public static final int missTargetButton = 0;
-    public static final double ksTurret = 0;
-    public static final double kvTurret = 0;
-    public static final double kaTurret = 0;
-    public static final double kpTurret = 0;
-    public static final Constraints turretConstraints = null;
-	
+    public static final double kpMecV = 0;
+    public static final Constraints mecVConstraints = null;
+    
+    
 	
     
     
