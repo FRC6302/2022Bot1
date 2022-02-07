@@ -10,6 +10,11 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonSRXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxRelativeEncoder.Type;
 
 import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -22,13 +27,19 @@ public class Shooter extends SubsystemBase {
   private final double topkS = 0, topkV = 0, topkA = 0;
   private final double bottomkS = 0, bottomkV = 0, bottomkA = 0;
 
-  private WPI_TalonSRX motorShooterTop = new WPI_TalonSRX(Constants.motorShooterTop);
-  private WPI_TalonSRX motorShooterBottom = new WPI_TalonSRX(Constants.motorShooterBottom);
+  //private WPI_TalonSRX motorShooterTop = new WPI_TalonSRX(Constants.motorShooterTop);
+  //private WPI_TalonSRX motorShooterBottom = new WPI_TalonSRX(Constants.motorShooterBottom);
+
+  private CANSparkMax motorShooterTop = new CANSparkMax(Constants.motorShooterTop, MotorType.kBrushless);
+  private CANSparkMax motorShooterBottom = new CANSparkMax(Constants.motorShooterBottom, MotorType.kBrushless);
 
   /*private Encoder topShooterEncoder = new Encoder(Constants.topShooterEncA, Constants.topShooterEncB, 
     false/*, EncodingType.k4X);
   private Encoder bottomShooterEncoder = new Encoder(Constants.bottomShooterEncA, Constants.bottomShooterEncB, 
     true/*, EncodingType.k4X);*/
+
+  private RelativeEncoder topShooterEncoder;
+  private RelativeEncoder bottomShooterEncoder;
 
   private BangBangController bangBangTop = new BangBangController(0.05);
   private BangBangController bangBangBottom = new BangBangController(0.05);
@@ -38,15 +49,15 @@ public class Shooter extends SubsystemBase {
   private SimpleMotorFeedforward bottomFeedforward = new SimpleMotorFeedforward(bottomkS, bottomkV, bottomkA);
   
   
-  //distance per pulse = pi * (wheel diameter / counts per revolution) / gear reduction
+  //distance per pulse = pi * (wheel diameter / counts per revolution) / gear reduction between encoder and shaft
   //rev through bore encoder is 8192 counts per rev?
   //ctre mag encoder is 4096
-  private final double distancePerPulse = (Math.PI * 0.1524 / 4096) / 4; //blue wheel diam is 6 inches or 0.1524 meters
+  private final double distancePerPulse = Math.PI * 0.1524; // / 4096) / 1; //blue wheel diam is 6 inches or 0.1524 meters
 
   /** Creates a new Shooter. */
   public Shooter() {
 
-    motorShooterTop.configFactoryDefault();
+    /*motorShooterTop.configFactoryDefault();
     motorShooterBottom.configFactoryDefault();
 
     //DO NOT CHANGE OR BANG BANG CONTROL WILL NOT WORK AND SHOOTER WILL BREAK
@@ -62,13 +73,40 @@ public class Shooter extends SubsystemBase {
     motorShooterBottom.setSensorPhase(false);
     
     motorShooterTop.setInverted(false);
-    motorShooterBottom.setInverted(true);
+    motorShooterBottom.setInverted(true);*/
     
     //topShooterEncoder.setDistancePerPulse(distancePerPulse);
     //bottomShooterEncoder.setDistancePerPulse(distancePerPulse);
 
-    motorShooterBottom.configAllSettings(new TalonSRXConfiguration());
+    //motorShooterBottom.configAllSettings(new TalonSRXConfiguration());
 
+    motorShooterTop.restoreFactoryDefaults();
+    motorShooterBottom.restoreFactoryDefaults();
+
+    motorShooterTop.setInverted(false);
+    motorShooterBottom.setInverted(true);
+
+    //DO NOT CHANGE OR BANG BANG CONTROL WILL NOT WORK AND SHOOTER WILL BREAK
+    motorShooterTop.setIdleMode(IdleMode.kCoast);
+    motorShooterBottom.setIdleMode(IdleMode.kCoast);
+
+    /*this line only works if using neo built-in encoders, otherwise you need arguments that describe
+    the encoder that you are using instead*/
+    topShooterEncoder = motorShooterTop.getEncoder();
+    bottomShooterEncoder = motorShooterTop.getEncoder();
+
+    topShooterEncoder.setInverted(false);
+    bottomShooterEncoder.setInverted(false);
+
+    topShooterEncoder.setPositionConversionFactor(distancePerPulse);
+    bottomShooterEncoder.setPositionConversionFactor(distancePerPulse);
+
+    topShooterEncoder.setVelocityConversionFactor(distancePerPulse);
+    bottomShooterEncoder.setVelocityConversionFactor(distancePerPulse);
+
+    //saves the settings
+    motorShooterTop.burnFlash();
+    motorShooterBottom.burnFlash();
   }
 
   @Override
@@ -94,13 +132,19 @@ public class Shooter extends SubsystemBase {
   }
 
   public void setMotors(double speed) {
-    motorShooterTop.set(ControlMode.PercentOutput, speed);
-    motorShooterBottom.set(ControlMode.PercentOutput, speed);
+    //motorShooterTop.set(ControlMode.PercentOutput, speed);
+    //motorShooterBottom.set(ControlMode.PercentOutput, speed);
+
+    motorShooterTop.set(speed);
+    motorShooterBottom.set(speed);
   }
   
   public void setMotors(double topSpeed, double bottomSpeed) {
-    motorShooterTop.set(ControlMode.PercentOutput, topSpeed);
-    motorShooterBottom.set(ControlMode.PercentOutput, bottomSpeed);
+    //motorShooterTop.set(ControlMode.PercentOutput, topSpeed);
+    //motorShooterBottom.set(ControlMode.PercentOutput, bottomSpeed);
+
+    motorShooterTop.set(topSpeed);
+    motorShooterBottom.set(bottomSpeed);
   }
 
   /*public void setTopMotor(double speed) {
@@ -113,11 +157,15 @@ public class Shooter extends SubsystemBase {
 
   public double getTopShooterEncRate() {
     //multiplying by 10 because to turn 100 ms to 1 sec because it reports with per 100 ms units
-    return 10.0 * motorShooterTop.getSelectedSensorVelocity() * distancePerPulse;
+    //return 10.0 * motorShooterTop.getSelectedSensorVelocity() * distancePerPulse;
+
+    return topShooterEncoder.getVelocity();
   }
 
   public double getBottomShooterEncRate() {
-    return 10.0 * motorShooterBottom.getSelectedSensorVelocity() * distancePerPulse;
+    //return 10.0 * motorShooterBottom.getSelectedSensorVelocity() * distancePerPulse;
+
+    return bottomShooterEncoder.getVelocity();
   }
 
   public void setWithBangBang(double desiredSpeed) {
