@@ -28,9 +28,9 @@ public class DriveMecTrackTarget extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    x = 3 * Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftStickY);
-    y = 3 * Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftStickX);
-    z = Limelight.getX() / 2;
+    x = -1 * Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftStickY);
+    y = -1 * Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftStickX);
+    z = -1/2 * mecDriveTrain.getPerpV(Limelight.getLastX()) / Limelight.getTargetDistance();
 
     mecDriveTrain.setMotors(x, y, z, true);
   }

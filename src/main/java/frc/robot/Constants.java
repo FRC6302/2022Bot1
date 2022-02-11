@@ -61,9 +61,9 @@ public final class Constants {
     public static final double maxMecSpeed = 5; //meters per second
     public static final double maxMecAcceleration = 5; //meters per second squared
 
-    public static final double ksMecFeedForward = 0.1; //determined from drive characterization
-    public static final double kvMecFeedForward = 0.1;
-    public static final double kaMecFeedForward = 0.1;
+    public static final double ksMecFeedForward = 0.5695; //determined from drive characterization
+    public static final double kvMecFeedForward = 3.2686;
+    public static final double kaMecFeedForward = 0.1794;
 
     public static final double kpMecXController = 0.1; //determined through testing
     public static final double kpMecYController = 0.1;

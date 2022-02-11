@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.MecDriveTrain;
 
 public class DriveMec extends CommandBase {
@@ -28,13 +29,15 @@ public class DriveMec extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    z = -3 * (Robot.robotContainer.getDriverDeadzoneAxis(Constants.rightTrigger)
+    z = -1 * (Robot.robotContainer.getDriverDeadzoneAxis(Constants.rightTrigger)
     - Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftTrigger));
-    x = -3 * Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftStickY);
-    y = -3 * Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftStickX);
+    x = -1 * Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftStickY);
+    y = -1 * Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftStickX);
 
-    SmartDashboard.putNumber("forward input joystick", x);
-    SmartDashboard.putNumber("sideways input joystick", y);
+    //SmartDashboard.putNumber("forward input joystick", x);
+    //SmartDashboard.putNumber("sideways input joystick", y);
+    SmartDashboard.putNumber("perpV", mecDriveTrain.getPerpV(Limelight.getX()));
+    SmartDashboard.putNumber("paraV", mecDriveTrain.getParaV(Limelight.getLastX()));
 
     //mecDriveTrain.setMotorsSimple(x, y, z);
 

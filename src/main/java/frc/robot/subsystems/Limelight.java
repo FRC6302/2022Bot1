@@ -113,7 +113,7 @@ public class Limelight extends SubsystemBase {
     and see here for the formula I used:
     https://www.chiefdelphi.com/t/calculating-distance-to-vision-target/387183/6?u=frc6302
     */
-    distance = Constants.targetDeltaY / (Math.tan(Math.toRadians(lastY)) * Math.cos(Math.toRadians(lastX)));
+    distance = 0.381 / (Math.tan(Math.toRadians(lastY)) * Math.cos(Math.toRadians(lastX)));
     SmartDashboard.putNumber("target distance", distance);
     return distance;
   }

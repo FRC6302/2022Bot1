@@ -17,6 +17,7 @@ import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 import edu.wpi.first.math.kinematics.MecanumDriveMotorVoltages;
 import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.CounterBase;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -35,7 +36,7 @@ public class MecDriveTrain extends SubsystemBase {
   private Encoder encoderR1;
   private Encoder encoderR2;
 
-  SimpleMotorFeedforward mecFeedforward = new SimpleMotorFeedforward(
+  SimpleMotorFeedforward simpleFeedforward = new SimpleMotorFeedforward(
     Constants.ksMecFeedForward, 
     Constants.kvMecFeedForward,
     Constants.kaMecFeedForward);
@@ -88,10 +89,10 @@ public class MecDriveTrain extends SubsystemBase {
     motorR2.setInverted(true);
 
     
-    encoderL1 = new Encoder(Constants.encL1A, Constants.encL1B, true);
-    encoderL2 = new Encoder(Constants.encL2A, Constants.encL2B, true);
-    encoderR1 = new Encoder(Constants.encR1A, Constants.encR1B, false);
-    encoderR2 = new Encoder(Constants.encR2A, Constants.encR2B, false);
+    encoderL1 = new Encoder(Constants.encL1A, Constants.encL1B, true, CounterBase.EncodingType.k4X);
+    encoderL2 = new Encoder(Constants.encL2A, Constants.encL2B, true, CounterBase.EncodingType.k4X);
+    encoderR1 = new Encoder(Constants.encR1A, Constants.encR1B, false, CounterBase.EncodingType.k4X);
+    encoderR2 = new Encoder(Constants.encR2A, Constants.encR2B, false, CounterBase.EncodingType.k4X);
 
     encoderL1.setDistancePerPulse(distancePerPulse);
     encoderL2.setDistancePerPulse(distancePerPulse);
@@ -134,13 +135,15 @@ public class MecDriveTrain extends SubsystemBase {
   }
 
   public void setSpeeds(MecanumDriveWheelSpeeds speeds) {
-    motorL1.setVoltage(speeds.frontLeftMetersPerSecond);
-    motorL2.setVoltage(speeds.rearLeftMetersPerSecond);
-    motorR1.setVoltage(speeds.frontRightMetersPerSecond);
-    motorR2.setVoltage(speeds.rearRightMetersPerSecond);
+
+
+    motorL1.setVoltage(simpleFeedforward.calculate(speeds.frontLeftMetersPerSecond));
+    motorL2.setVoltage(simpleFeedforward.calculate(speeds.rearLeftMetersPerSecond));
+    motorR1.setVoltage(simpleFeedforward.calculate(speeds.frontRightMetersPerSecond));
+    motorR2.setVoltage(simpleFeedforward.calculate(speeds.rearRightMetersPerSecond));
     //TODO use pid here somehow with PPMecCommand and also dont use setVoltage?
 
-    SmartDashboard.putNumber("motorL1", speeds.frontLeftMetersPerSecond);
+    SmartDashboard.putNumber("motorL1", simpleFeedforward.calculate(speeds.frontLeftMetersPerSecond));
     SmartDashboard.putNumber("motorR1", speeds.frontRightMetersPerSecond);
   }
 
@@ -211,8 +214,8 @@ public class MecDriveTrain extends SubsystemBase {
     return kinematics;
   }
 
-  public SimpleMotorFeedforward getMecFeedforward() {
-    return mecFeedforward;
+  public SimpleMotorFeedforward getSimpleFeedforward() {
+    return simpleFeedforward;
   }
 
   public Pose2d getPose() {
