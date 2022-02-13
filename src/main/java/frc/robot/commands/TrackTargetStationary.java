@@ -13,7 +13,9 @@ import frc.robot.subsystems.MecDriveTrain;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Turret;
 
-public class TrackTarget extends CommandBase {
+/*command that tracks target but does not account for leading the shot, so in theory it would work if you 
+completely brake and then instantly shoot. It won't need time to adjust after stopping*/
+public class TrackTargetStationary extends CommandBase {
   MecDriveTrain mecDriveTrain;
   Turret turret;
   Hood hood;
@@ -27,16 +29,19 @@ public class TrackTarget extends CommandBase {
   double paraV = 0, perpV = 0, angV = 0;
   
   //from limelight
-  double distance = 0, x = 0, y = 0, lastX = 0, lastY = 0;
+  double distance = 3, x = 0, y = 0, lastX = 0, lastY = 0;
 
   //double gyroYaw = 0;
 
   double turretAngle = 0;
   //boolean isAllianceBall = true;
 
+  double offsetAngle = 0;
+  //double effectiveDistance = 3;
+
   
   /** Creates a new TrackTarget. */
-  public TrackTarget(MecDriveTrain mecDriveTrain, Turret turret, Hood hood, Shooter shooter) {
+  public TrackTargetStationary(MecDriveTrain mecDriveTrain, Turret turret, Hood hood, Shooter shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.mecDriveTrain = mecDriveTrain;
     this.turret = turret;
@@ -53,7 +58,7 @@ public class TrackTarget extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (Limelight.getTargetFound()) { //if target is found
+    if (Limelight.getTargetFound()) { //runs when the LL can see the target
       distance = Limelight.getTargetDistance();
       x = Limelight.getX();
 
@@ -66,23 +71,30 @@ public class TrackTarget extends CommandBase {
       
       angV = mecDriveTrain.getAngV();
 
+      offsetAngle = 10 * perpV / distance;
+      //effectiveDistance = distance / Math.cos(Math.toRadians(offsetAngle)); //something like this
+
       //isAllianceBall = ColorSensor.getLastestBallIsAlliance();
 
       //desiredHoodAngle = -3 * distance + 85; //degrees
       //desiredTurretV = x / 100; //- 3 * perpV;
 
       hood.setMotorPosPID(distance, paraV);
-      turret.setMotor(x, perpV, distance, angV);
 
-      shooter.shootWithInitialBallVelocity(paraV, perpV, desiredHoodAngle, desiredTurretAngle, distance);
+      turret.setMotorPosPID(x - offsetAngle, perpV, distance, angV); 
+
+      //shooter.shootWithInitialBallVelocity(paraV, perpV, desiredHoodAngle, desiredTurretAngle, distance);
+      shooter.setMotorsPosPID(distance, perpV, paraV);
     }
     else //this runs when the target is not in view of camera
     {
-      //maybe base shooter speed on last distance value?
-      shooter.setMotors(Constants.defaultShooterSpeed);
+      distance = Limelight.getTargetDistance();
+      /*the distance value here is calculated internally from lastX and lastY, so it doesnt matter that
+      the target isnt in view*/
+      shooter.setMotorsPosPID(distance, perpV, paraV);
       
-      //if target is out of view, x and y will default to zero, so we have to use the last values of them
-      //from before they went out of sight
+      /*if target is out of view, x and y will default to zero, so we use the last values of them
+      from before they went out of sight to guess how to move to get the target back in view*/
       lastX = Limelight.getLastX();
       lastY = Limelight.getLastY();
       if (lastX < -29) { //happens when we turn too far to the right

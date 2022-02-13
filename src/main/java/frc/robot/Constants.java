@@ -25,6 +25,7 @@ public final class Constants {
     public static final int motorShooterTop = 2;
     public static final int motorShooterBottom = 3;
     public static final int motorHood = 93;
+    public static final int motorNeoTest = 1;
 
     //controller values - wont ever change
     public static final int leftTrigger = 2;
@@ -78,7 +79,10 @@ public final class Constants {
     public static final double kpMecL2Velocity = 0.1;
     public static final double kpMecR1Velocity = 0.1;
     public static final double kpMecR2Velocity = 0.1;
-
+    
+    public static final Constraints mecVConstraints = null;
+    public static final double kpMecV = 0;
+    
     //gyro
     public static final double jerkXCollisionThreshold = 1;
 
@@ -150,8 +154,9 @@ public final class Constants {
     public static final int zeroEncButton = xButton;
     public static final int driveNormalButton = aButton;
     public static final int missTargetButton = 0;
-    public static final double kpMecV = 0;
-    public static final Constraints mecVConstraints = null;
+    
+    
+    
     
     
 	

@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Utilities.LinearInterpolator;
 
 public class Shooter extends SubsystemBase {
   private final double topkS = 0, topkV = 0, topkA = 0;
@@ -54,6 +55,18 @@ public class Shooter extends SubsystemBase {
   //ctre mag encoder is 4096
   private final double distancePerPulse = Math.PI * 0.1524; // / 4096) / 1; //blue wheel diam is 6 inches or 0.1524 meters
 
+  private LinearInterpolator distanceVelocityMap;
+  private double[][] distanceVelocityData = { 
+    {1.0, 12}, //{distance in meters, velocity in m/s} format
+    {3.0, 14}, 
+    {10, 16} };
+
+  private LinearInterpolator distanceTimeMap; 
+  private double[][] distanceTimeData = { 
+      {1.0, 2}, //{distance in meters, time in sec} format
+      {3.0, 3}, 
+      {10, 5} };
+  
   /** Creates a new Shooter. */
   public Shooter() {
 
@@ -107,6 +120,9 @@ public class Shooter extends SubsystemBase {
     //saves the settings
     motorShooterTop.burnFlash();
     motorShooterBottom.burnFlash();
+
+    distanceVelocityMap = new LinearInterpolator(distanceVelocityData);
+    distanceTimeMap = new LinearInterpolator(distanceTimeData);
   }
 
   @Override
@@ -129,6 +145,14 @@ public class Shooter extends SubsystemBase {
       * Math.cos(hoodAngle) * Math.sin(hoodAngle)), 0.5);
 
     setMotors(shotInitV / 10);
+  }
+
+  public void setMotorsPosPID(double distance, double perpV, double paraV) {
+    double setpointV = distanceVelocityMap.getInterpolatedValue(distance);
+    
+    //break setpointV into component parts
+    //add perpV and paraV to their respective components
+    //combine components into new setpointV
   }
 
   public void setMotors(double speed) {

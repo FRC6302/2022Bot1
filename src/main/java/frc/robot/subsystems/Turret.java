@@ -55,13 +55,13 @@ public class Turret extends SubsystemBase {
     motorTurret.set(ControlMode.PercentOutput, speed);
   }
 
-  public void setMotor(double setpointV, double perpV, double distance, double angV){
+  /*public void setMotor(double setpointV, double perpV, double distance, double angV){
     tangentialFeedforward = perpV / distance;
     rotationalFeedforward = -angV;
     setpointV = setpointV + tangentialFeedforward + rotationalFeedforward;
 
     motorTurret.setVoltage(pidController.calculate(getEncVelocity(), setpointV) + simpleFeedforward.calculate(setpointV));
-  }
+  }*/
 
   public void setMotorPosPID(double tx, double perpV, double distance, double angV){
     tangentialFeedforward = perpV / distance;

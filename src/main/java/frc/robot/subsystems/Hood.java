@@ -37,7 +37,7 @@ public class Hood extends SubsystemBase {
 
   public LinearInterpolator distanceAngleMap;
   private double[][] distanceAngleData = { 
-    {1.0, 80.0}, //{distance, angle} format
+    {1.0, 80.0}, //{distance in meters, angle in degrees} format
     {3.0, 65.0}, 
     {10, 50.0} };
 
@@ -59,10 +59,21 @@ public class Hood extends SubsystemBase {
   //add boolean argument for whether scoring or missing?
   public void setMotorPosPID(double distance, double paraV) { 
     paraFeedforward = paraV / distance; //this is just a guess
-
     double desiredAngle = distanceAngleMap.getInterpolatedValue(distance);
     double pidOutput = pidController.calculate(getAngle(), desiredAngle);
+
     motorHood.setVoltage(simpleFeedforward.calculate(pidOutput + paraFeedforward));
+
+    angleSetpoint = desiredAngle;
+  }
+
+  public void setMotorVelPID(double distance, double paraV) {
+    paraFeedforward = paraV / distance; //this is just a guess
+    double desiredAngle = distanceAngleMap.getInterpolatedValue(distance);
+    double setpointV = pidController.calculate(getAngle(), desiredAngle) + paraFeedforward;
+    //this would need two different PID controllers? Waste of time
+    motorHood.setVoltage(pidController.calculate(getEncVelocity(), setpointV) 
+      + simpleFeedforward.calculate(setpointV));
 
     angleSetpoint = desiredAngle;
   }
@@ -85,5 +96,9 @@ public class Hood extends SubsystemBase {
 
   public double getAngleSetpoint() {
     return angleSetpoint;
+  }
+
+  public double getEncVelocity() {
+    return hoodEncoder.getRate();
   }
 }

@@ -26,10 +26,12 @@ import frc.robot.commands.MissTarget;
 import frc.robot.commands.Move;
 import frc.robot.commands.PPMecanumControllerCommand;
 import frc.robot.commands.Shoot;
+import frc.robot.commands.TestNeo;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.MecDriveTrain;
 import frc.robot.subsystems.NavX;
+import frc.robot.subsystems.NeoTest;
 import frc.robot.subsystems.PneumaticsTest;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.TouchSensor;
@@ -73,6 +75,9 @@ public class RobotContainer {
 
   private Move move;
 
+  private NeoTest neoTest;
+  private TestNeo testNeo;
+
   //public InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> distanceVelocityMap;
   public LinearInterpolator distanceVelocityMap;
   private double[][] distanceVelocityData = { 
@@ -90,23 +95,23 @@ public class RobotContainer {
     //driveGTA.addRequirements(driveTrain);
     //driveTrain.setDefaultCommand(driveGTA);
 
-    mecDriveTrain = new MecDriveTrain();
+    /*mecDriveTrain = new MecDriveTrain();
     //driveMec = new DriveMec(mecDriveTrain);
     //driveMec.addRequirements(mecDriveTrain);
     driveMecTrackTarget = new DriveMecTrackTarget(mecDriveTrain);
     driveMecTrackTarget.addRequirements(mecDriveTrain);
     //mecDriveTrain.setDefaultCommand(driveMec);
     mecDriveTrain.setDefaultCommand(driveMecTrackTarget);
-
+    */
     /*shooter = new Shooter();
     shoot = new Shoot(shooter);
     shoot.addRequirements(shooter);*/
     //shooter.setDefaultCommand(trackTarget);
 
 
-    limelight = new Limelight();
+    //limelight = new Limelight();
 
-    navX = new NavX();
+    //navX = new NavX();
 
     //pneumaticsTest = new PneumaticsTest();
 
@@ -115,6 +120,10 @@ public class RobotContainer {
     //move = new Move(driveTrain);
     //move.addRequirements(driveTrain);
 
+    neoTest = new NeoTest();
+    testNeo = new TestNeo(neoTest);
+    testNeo.addRequirements(neoTest);
+    neoTest.setDefaultCommand(testNeo);
 
     //distanceVelocityMap = new InterpolatingTreeMap<>(100);
     distanceVelocityMap = new LinearInterpolator(distanceVelocityData);
@@ -172,11 +181,11 @@ public class RobotContainer {
     //final JoystickButton LLDistanceButton = new JoystickButton(driverController, Constants.LLDistanceButton);
     //LLDistanceButton.whileHeld(Limelight::getTargetDistance);
 
-    final JoystickButton zeroYawButton = new JoystickButton(driverController, Constants.zeroYawButton);
-    zeroYawButton.whenPressed(NavX::zeroGyroYaw); //this is a method reference 
+    //final JoystickButton zeroYawButton = new JoystickButton(driverController, Constants.zeroYawButton);
+    //zeroYawButton.whenPressed(NavX::zeroGyroYaw); //this is a method reference 
 
-    final JoystickButton zeroEncButton = new JoystickButton(driverController, Constants.zeroEncButton);
-    zeroEncButton.whenPressed(mecDriveTrain::resetEncoders);
+    //final JoystickButton zeroEncButton = new JoystickButton(driverController, Constants.zeroEncButton);
+    //zeroEncButton.whenPressed(mecDriveTrain::resetEncoders);
 
     //final JoystickButton driveNormalButton = new JoystickButton(driverController, Constants.driveNormalButton);
     //driveNormalButton.whileHeld(new DriveMec(mecDriveTrain));

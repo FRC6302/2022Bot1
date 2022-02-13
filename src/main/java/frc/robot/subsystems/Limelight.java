@@ -49,17 +49,17 @@ public class Limelight extends SubsystemBase {
     NetworkTableEntry tv = table.getEntry("tv");
     
     //read values periodically
+    //maybe change default value to return the last x? Then you dont need lastX variable
     Limelight.x = tx.getDouble(0.0); //ranges from -29.8 to 29.8 degrees for LL2
     Limelight.y = ty.getDouble(0.0); //ranges from -24.85 to 24.85 degrees for LL2
     double area = ta.getDouble(0.0); //ranges from 0 to 100% of image
     Limelight.targetFound = tv.getDouble(0.0);
 
-    if (x != 0) {
+    if (getTargetFound()) {
       lastX = x;
-    }
-    if (y != 0) {
       lastY = y;
     }
+    
 
     //posts to smart dashboard periodically
     SmartDashboard.putNumber("LimelightX", x);
@@ -100,6 +100,7 @@ public class Limelight extends SubsystemBase {
     Limelight docs: https://docs.limelightvision.io/en/latest/cs_estimating_distance.html
     */
     distance = Constants.targetDeltaY / Math.tan(Math.toRadians(lastY + Constants.limelightMountDegreeOffset));
+    
     SmartDashboard.putNumber("target distance simple", distance);
     return distance;
 
@@ -114,6 +115,7 @@ public class Limelight extends SubsystemBase {
     https://www.chiefdelphi.com/t/calculating-distance-to-vision-target/387183/6?u=frc6302
     */
     distance = 0.381 / (Math.tan(Math.toRadians(lastY)) * Math.cos(Math.toRadians(lastX)));
+
     SmartDashboard.putNumber("target distance", distance);
     return distance;
   }
