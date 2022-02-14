@@ -70,8 +70,8 @@ public class Turret extends SubsystemBase {
     //double setpoint = angle - tx;
     double pidOutput = pidController.calculate(tx, 0);
 
-    motorTurret.setVoltage(pidOutput + simpleFeedforward.calculate(
-      tangentialFeedforward + rotationalFeedforward));
+    motorTurret.setVoltage(simpleFeedforward.calculate(
+      pidOutput + tangentialFeedforward + rotationalFeedforward));
   }
 
   public void setMotorVelPID(double tx, double perpV, double distance, double angV) {

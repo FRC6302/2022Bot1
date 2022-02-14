@@ -108,9 +108,9 @@ public class DriveTrain extends SubsystemBase {
 
     //this is supposed to be so i dont get errors saying the motor output doesnt update enough,
     //but i still get them
-    motorL1.feed();
+    //motorL1.feed();
     //motorL2.feed();
-    motorR1.feed();
+    //motorR1.feed();
     //motorR2.feed();
 
     //should print out 16.25

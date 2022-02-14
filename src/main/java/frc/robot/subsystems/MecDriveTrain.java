@@ -8,8 +8,10 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.estimator.MecanumDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -17,11 +19,14 @@ import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 import edu.wpi.first.math.kinematics.MecanumDriveMotorVoltages;
 import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.CounterBase;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Utilities.VisionPoseEstimation;
 
 public class MecDriveTrain extends SubsystemBase {
   WPI_TalonSRX motorL1;
@@ -55,7 +60,15 @@ public class MecDriveTrain extends SubsystemBase {
       new MecanumDriveKinematics(
           frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
 
-  private final MecanumDriveOdometry odometry = new MecanumDriveOdometry(kinematics, NavX.getGyroRotation2d());
+  //private final MecanumDriveOdometry odometry = new MecanumDriveOdometry(kinematics, NavX.getGyroRotation2d());
+
+  private final MecanumDrivePoseEstimator poseEstimator = new MecanumDrivePoseEstimator(
+    NavX.getGyroRotation2d(),
+    new Pose2d(),
+    kinematics,
+    VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
+    VecBuilder.fill(Units.degreesToRadians(0.01)),
+    VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
 
   private final NeutralMode motorMode = NeutralMode.Brake;
 
@@ -135,13 +148,14 @@ public class MecDriveTrain extends SubsystemBase {
   }
 
   public void setSpeeds(MecanumDriveWheelSpeeds speeds) {
-
-
-    motorL1.setVoltage(simpleFeedforward.calculate(speeds.frontLeftMetersPerSecond));
-    motorL2.setVoltage(simpleFeedforward.calculate(speeds.rearLeftMetersPerSecond));
-    motorR1.setVoltage(simpleFeedforward.calculate(speeds.frontRightMetersPerSecond));
-    motorR2.setVoltage(simpleFeedforward.calculate(speeds.rearRightMetersPerSecond));
-    //TODO use pid here somehow with PPMecCommand and also dont use setVoltage?
+    motorL1.setVoltage(simpleFeedforward.calculate(speeds.frontLeftMetersPerSecond) 
+      + pidController.calculate(getEncL1Rate(), speeds.frontLeftMetersPerSecond));
+    motorL2.setVoltage(simpleFeedforward.calculate(speeds.rearLeftMetersPerSecond)
+      + pidController.calculate(getEncL2Rate(), speeds.rearLeftMetersPerSecond));
+    motorR1.setVoltage(simpleFeedforward.calculate(speeds.frontRightMetersPerSecond)
+      + pidController.calculate(getEncR1Rate(), speeds.frontRightMetersPerSecond));
+    motorR2.setVoltage(simpleFeedforward.calculate(speeds.rearRightMetersPerSecond)
+      + pidController.calculate(getEncR2Rate(), speeds.rearRightMetersPerSecond));
 
     SmartDashboard.putNumber("motorL1", simpleFeedforward.calculate(speeds.frontLeftMetersPerSecond));
     SmartDashboard.putNumber("motorR1", speeds.frontRightMetersPerSecond);
@@ -181,11 +195,19 @@ public class MecDriveTrain extends SubsystemBase {
       encoderR2.getRate());
   }
 
-   /** Updates the field relative position of the robot. */
-   public void updateOdometry() {
-    odometry.update(NavX.getGyroRotation2d(), getCurrentWheelSpeeds());
+  public void updateOdometry() {
+    poseEstimator.update(NavX.getGyroRotation2d(), getCurrentWheelSpeeds());
   }
 
+   /** Updates the field relative position of the robot. */
+   public void updateOdometryWithVision(double distance, double gyroAngle, double turretAngle, double tx) {
+    //odometry.update(NavX.getGyroRotation2d(), getCurrentWheelSpeeds());
+    poseEstimator.update(NavX.getGyroRotation2d(), getCurrentWheelSpeeds());
+
+    poseEstimator.addVisionMeasurement(
+      VisionPoseEstimation.getGlobalPoseEstimation(distance, gyroAngle, turretAngle, tx), 
+      Timer.getFPGATimestamp() - Constants.limelightLatency);
+  }
 
   public void resetEncoders() {
     encoderL1.reset();
@@ -209,6 +231,22 @@ public class MecDriveTrain extends SubsystemBase {
   public Encoder getEncoderR2() {
     return encoderR2;
   }
+  
+  public double getEncL1Rate() {
+    return encoderL1.getRate();
+  }
+
+  public double getEncL2Rate() {
+    return encoderL2.getRate();
+  }
+
+  public double getEncR1Rate() {
+    return encoderR1.getRate();
+  }
+
+  public double getEncR2Rate() {
+    return encoderR2.getRate();
+  }
 
   public MecanumDriveKinematics getMecKinematics() {
     return kinematics;
@@ -218,8 +256,8 @@ public class MecDriveTrain extends SubsystemBase {
     return simpleFeedforward;
   }
 
-  public Pose2d getPose() {
-    return odometry.getPoseMeters();
+  public Pose2d getPoseEstimate() {
+    return poseEstimator.getEstimatedPosition();
   }
 
   /*public double getParaVFromFieldRelative(double gyroAngleDeg, double turretAngleDeg) {

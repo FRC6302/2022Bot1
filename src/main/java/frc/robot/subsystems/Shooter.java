@@ -17,7 +17,9 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxRelativeEncoder.Type;
 
 import edu.wpi.first.math.controller.BangBangController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -49,7 +51,11 @@ public class Shooter extends SubsystemBase {
   private SimpleMotorFeedforward topFeedforward = new SimpleMotorFeedforward(topkS, topkV, topkA);
   private SimpleMotorFeedforward bottomFeedforward = new SimpleMotorFeedforward(bottomkS, bottomkV, bottomkA);
   
-  
+  private ProfiledPIDController topPID = new ProfiledPIDController(Constants.kpTopShooter, 0, 0, 
+    new Constraints(Constants.maxShooterV, Constants.maxShooterA));
+  private ProfiledPIDController bottomPID = new ProfiledPIDController(Constants.kpBottomShooter, 0, 0, 
+    new Constraints(Constants.maxShooterV, Constants.maxShooterA));
+
   //distance per pulse = pi * (wheel diameter / counts per revolution) / gear reduction between encoder and shaft
   //rev through bore encoder is 8192 counts per rev?
   //ctre mag encoder is 4096
@@ -147,7 +153,14 @@ public class Shooter extends SubsystemBase {
     setMotors(shotInitV / 10);
   }
 
-  public void setMotorsPosPID(double distance, double perpV, double paraV) {
+  public void setMotorsVelPID(double distance) {
+    double setpointV = distanceVelocityMap.getInterpolatedValue(distance);
+
+    motorShooterTop.setVoltage(topPID.calculate(getTopShooterEncRate(), setpointV) + topFeedforward.calculate(setpointV));
+    motorShooterBottom.setVoltage(bottomPID.calculate(getBottomShooterEncRate(), setpointV) + bottomFeedforward.calculate(setpointV));
+  }
+
+  public void setMotorsVelPID(double distance, double perpV, double paraV) {
     double setpointV = distanceVelocityMap.getInterpolatedValue(distance);
     
     //break setpointV into component parts

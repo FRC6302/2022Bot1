@@ -6,11 +6,9 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-/* tracks target like TrackTargetStationary command but accounts for the robots movement by leading the shot
-so that you can shoot while moving*/
-public class TrackTargetLeading extends CommandBase {
-  /** Creates a new TrackTargetLeading. */
-  public TrackTargetLeading() {
+public class TrackTargetLeadingLatency extends CommandBase {
+  /** Creates a new TrackTargetLeadingLatency. */
+  public TrackTargetLeadingLatency() {
     // Use addRequirements() here to declare subsystem dependencies.
   }
 

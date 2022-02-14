@@ -233,7 +233,7 @@ public class RobotContainer {
 
     PPMecanumControllerCommand mecanumControllerCommand = new PPMecanumControllerCommand(
         Robot.testPath,
-        mecDriveTrain::getPose,
+        mecDriveTrain::getPoseEstimate,
         //TODO go to WPILIB source code for mecControlCommand and see how they use this feedforward
         //and then use that in the mecDriveTrain.setSpeeds() method
         //mecDriveTrain.getMecFeedforward(),
@@ -258,5 +258,9 @@ public class RobotContainer {
         mecDriveTrain);
 
     return mecanumControllerCommand.andThen(mecDriveTrain::stopDrive);
+  }
+
+  public void updateOdometry() {
+    mecDriveTrain.updateOdometry();
   }
 }

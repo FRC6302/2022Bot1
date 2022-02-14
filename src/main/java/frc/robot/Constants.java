@@ -97,6 +97,7 @@ public final class Constants {
     public static final double limelightTargetArea = 0.3;
     //the angle the limelight is pointing relative to the ground, 0 = parallel to floor
     public static final double limelightMountDegreeOffset = 0; 
+    public static final double limelightLatency = 0.03;
 
     //pneumatics
 
@@ -154,6 +155,11 @@ public final class Constants {
     public static final int zeroEncButton = xButton;
     public static final int driveNormalButton = aButton;
     public static final int missTargetButton = 0;
+    public static final double maxShooterV = 0;
+    public static final double maxShooterA = 0;
+    public static final double kpTopShooter = 0;
+    public static final double kpBottomShooter = 0;
+    
     
     
     
