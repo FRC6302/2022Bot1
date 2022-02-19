@@ -303,4 +303,12 @@ public class MecDriveTrain extends SubsystemBase {
   public double getAngV() {
     return Math.toDegrees(curChassisSpeeds.omegaRadiansPerSecond);
   }
+
+  public double getVx() {
+    return -curChassisSpeeds.vyMetersPerSecond;
+  }
+
+  public double getVy() {
+    return curChassisSpeeds.vxMetersPerSecond;
+  }
 }

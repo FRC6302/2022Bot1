@@ -238,5 +238,9 @@ public class Shooter extends SubsystemBase {
   public void stop() {
     setMotors(0);
   }
+
+  public double getTime(double distance) {
+    return distanceTimeMap.getInterpolatedValue(distance);
+  }
   
 }
