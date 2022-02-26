@@ -66,6 +66,9 @@ public class Limelight extends SubsystemBase {
     SmartDashboard.putNumber("LimelightY", y);
     SmartDashboard.putNumber("LimelightArea", area); 
     SmartDashboard.putNumber("LimelightTargetFound", targetFound);
+
+    SmartDashboard.putNumber("distance simple", getTargetDistanceSimple()); 
+    SmartDashboard.putNumber("distance actual", getTargetDistance()); 
   }
 
   public static double getX() {
@@ -114,7 +117,8 @@ public class Limelight extends SubsystemBase {
     and see here for the formula I used:
     https://www.chiefdelphi.com/t/calculating-distance-to-vision-target/387183/6?u=frc6302
     */
-    distance = 0.381 / (Math.tan(Math.toRadians(lastY)) * Math.cos(Math.toRadians(lastX)));
+    distance = Constants.targetDeltaY / (Math.tan(Math.toRadians(lastY + Constants.limelightMountDegreeOffset))
+      * Math.cos(Math.toRadians(lastX)));
 
     SmartDashboard.putNumber("target distance", distance);
     return distance;

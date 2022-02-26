@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 
 /**
@@ -17,13 +18,13 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 public final class Constants {
 
     //motors
-    public static final int motorL1Value = 0;
-    public static final int motorL2Value = 1;
+    public static final int motorL1Value = 1;
+    public static final int motorL2Value = 2;
     public static final int motorR1Value = 3;
-    public static final int motorR2Value = 2;
-    public static final int motorTurret = 90;
-    public static final int motorShooterTop = 2;
-    public static final int motorShooterBottom = 3;
+    public static final int motorR2Value = 4;
+    public static final int motorTurret = 0;
+    public static final int motorShooterTop = 3;
+    public static final int motorShooterBottom = 2;
     public static final int motorHood = 93;
     public static final int motorNeoTest = 1;
 
@@ -53,8 +54,8 @@ public final class Constants {
     public static final int encL1B = 1;
     public static final int encL2A = 2;
     public static final int encL2B = 3;
-    public static final int encR1A = 5;
-    public static final int encR1B = 6;
+    public static final int encR1A = 6;
+    public static final int encR1B = 7;
     public static final int encR2A = 8;
     public static final int encR2B = 9;
 
@@ -70,10 +71,8 @@ public final class Constants {
     public static final double kpMecYController = 0.1;
     public static final double kpMecThetaController = 0.1;
 
-    private static final double maxMecRotationVelocity = 2; //what units??
-    private static final double maxMecRotationAccel = 2; 
-    public static final Constraints mecThetaControllerConstraints = 
-        new Constraints(maxMecRotationVelocity, maxMecRotationAccel);
+    public static final double maxMecRotationVelocity = 5; // rad/s
+    public static final double maxMecRotationAccel = 5; // rad/s/s
     
     public static final double kpMecL1Velocity = 0.1; //i think these should all be similar
     public static final double kpMecL2Velocity = 0.1;
@@ -96,7 +95,7 @@ public final class Constants {
     public static final double limelightGetInRangeSpeed = 0.2;
     public static final double limelightTargetArea = 0.3;
     //the angle the limelight is pointing relative to the ground, 0 = parallel to floor
-    public static final double limelightMountDegreeOffset = 0; 
+    public static final double limelightMountDegreeOffset = -2; 
     public static final double limelightLatency = 0.03;
 
     //pneumatics
@@ -104,14 +103,15 @@ public final class Constants {
     //turret
     public static final double turretSeekSpeed = 0.2;
     public static final double turretCircumference = 0;
-    public static final int encTurretA = 90;
-    public static final int encTurretB = 90;
+    public static final int encTurretA = 4;
+    public static final int encTurretB = 5;
     
-    public static final double ksTurret = 0;
-    public static final double kvTurret = 0;
-    public static final double kaTurret = 0;
-    public static final double kpTurret = 0;
-    public static final Constraints turretConstraints = null;
+    public static final double ksTurret = 0.56996;
+    public static final double kvTurret = 0.0161;
+    public static final double kaTurret = 0.0019;
+    public static final double kpTurret = 0.05; //sysid said 2
+    public static final double maxTurretV = 180; //deg/s
+    public static final double maxTurretA = 90; //deg/s/s
     
     //hood
     public static final int encHoodA = 90;
@@ -127,6 +127,10 @@ public final class Constants {
     //shooter
     public static final double shootSpeed = 0.65;
     public static final double defaultShooterSpeed = 0.8;
+    public static final double maxShooterV = 0;
+    public static final double maxShooterA = 0;
+    public static final double kpTopShooter = 0;
+    public static final double kpBottomShooter = 0;
     public static final int topShooterEncA = 7;
     public static final int topShooterEncB = 8;
     public static final int bottomShooterEncA = 0;
@@ -142,7 +146,8 @@ public final class Constants {
     public static final double deadzone = 0.1;
 
     //field
-    public static final double targetDeltaY = 2.64;
+    public static final double targetDeltaY = 1.549;
+    public static final Translation2d goalLocation = new Translation2d(0, 0);
     
     //driver contoller buttons
     public static final int limelightTargetButton = rightBumper;
@@ -151,14 +156,12 @@ public final class Constants {
     public static final int PneumReverseButton = yButton;
     public static final int PneumToggleButton = rightBumper;
     public static final int zeroYawButton = yButton;
-    public static final int shootButton = bButton;
+    public static final int shootButton = aButton;
     public static final int zeroEncButton = xButton;
     public static final int driveNormalButton = aButton;
     public static final int missTargetButton = 0;
-    public static final double maxShooterV = 0;
-    public static final double maxShooterA = 0;
-    public static final double kpTopShooter = 0;
-    public static final double kpBottomShooter = 0;
+    public static final int shootButton2 = bButton;
+    public static final int turnTurretButton = bButton;
     
     
     

@@ -5,7 +5,11 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import edu.wpi.first.math.VecBuilder;
@@ -13,6 +17,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.MecanumDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
@@ -29,10 +34,15 @@ import frc.robot.Constants;
 import frc.robot.Utilities.VisionPoseEstimation;
 
 public class MecDriveTrain extends SubsystemBase {
-  WPI_TalonSRX motorL1;
+  /*WPI_TalonSRX motorL1;
   WPI_TalonSRX motorL2;
   WPI_TalonSRX motorR1;
-  WPI_TalonSRX motorR2;
+  WPI_TalonSRX motorR2;*/
+
+  private CANSparkMax motorL1;
+  private CANSparkMax motorL2;
+  private CANSparkMax motorR1;
+  private CANSparkMax motorR2;
 
   //MecanumDrive mecDrive;
 
@@ -67,8 +77,8 @@ public class MecDriveTrain extends SubsystemBase {
     new Pose2d(),
     kinematics,
     VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
-    VecBuilder.fill(Units.degreesToRadians(0.01)),
-    VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
+    VecBuilder.fill(Units.degreesToRadians(15)), //wheels slip a lot so their readings are less accurate
+    VecBuilder.fill(0.2, 0.2, Units.degreesToRadians(3)));
 
   private final NeutralMode motorMode = NeutralMode.Brake;
 
@@ -81,7 +91,7 @@ public class MecDriveTrain extends SubsystemBase {
 
   /** Creates a new MecDriveTrain. */
   public MecDriveTrain() {
-    motorL1 = new WPI_TalonSRX(Constants.motorL1Value);
+    /*motorL1 = new WPI_TalonSRX(Constants.motorL1Value);
     motorL2 = new WPI_TalonSRX(Constants.motorL2Value);
     motorR1 = new WPI_TalonSRX(Constants.motorR1Value);
     motorR2 = new WPI_TalonSRX(Constants.motorR2Value);    
@@ -99,9 +109,34 @@ public class MecDriveTrain extends SubsystemBase {
     motorL1.setInverted(false);
     motorL2.setInverted(false);
     motorR1.setInverted(true);
+    motorR2.setInverted(true);*/
+
+    motorL1 = new CANSparkMax(Constants.motorL1Value, MotorType.kBrushless);
+    motorL2 = new CANSparkMax(Constants.motorL2Value, MotorType.kBrushless);
+    motorR1 = new CANSparkMax(Constants.motorR1Value, MotorType.kBrushless);
+    motorR2 = new CANSparkMax(Constants.motorR2Value, MotorType.kBrushless);
+
+    motorL1.restoreFactoryDefaults();
+    motorL2.restoreFactoryDefaults();
+    motorR1.restoreFactoryDefaults();
+    motorR2.restoreFactoryDefaults();
+
+    motorL1.setInverted(false);
+    motorL2.setInverted(false);
+    motorR1.setInverted(true);
     motorR2.setInverted(true);
 
-    
+    motorL1.setIdleMode(IdleMode.kBrake);
+    motorL2.setIdleMode(IdleMode.kBrake);
+    motorR1.setIdleMode(IdleMode.kBrake);
+    motorR2.setIdleMode(IdleMode.kBrake);
+
+    motorL1.burnFlash();
+    motorL2.burnFlash();
+    motorR1.burnFlash();
+    motorR2.burnFlash();
+
+
     encoderL1 = new Encoder(Constants.encL1A, Constants.encL1B, true, CounterBase.EncodingType.k4X);
     encoderL2 = new Encoder(Constants.encL2A, Constants.encL2B, true, CounterBase.EncodingType.k4X);
     encoderR1 = new Encoder(Constants.encR1A, Constants.encR1B, false, CounterBase.EncodingType.k4X);
@@ -148,32 +183,47 @@ public class MecDriveTrain extends SubsystemBase {
   }
 
   public void setSpeeds(MecanumDriveWheelSpeeds speeds) {
-    motorL1.setVoltage(simpleFeedforward.calculate(speeds.frontLeftMetersPerSecond) 
+    /*motorL1.setVoltage(simpleFeedforward.calculate(speeds.frontLeftMetersPerSecond) 
       + pidController.calculate(getEncL1Rate(), speeds.frontLeftMetersPerSecond));
     motorL2.setVoltage(simpleFeedforward.calculate(speeds.rearLeftMetersPerSecond)
       + pidController.calculate(getEncL2Rate(), speeds.rearLeftMetersPerSecond));
     motorR1.setVoltage(simpleFeedforward.calculate(speeds.frontRightMetersPerSecond)
       + pidController.calculate(getEncR1Rate(), speeds.frontRightMetersPerSecond));
     motorR2.setVoltage(simpleFeedforward.calculate(speeds.rearRightMetersPerSecond)
-      + pidController.calculate(getEncR2Rate(), speeds.rearRightMetersPerSecond));
+      + pidController.calculate(getEncR2Rate(), speeds.rearRightMetersPerSecond));*/
+
+    motorL1.setVoltage(speeds.frontLeftMetersPerSecond);
+    motorL2.setVoltage(speeds.rearLeftMetersPerSecond);
+    motorR1.setVoltage(speeds.frontRightMetersPerSecond);
+    motorR2.setVoltage(speeds.rearRightMetersPerSecond);
 
     SmartDashboard.putNumber("motorL1", simpleFeedforward.calculate(speeds.frontLeftMetersPerSecond));
     SmartDashboard.putNumber("motorR1", speeds.frontRightMetersPerSecond);
   }
 
   public void stopDrive(){
-    motorL1.set(ControlMode.PercentOutput, 0);
+    /*motorL1.set(ControlMode.PercentOutput, 0);
     motorL2.set(ControlMode.PercentOutput, 0);
     motorR1.set(ControlMode.PercentOutput, 0);
-    motorR2.set(ControlMode.PercentOutput, 0);
+    motorR2.set(ControlMode.PercentOutput, 0);*/
+
+    motorL1.set(0);
+    motorL2.set(0);
+    motorR1.set(0);
+    motorR2.set(0);
   }
 
   double maxMecSpeed = 9;
   public void setMotorsSimple(double xSpeed, double ySpeed, double rotSpeed) {
-    motorL1.set(ControlMode.PercentOutput, (xSpeed - ySpeed - rotSpeed) / maxMecSpeed);
+    /*motorL1.set(ControlMode.PercentOutput, (xSpeed - ySpeed - rotSpeed) / maxMecSpeed);
     motorL2.set(ControlMode.PercentOutput, (xSpeed + ySpeed - rotSpeed) / maxMecSpeed);
     motorR1.set(ControlMode.PercentOutput, (xSpeed + ySpeed + rotSpeed) / maxMecSpeed);
-    motorR2.set(ControlMode.PercentOutput, (xSpeed - ySpeed + rotSpeed) / maxMecSpeed);
+    motorR2.set(ControlMode.PercentOutput, (xSpeed - ySpeed + rotSpeed) / maxMecSpeed);*/
+
+    motorL1.set((xSpeed - ySpeed - rotSpeed) / maxMecSpeed);
+    motorL2.set((xSpeed + ySpeed - rotSpeed) / maxMecSpeed);
+    motorR1.set((xSpeed + ySpeed + rotSpeed) / maxMecSpeed);
+    motorR2.set((xSpeed - ySpeed + rotSpeed) / maxMecSpeed);
 
     SmartDashboard.putNumber("motorL1", (xSpeed - ySpeed - rotSpeed) / maxMecSpeed);
     SmartDashboard.putNumber("motorR1", (xSpeed + ySpeed + rotSpeed) / maxMecSpeed);
@@ -214,6 +264,11 @@ public class MecDriveTrain extends SubsystemBase {
     encoderL2.reset();
     encoderR1.reset();
     encoderR2.reset();
+  }
+
+  public void setPose(Pose2d pose) {
+    resetEncoders();
+    poseEstimator.resetPosition(pose, NavX.getGyroRotation2d());
   }
 
   public Encoder getEncoderL1() {

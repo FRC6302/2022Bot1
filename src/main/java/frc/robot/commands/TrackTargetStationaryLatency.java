@@ -7,6 +7,7 @@ package frc.robot.commands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -44,9 +45,13 @@ public class TrackTargetStationaryLatency extends CommandBase {
   //double offsetAngle = 0;
   //double effectiveDistance = 3;
 
-  private final Pose2d goalPose = new Pose2d(0, 0, new Rotation2d());
+  //private final Pose2d goalPose = new Pose2d(0, 0, new Rotation2d());
   private Pose2d robotPose = new Pose2d();
-  private Transform2d robotToGoal = new Transform2d();
+  //private Transform2d robotToGoal = new Transform2d();
+
+  
+  //private Translation2d robotLocation = new Translation2d();
+  double estimatedDistance = 3;
 
   
   /** Creates a new TrackTargetStationary. */
@@ -67,8 +72,6 @@ public class TrackTargetStationaryLatency extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    
-
     if (Limelight.getTargetFound()) { //runs when the LL can see the target
       distance = Limelight.getTargetDistance();
       x = Limelight.getX();
@@ -77,9 +80,10 @@ public class TrackTargetStationaryLatency extends CommandBase {
 
       mecDriveTrain.updateOdometryWithVision(distance, gyroYaw, turretAngle, x);
       robotPose = mecDriveTrain.getPoseEstimate();
-      robotToGoal = new Transform2d(robotPose, goalPose);
-      distance = Math.sqrt(Math.pow(robotToGoal.getX(), 2) + Math.pow(robotToGoal.getY(), 2)); 
-      //TODO: get actual tx based on pose estimate
+      //robotToGoal = new Transform2d(robotPose, goalPose);
+      //distance = Math.sqrt(Math.pow(robotToGoal.getX(), 2) + Math.pow(robotToGoal.getY(), 2)); 
+      estimatedDistance = Constants.goalLocation.getDistance(robotPose.getTranslation());
+      //TODO: get actual tx based on pose estimate?
       //difference between turret pose and 
       //it should be the same though if the rest of this works right?
 
@@ -97,19 +101,19 @@ public class TrackTargetStationaryLatency extends CommandBase {
       //desiredHoodAngle = -3 * distance + 85; //degrees
       //desiredTurretV = x / 100; //- 3 * perpV;
 
-      hood.setMotorPosPID(distance, paraV);
+      //hood.setMotorPosPID(estimatedDistance, paraV);
 
-      turret.setMotorPosPID(x, perpV, distance, angV); 
+      turret.setMotorPosPID(x, perpV, estimatedDistance, angV); 
 
       //shooter.shootWithInitialBallVelocity(paraV, perpV, desiredHoodAngle, desiredTurretAngle, distance);
-      shooter.setMotorsVelPID(distance);
+      //shooter.setMotorsVelPID(distance);
     }
     else //this runs when the target is not in view of camera
     {
       distance = Limelight.getTargetDistance();
       /*the distance value here is calculated internally from lastX and lastY, so it doesnt matter that
       the target isnt in view*/
-      shooter.setMotorsVelPID(distance);
+      //shooter.setMotorsVelPID(distance);
             
       /*if target is out of view, x and y will default to zero, so we use the last values of them
       from before they went out of sight to guess how to move to get the target back in view*/

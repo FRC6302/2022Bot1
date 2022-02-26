@@ -34,10 +34,10 @@ public class DriveMec extends CommandBase {
     x = -1 * Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftStickY);
     y = -1 * Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftStickX);
 
-    //SmartDashboard.putNumber("forward input joystick", x);
-    //SmartDashboard.putNumber("sideways input joystick", y);
-    SmartDashboard.putNumber("perpV", mecDriveTrain.getPerpV(Limelight.getX()));
-    SmartDashboard.putNumber("paraV", mecDriveTrain.getParaV(Limelight.getLastX()));
+    SmartDashboard.putNumber("forward input joystick", x);
+    SmartDashboard.putNumber("sideways input joystick", y);
+    //SmartDashboard.putNumber("perpV", mecDriveTrain.getPerpV(Limelight.getX()));
+    //SmartDashboard.putNumber("paraV", mecDriveTrain.getParaV(Limelight.getLastX()));
 
     //mecDriveTrain.setMotorsSimple(x, y, z);
 

@@ -11,9 +11,16 @@ public class VisionPoseEstimation {
   }
 
   public static Pose2d getGlobalPoseEstimation(double distance, double gyroAngle, double turretAngle, double tx) {
-    return new Pose2d(
+    //normal math conventions
+    /*return new Pose2d(
       distance * Math.sin(Units.degreesToRadians(gyroAngle + turretAngle - tx - 90)),
       -distance * Math.cos(Units.degreesToRadians(gyroAngle + turretAngle - tx - 90)), 
+      Rotation2d.fromDegrees(gyroAngle));*/
+
+    //wpilib conventions
+    return new Pose2d(
+      distance * Math.cos(Units.degreesToRadians(gyroAngle + turretAngle - tx - 90)), 
+      distance * Math.sin(Units.degreesToRadians(gyroAngle + turretAngle - tx - 90)),
       Rotation2d.fromDegrees(gyroAngle));
   }
 

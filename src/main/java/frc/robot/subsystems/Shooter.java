@@ -21,6 +21,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -30,19 +31,19 @@ public class Shooter extends SubsystemBase {
   private final double topkS = 0, topkV = 0, topkA = 0;
   private final double bottomkS = 0, bottomkV = 0, bottomkA = 0;
 
-  //private WPI_TalonSRX motorShooterTop = new WPI_TalonSRX(Constants.motorShooterTop);
-  //private WPI_TalonSRX motorShooterBottom = new WPI_TalonSRX(Constants.motorShooterBottom);
+  private WPI_TalonSRX motorShooterTop = new WPI_TalonSRX(Constants.motorShooterTop);
+  private WPI_TalonSRX motorShooterBottom = new WPI_TalonSRX(Constants.motorShooterBottom);
 
-  private CANSparkMax motorShooterTop = new CANSparkMax(Constants.motorShooterTop, MotorType.kBrushless);
-  private CANSparkMax motorShooterBottom = new CANSparkMax(Constants.motorShooterBottom, MotorType.kBrushless);
+  //private CANSparkMax motorShooterTop = new CANSparkMax(Constants.motorShooterTop, MotorType.kBrushless);
+  //private CANSparkMax motorShooterBottom = new CANSparkMax(Constants.motorShooterBottom, MotorType.kBrushless);
 
   /*private Encoder topShooterEncoder = new Encoder(Constants.topShooterEncA, Constants.topShooterEncB, 
-    false/*, EncodingType.k4X);
+    false, EncodingType.k4X);
   private Encoder bottomShooterEncoder = new Encoder(Constants.bottomShooterEncA, Constants.bottomShooterEncB, 
-    true/*, EncodingType.k4X);*/
+    true, EncodingType.k4X);*/
 
-  private RelativeEncoder topShooterEncoder;
-  private RelativeEncoder bottomShooterEncoder;
+  //private RelativeEncoder topShooterEncoder;
+  //private RelativeEncoder bottomShooterEncoder;
 
   private BangBangController bangBangTop = new BangBangController(0.05);
   private BangBangController bangBangBottom = new BangBangController(0.05);
@@ -76,7 +77,7 @@ public class Shooter extends SubsystemBase {
   /** Creates a new Shooter. */
   public Shooter() {
 
-    /*motorShooterTop.configFactoryDefault();
+    motorShooterTop.configFactoryDefault();
     motorShooterBottom.configFactoryDefault();
 
     //DO NOT CHANGE OR BANG BANG CONTROL WILL NOT WORK AND SHOOTER WILL BREAK
@@ -92,14 +93,14 @@ public class Shooter extends SubsystemBase {
     motorShooterBottom.setSensorPhase(false);
     
     motorShooterTop.setInverted(false);
-    motorShooterBottom.setInverted(true);*/
+    motorShooterBottom.setInverted(true);
     
     //topShooterEncoder.setDistancePerPulse(distancePerPulse);
     //bottomShooterEncoder.setDistancePerPulse(distancePerPulse);
 
     //motorShooterBottom.configAllSettings(new TalonSRXConfiguration());
 
-    motorShooterTop.restoreFactoryDefaults();
+    /*motorShooterTop.restoreFactoryDefaults();
     motorShooterBottom.restoreFactoryDefaults();
 
     motorShooterTop.setInverted(false);
@@ -107,11 +108,11 @@ public class Shooter extends SubsystemBase {
 
     //DO NOT CHANGE OR BANG BANG CONTROL WILL NOT WORK AND SHOOTER WILL BREAK
     motorShooterTop.setIdleMode(IdleMode.kCoast);
-    motorShooterBottom.setIdleMode(IdleMode.kCoast);
+    motorShooterBottom.setIdleMode(IdleMode.kCoast);*/
 
     /*this line only works if using neo built-in encoders, otherwise you need arguments that describe
     the encoder that you are using instead*/
-    topShooterEncoder = motorShooterTop.getEncoder();
+    /*topShooterEncoder = motorShooterTop.getEncoder();
     bottomShooterEncoder = motorShooterTop.getEncoder();
 
     topShooterEncoder.setInverted(false);
@@ -121,11 +122,11 @@ public class Shooter extends SubsystemBase {
     bottomShooterEncoder.setPositionConversionFactor(distancePerPulse);
 
     topShooterEncoder.setVelocityConversionFactor(distancePerPulse);
-    bottomShooterEncoder.setVelocityConversionFactor(distancePerPulse);
+    bottomShooterEncoder.setVelocityConversionFactor(distancePerPulse / 60); //changes per min to per sec
 
     //saves the settings
     motorShooterTop.burnFlash();
-    motorShooterBottom.burnFlash();
+    motorShooterBottom.burnFlash();*/
 
     distanceVelocityMap = new LinearInterpolator(distanceVelocityData);
     distanceTimeMap = new LinearInterpolator(distanceTimeData);
@@ -137,8 +138,8 @@ public class Shooter extends SubsystemBase {
     //SmartDashboard.putNumber("top shooter encoder", topShooterEncoder.getRate());
     //SmartDashboard.putNumber("bottom shooter encoder", bottomShooterEncoder.getRate());
 
-    SmartDashboard.putNumber("top shooter encoder", getTopShooterEncRate());
-    SmartDashboard.putNumber("bottom shooter encoder", getBottomShooterEncRate());
+    //SmartDashboard.putNumber("top shooter encoder", getTopShooterEncRate());
+    //SmartDashboard.putNumber("bottom shooter encoder", getBottomShooterEncRate());
   }
 
 
@@ -153,7 +154,7 @@ public class Shooter extends SubsystemBase {
     setMotors(shotInitV / 10);
   }
 
-  public void setMotorsVelPID(double distance) {
+  /*public void setMotorsVelPID(double distance) {
     double setpointV = distanceVelocityMap.getInterpolatedValue(distance);
 
     motorShooterTop.setVoltage(topPID.calculate(getTopShooterEncRate(), setpointV) + topFeedforward.calculate(setpointV));
@@ -166,7 +167,7 @@ public class Shooter extends SubsystemBase {
     //break setpointV into component parts
     //add perpV and paraV to their respective components
     //combine components into new setpointV
-  }
+  }*/
 
   public void setMotors(double speed) {
     //motorShooterTop.set(ControlMode.PercentOutput, speed);
@@ -192,20 +193,20 @@ public class Shooter extends SubsystemBase {
     motorShooterBottom.set(ControlMode.PercentOutput, speed);
   }*/
 
-  public double getTopShooterEncRate() {
+  /*public double getTopShooterEncRate() {
     //multiplying by 10 because to turn 100 ms to 1 sec because it reports with per 100 ms units
     //return 10.0 * motorShooterTop.getSelectedSensorVelocity() * distancePerPulse;
 
-    return topShooterEncoder.getVelocity();
+    return topShooterEncoder.getRate();
   }
 
   public double getBottomShooterEncRate() {
     //return 10.0 * motorShooterBottom.getSelectedSensorVelocity() * distancePerPulse;
 
-    return bottomShooterEncoder.getVelocity();
-  }
+    return bottomShooterEncoder.getRate();
+  }*/
 
-  public void setWithBangBang(double desiredSpeed) {
+  /*public void setWithBangBang(double desiredSpeed) {
     // Controls a motor with the output of the BangBang controller
     setMotors(
       bangBangTop.calculate(getTopShooterEncRate(), desiredSpeed), 
@@ -233,7 +234,7 @@ public class Shooter extends SubsystemBase {
         + 0.9 * topFeedforward.calculate(desiredTop),
       bangBangBottom.calculate(getBottomShooterEncRate(), desiredBottom) 
         + 0.9 * bottomFeedforward.calculate(desiredBottom));
-  }
+  }*/
 
   public void stop() {
     setMotors(0);

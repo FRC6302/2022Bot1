@@ -85,7 +85,7 @@ public class TrackTargetStationary extends CommandBase {
       turret.setMotorPosPID(x, perpV, distance, angV); 
 
       //shooter.shootWithInitialBallVelocity(paraV, perpV, desiredHoodAngle, desiredTurretAngle, distance);
-      shooter.setMotorsVelPID(distance);
+      //shooter.setMotorsVelPID(distance);
     }
     else //this runs when the target is not in view of camera
     {
@@ -93,7 +93,7 @@ public class TrackTargetStationary extends CommandBase {
       distance = Limelight.getTargetDistance();
       /*the distance value here is calculated internally from lastX and lastY, so it doesnt matter that
       the target isnt in view*/
-      shooter.setMotorsVelPID(distance);
+      //shooter.setMotorsVelPID(distance);
       hood.setMotorPosPID(distance, paraV);
       
       /*if target is out of view, x and y will default to zero, so we use the last values of them

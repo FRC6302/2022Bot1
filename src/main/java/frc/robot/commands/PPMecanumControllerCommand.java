@@ -16,9 +16,11 @@ import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
 /**
@@ -104,12 +106,14 @@ public class PPMecanumControllerCommand extends CommandBase {
   @SuppressWarnings("LocalVariableName")
   public void execute() {
       double curTime = m_timer.get();
-      var desiredState = (PathPlannerState) m_trajectory.sample(curTime);
+      PathPlannerState desiredState = (PathPlannerState) m_trajectory.sample(curTime);
 
-      var targetChassisSpeeds = m_controller.calculate(m_pose.get(), desiredState, desiredState.holonomicRotation);
+      ChassisSpeeds targetChassisSpeeds = m_controller.calculate(m_pose.get(), desiredState, desiredState.holonomicRotation);
       MecanumDriveWheelSpeeds targetWheelSpeeds = m_kinematics.toWheelSpeeds(targetChassisSpeeds);
 
       m_outputWheelSpeeds.accept(targetWheelSpeeds);
+
+      SmartDashboard.putNumber("desired rotation", desiredState.holonomicRotation.getDegrees());
   }
 
   @Override

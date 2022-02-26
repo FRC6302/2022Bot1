@@ -6,45 +6,33 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.subsystems.Shooter;
+import frc.robot.Robot;
+import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.Turret;
 
-public class Shoot extends CommandBase {
-  Shooter shooter;
-  double topSpeed = 0, bottomSpeed = 0;
-  
-  /**
-   * Creates a new Shoot.
-   */
-  public Shoot(Shooter shooter, double topSpeed, double bottomSpeed) {
+public class TurnTurret extends CommandBase {
+  Turret turret;
+  /** Creates a new TurnTurret. */
+  public TurnTurret(Turret turret) {
     // Use addRequirements() here to declare subsystem dependencies.
-    this.shooter = shooter;
-    this.topSpeed = topSpeed;
-    this.bottomSpeed = bottomSpeed;
-
-    addRequirements(shooter); 
+    this.turret = turret;
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    //while (true) {
-      //shooter.setBothMotors(Constants.shootSpeed);
-
-      shooter.setMotors(topSpeed, bottomSpeed);
-    //}
-    
+    //turret.setMotor(Robot.robotContainer.getDriverRawAxis(Constants.rightStickX) / -2);
+    turret.setMotorVelPID(Limelight.getLastX(), 0, 2, 0);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    shooter.stop();
+    turret.stopMotor();
   }
 
   // Returns true when the command should end.
