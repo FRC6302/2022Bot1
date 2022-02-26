@@ -28,6 +28,22 @@ public final class Constants {
     public static final int motorHood = 93;
     public static final int motorNeoTest = 1;
 
+    //encoders - DIO ports on rio
+    public static final int encL1A = 0;
+    public static final int encL1B = 1;
+    public static final int encL2A = 2;
+    public static final int encL2B = 3;
+    public static final int encR1A = 6;
+    public static final int encR1B = 7;
+    public static final int encR2A = 8;
+    public static final int encR2B = 9;
+    
+    public static final int encTurretA = 4;
+    public static final int encTurretB = 5;
+    
+    public static final int encHoodA = 90;
+    public static final int encHoodB = 90;
+    
     //controller values - wont ever change
     public static final int leftTrigger = 2;
     public static final int rightTrigger = 3;
@@ -42,7 +58,7 @@ public final class Constants {
     public static final int leftBumper = 5;
     public static final int rightBumper = 6;
 
-    //controller ports (where they plug in at)
+    //controller ports (where they plug in at) - laptop USB
     public static final int driverControllerPort = 0;
     public static final int operatorControllerPort = 1;
 
@@ -50,14 +66,7 @@ public final class Constants {
     public static final double maxDriveSpeed = 1.0;
 
     //mecanum
-    public static final int encL1A = 0;
-    public static final int encL1B = 1;
-    public static final int encL2A = 2;
-    public static final int encL2B = 3;
-    public static final int encR1A = 6;
-    public static final int encR1B = 7;
-    public static final int encR2A = 8;
-    public static final int encR2B = 9;
+    
 
     //mecanum trajectory
     public static final double maxMecSpeed = 5; //meters per second
@@ -100,23 +109,28 @@ public final class Constants {
 
     //pneumatics
 
+
     //turret
     public static final double turretSeekSpeed = 0.2;
-    public static final double turretCircumference = 0;
-    public static final int encTurretA = 4;
-    public static final int encTurretB = 5;
-    
+    //public static final double turretCircumference = 0;
+    public static final double minTurretAngle = -180;
+    public static final double maxTurretAngle = 180;
+
     public static final double ksTurret = 0.56996;
     public static final double kvTurret = 0.0161;
     public static final double kaTurret = 0.0019;
-    public static final double kpTurret = 0.05; //sysid said 2
+
+    //public static final double kpTurret = 0.05; 
+    public static final double kpPosTurret = 1.0; //sysid guessed 2
+    public static final double kpVelTurret = 0.05;
+
     public static final double maxTurretV = 180; //deg/s
     public static final double maxTurretA = 90; //deg/s/s
     
-    //hood
-    public static final int encHoodA = 90;
-    public static final int encHoodB = 90;
     
+    
+    //hood
+
     public static final double ksHood = 0;
     public static final double kvHood = 0;
     public static final double kaHood = 0;
@@ -162,6 +176,8 @@ public final class Constants {
     public static final int missTargetButton = 0;
     public static final int shootButton2 = bButton;
     public static final int turnTurretButton = bButton;
+    
+    
     
     
     

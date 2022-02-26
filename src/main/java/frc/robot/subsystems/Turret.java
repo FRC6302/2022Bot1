@@ -16,7 +16,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
+import frc.robot.commands.ResetTurret;
 
 public class Turret extends SubsystemBase {
   private WPI_TalonSRX motorTurret = new WPI_TalonSRX(Constants.motorTurret);
@@ -24,7 +26,8 @@ public class Turret extends SubsystemBase {
   private Encoder turretEncoder;
 
   //private ProfiledPIDController pidController = new ProfiledPIDController(Constants.kpTurret, 0, 0, Constants.turretConstraints);
-  private PIDController pidController = new PIDController(Constants.kpTurret, 0, 0);
+  private PIDController posPIDController = new PIDController(Constants.kpPosTurret, 0, 0);
+  private PIDController velPIDController = new PIDController(Constants.kpVelTurret, 0, 0);
 
   private SimpleMotorFeedforward simpleFeedforward = new SimpleMotorFeedforward(
     Constants.ksTurret, Constants.kvTurret, Constants.kaTurret);
@@ -39,6 +42,11 @@ public class Turret extends SubsystemBase {
   //360 degrees
   //8192 cpr for rev through bore encoder
   private double distancePerPulse = (360. / 2048.) / gearReduction;
+
+  private boolean needsReset = false;
+
+  //can you say "this" before constructor runs?
+  //private Trigger resetTrigger = new Trigger(this::getNeedsReset);
 
   /** Creates a new Turret. */
   public Turret() {
@@ -62,29 +70,23 @@ public class Turret extends SubsystemBase {
     SmartDashboard.putNumber("turret enc pos", getAngle());
     SmartDashboard.putNumber("turret enc vel", getEncVelocity());
 
+    ///resetTrigger.whileActiveOnce(new ResetTurret(this, 0., false), false;)
+
   }
 
   public void setMotor(double speed) {
     //motorTurret.set(ControlMode.PercentOutput, speed);
-    double volts = speed * 12;
+    double volts = speed * 12.5;
     SmartDashboard.putNumber("turret drive volts", volts);
     motorTurret.setVoltage(volts);
   }
-
-  /*public void setMotor(double setpointV, double perpV, double distance, double angV){
-    tangentialFeedforward = perpV / distance;
-    rotationalFeedforward = -angV;
-    setpointV = setpointV + tangentialFeedforward + rotationalFeedforward;
-
-    motorTurret.setVoltage(pidController.calculate(getEncVelocity(), setpointV) + simpleFeedforward.calculate(setpointV));
-  }*/
 
   public void setMotorPosPID(double tx, double perpV, double distance, double angV){
     tangentialFeedforward = perpV / distance;
     rotationalFeedforward = -angV;
     //double angle = getAngle();
     //double setpoint = angle - tx;
-    double pidOutput = pidController.calculate(tx, 0);
+    double pidOutput = posPIDController.calculate(tx, 0);
     double turretVolts = simpleFeedforward.calculate(
       pidOutput/* + tangentialFeedforward + rotationalFeedforward*/);
     SmartDashboard.putNumber("turret volts", turretVolts);
@@ -99,18 +101,16 @@ public class Turret extends SubsystemBase {
 
     double posSetpoint = 0;
 
-    motorTurret.setVoltage(simpleFeedforward.calculate(pidController.calculate(getAngle(), posSetpoint)
+    motorTurret.setVoltage(simpleFeedforward.calculate(posPIDController.calculate(getAngle(), posSetpoint)
       + tangentialFeedforward + rotationalFeedforward));
   }
-  
-  
 
   public void setMotorVelPID(double tx, double perpV, double distance, double angV) {
-    
-
+    tangentialFeedforward = perpV / distance;
+    rotationalFeedforward = -angV;
     double setpointVel = -tx / 1 + tangentialFeedforward + rotationalFeedforward;
     
-    double pid = pidController.calculate(getEncVelocity(), setpointVel);
+    double pid = velPIDController.calculate(getEncVelocity(), setpointVel);
     double ff = simpleFeedforward.calculate(setpointVel);
     double turretVolts = pid + ff;
     SmartDashboard.putNumber("turret pid", pid);
@@ -126,19 +126,47 @@ public class Turret extends SubsystemBase {
 
     double setpointVel = robotPose.getRotation().getDegrees();
 
-    motorTurret.setVoltage(pidController.calculate(getEncVelocity(), setpointVel) 
+    motorTurret.setVoltage(velPIDController.calculate(getEncVelocity(), setpointVel) 
       + simpleFeedforward.calculate(setpointVel));
   }
 
-  public void setAngle(double angleDeg) {
+  public void turnToAngle(double angleDeg) {
     angleSetpoint = angleDeg;
 
     //use PID to get to certain encoder values
-    motorTurret.setVoltage(pidController.calculate(getAngle(), angleDeg));
+    motorTurret.setVoltage(simpleFeedforward.calculate(posPIDController.calculate(getAngle(), angleDeg)));
+  }
+  
+
+  //makes sure that the turret go past its limits
+  private void setVoltageBounded(double volts, double turretAngle) {
+    if (getAngle() <= Constants.minTurretAngle) {
+      motorTurret.setVoltage(-1);
+      return;
+    }
+    else if (getAngle() >= Constants.maxTurretAngle) {
+      motorTurret.setVoltage(1);
+    }
+    else {
+      motorTurret.setVoltage(volts);
+    }
+  }
+
+  private void setVoltageBounded(double volts) {
+    double turretAngle = getAngle();
+    setVoltageBounded(volts, turretAngle);
   }
 
   public double getAngle() {
+    //double currAngle = turretEncoder.getDistance() % 360;
+    //if (currAngle >= 0)
     return turretEncoder.getDistance();
+  }
+
+  //returns the angle but between -360 and 360 ???
+  public double getAngleBounded() {
+    //TODO: test this
+    return turretEncoder.getDistance() % 360;
   }
 
   public Rotation2d getRotation2d() {
@@ -151,6 +179,10 @@ public class Turret extends SubsystemBase {
 
   public double getEncVelocity() {
     return turretEncoder.getRate();
+  }
+
+  public boolean getNeedsReset() {
+    return needsReset;
   }
 
   public void stopMotor() {
