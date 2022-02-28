@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.MecDriveTrain;
@@ -14,7 +15,7 @@ import frc.robot.subsystems.Turret;
 
 /* tracks target like TrackTargetStationary command but accounts for the robots movement by leading the shot
 so that you can shoot while moving*/
-public class TrackTargetLeading extends CommandBase {
+public class TrackTargetLeadingPose extends CommandBase {
   MecDriveTrain mecDriveTrain;
   Turret turret;
   Hood hood;
@@ -28,7 +29,7 @@ public class TrackTargetLeading extends CommandBase {
   double paraV = 0, perpV = 0, angV = 0, vx = 0, vy = 0;
   
   //from limelight
-  double distance = 3, x = 0, y = 0, lastX = 0, lastY = 0;
+  double rawDistance = 3, x = 0, y = 0, lastX = 0, lastY = 0;
 
   double gyroYaw = 0;
 
@@ -37,12 +38,19 @@ public class TrackTargetLeading extends CommandBase {
 
   //leading stuff
   double offsetAngle = 0;
-  double predictedDistance = 3;
+  double effectiveDistance = 3;
   double airTime = 3;
   double temp = 0;
 
+  //pose stuff
+  private Pose2d robotPose = new Pose2d();
+  //private Transform2d robotToGoal = new Transform2d();
+  //private Translation2d robotLocation = new Translation2d();
+  //double estimatedActualDistance = 0;
+
+
   /** Creates a new TrackTargetLeading. */
-  public TrackTargetLeading(MecDriveTrain mecDriveTrain, Turret turret, Hood hood, Shooter shooter) {
+  public TrackTargetLeadingPose(MecDriveTrain mecDriveTrain, Turret turret, Hood hood, Shooter shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.mecDriveTrain = mecDriveTrain;
     this.turret = turret;
@@ -61,11 +69,17 @@ public class TrackTargetLeading extends CommandBase {
   @Override
   public void execute() {
     if (Limelight.getTargetFound()) { //runs when the LL can see the target
-      distance = Limelight.getTargetDistance();
+      rawDistance = Limelight.getTargetDistance();
       x = Limelight.getX();
 
       gyroYaw = NavX.getGyroYaw();
       turretAngle = turret.getAngle();
+
+      mecDriveTrain.updateOdometryWithVision(rawDistance, gyroYaw, turretAngle, x);
+      robotPose = mecDriveTrain.getPoseEstimate();
+      //robotToGoal = new Transform2d(robotPose, goalPose);
+      //distance = Math.sqrt(Math.pow(robotToGoal.getX(), 2) + Math.pow(robotToGoal.getY(), 2)); 
+      //estimatedActualDistance = Constants.goalLocation.getDistance(robotPose.getTranslation());
 
       //velocities with respect to target
       paraV = mecDriveTrain.getParaV(turretAngle);
@@ -76,23 +90,27 @@ public class TrackTargetLeading extends CommandBase {
       
       angV = mecDriveTrain.getAngV();
 
-      temp = airTime * (vy * Math.sin(gyroYaw + turretAngle - x) + vx * Math.cos(gyroYaw + turretAngle - x));
+      //temp = airTime * (vy * (robotPose.getX() - Constants.goalLocation.getX()) 
+        //+ vx * (robotPose.getY() - Constants.goalLocation.getY()));
 
-      offsetAngle = Math.asin(temp / predictedDistance);
-      predictedDistance = temp / Math.sin(offsetAngle);
+      temp = airTime * (vy * Math.sin(gyroYaw + turretAngle - x) + vx * Math.cos(gyroYaw + turretAngle - x));
+      //TODO: compare these temp values and make sure they are close
+
+      offsetAngle = Math.asin(temp / effectiveDistance);
+      effectiveDistance = temp / Math.sin(offsetAngle);
       //predictedDistance = distance / Math.cos(Math.toRadians(offsetAngle)); //something like this
 
       //desiredHoodAngle = -3 * distance + 85; //degrees
       //desiredTurretV = x / 100; //- 3 * perpV;
 
-      hood.setMotorPosPID(predictedDistance, paraV);
+      hood.setMotorPosPID(effectiveDistance, paraV);
 
-      turret.setMotorPosPID(x - offsetAngle, perpV, predictedDistance, angV); 
+      turret.setMotorPosPID(x - offsetAngle, perpV, effectiveDistance, angV); 
 
       //shooter.shootWithInitialBallVelocity(paraV, perpV, desiredHoodAngle, desiredTurretAngle, distance);
       //shooter.setMotorsVelPID(predictedDistance);
 
-      airTime = shooter.getTime(predictedDistance);
+      airTime = shooter.getTime(effectiveDistance);
     }
     else //this runs when the target is not in view of camera
     {}

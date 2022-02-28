@@ -52,12 +52,9 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Robot;
-import frc.robot.Utilities.InterpolatingDouble;
+
 
 //test commit 2
 //test from kaden 2
@@ -98,7 +95,7 @@ public class DriveTrain extends SubsystemBase {
     motorR1.configNeutralDeadband(0.001);
     //motorR2.configNeutralDeadband(0.001);
     
-    //TODO: play with this
+    //play with this
     //motorL1.configPeakOutputForward(0.9);
   }
 

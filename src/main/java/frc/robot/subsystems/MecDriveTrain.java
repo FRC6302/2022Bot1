@@ -4,32 +4,29 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.MecanumDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 import edu.wpi.first.math.kinematics.MecanumDriveMotorVoltages;
-import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.CounterBase;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import frc.robot.Constants;
 import frc.robot.Utilities.VisionPoseEstimation;
 
@@ -80,7 +77,7 @@ public class MecDriveTrain extends SubsystemBase {
     VecBuilder.fill(Units.degreesToRadians(15)), //wheels slip a lot so their readings are less accurate
     VecBuilder.fill(0.2, 0.2, Units.degreesToRadians(3)));
 
-  private final NeutralMode motorMode = NeutralMode.Brake;
+  //private final NeutralMode motorMode = NeutralMode.Brake; //for talons
 
   //distance per pulse = pi * (wheel diameter / counts per revolution) / gear reduction
   //rev through bore encoder is 8192 counts per rev? or use 2048 cycles per rev?
@@ -88,6 +85,8 @@ public class MecDriveTrain extends SubsystemBase {
   private final double distancePerPulse = (Math.PI * 0.1524 / 2048) / 1; //mec wheel diam is 6 in or 0.1524 m
 
   private ChassisSpeeds curChassisSpeeds = new ChassisSpeeds();
+
+  private Field2d field = new Field2d();
 
   /** Creates a new MecDriveTrain. */
   public MecDriveTrain() {
@@ -148,6 +147,11 @@ public class MecDriveTrain extends SubsystemBase {
     encoderR2.setDistancePerPulse(distancePerPulse);
     
     //mecDrive = new MecanumDrive(motorL1, motorL2, motorR1, motorR2);
+
+    //use this to show balls on the field?
+    //field.getObject("red balls").setPose(new Pose2d());
+
+    SmartDashboard.putData("field", field);
   }
 
   @Override
@@ -159,6 +163,9 @@ public class MecDriveTrain extends SubsystemBase {
     SmartDashboard.putNumber("enc R2", encoderR2.getDistance());
 
     updateOdometry();
+
+    SmartDashboard.putNumber("pose x", getPoseEstimate().getX());
+    SmartDashboard.putNumber("pose y", getPoseEstimate().getY());
 
     //used for converting robot velocity into target-relative velocity
     curChassisSpeeds = kinematics.toChassisSpeeds(getCurrentWheelSpeeds());
@@ -192,13 +199,22 @@ public class MecDriveTrain extends SubsystemBase {
     motorR2.setVoltage(simpleFeedforward.calculate(speeds.rearRightMetersPerSecond)
       + pidController.calculate(getEncR2Rate(), speeds.rearRightMetersPerSecond));*/
 
-    motorL1.setVoltage(speeds.frontLeftMetersPerSecond);
+    /*motorL1.setVoltage(speeds.frontLeftMetersPerSecond);
     motorL2.setVoltage(speeds.rearLeftMetersPerSecond);
     motorR1.setVoltage(speeds.frontRightMetersPerSecond);
-    motorR2.setVoltage(speeds.rearRightMetersPerSecond);
+    motorR2.setVoltage(speeds.rearRightMetersPerSecond);*/
+
+    motorL1.setVoltage(simpleFeedforward.calculate(speeds.frontLeftMetersPerSecond));
+    motorL2.setVoltage(simpleFeedforward.calculate(speeds.rearLeftMetersPerSecond));
+    motorR1.setVoltage(simpleFeedforward.calculate(speeds.frontRightMetersPerSecond));
+    motorR2.setVoltage(simpleFeedforward.calculate(speeds.rearRightMetersPerSecond));
 
     SmartDashboard.putNumber("motorL1", simpleFeedforward.calculate(speeds.frontLeftMetersPerSecond));
     SmartDashboard.putNumber("motorR1", speeds.frontRightMetersPerSecond);
+
+    SmartDashboard.putNumber("angv", getAngV());
+    SmartDashboard.putNumber("vx", getVx());
+    SmartDashboard.putNumber("vy", getVy());
   }
 
   public void stopDrive(){
@@ -342,8 +358,10 @@ public class MecDriveTrain extends SubsystemBase {
     double vz = curChassisSpeeds.vxMetersPerSecond; //velocity in the foward direction, relative to robot
     double vx = -curChassisSpeeds.vyMetersPerSecond; //velocity towards the right, relative to robot
     double theta = Math.toRadians(90 - turretAngleDeg);
+    double output = vx * Math.cos(theta) + vz * Math.sin(theta);
+    SmartDashboard.putNumber("paraV", output);
 
-    return vx * Math.cos(theta) + vz * Math.sin(theta);
+    return output;
   }
 
   public double getPerpV(double turretAngleDeg) {
@@ -352,18 +370,25 @@ public class MecDriveTrain extends SubsystemBase {
     double vx = -curChassisSpeeds.vyMetersPerSecond; //velocity towards the right, relative to robot
     double theta = Math.toRadians(90 - turretAngleDeg);
 
-    return -vx * Math.sin(theta) + vz * Math.cos(theta);
+    double output = -vx * Math.sin(theta) + vz * Math.cos(theta);
+    SmartDashboard.putNumber("perpV", output);
+
+    return output;
   }
 
   public double getAngV() {
-    return Math.toDegrees(curChassisSpeeds.omegaRadiansPerSecond);
+    double output = Math.toDegrees(curChassisSpeeds.omegaRadiansPerSecond);
+    //SmartDashboard.putNumber("angv", output);
+    return output;
   }
 
   public double getVx() {
-    return -curChassisSpeeds.vyMetersPerSecond;
+    //return -curChassisSpeeds.vyMetersPerSecond;
+    return curChassisSpeeds.vxMetersPerSecond;
   }
 
   public double getVy() {
-    return curChassisSpeeds.vxMetersPerSecond;
+    //return curChassisSpeeds.vxMetersPerSecond;
+    return curChassisSpeeds.vyMetersPerSecond;
   }
 }

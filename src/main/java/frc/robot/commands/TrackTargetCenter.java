@@ -4,26 +4,21 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.MecDriveTrain;
-import frc.robot.subsystems.NavX;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Turret;
 
 /*command that tracks target but does not account for leading the shot, so in theory it would work if you 
-completely brake and then instantly shoot. It won't need time to adjust after stopping*/
-public class TrackTargetStationaryLatency extends CommandBase {
+completely brake and then instantly shoot. It shouldn't need time to adjust after stopping*/
+public class TrackTargetCenter extends CommandBase {
   MecDriveTrain mecDriveTrain;
   Turret turret;
-  Hood hood;
+  //Hood hood;
   Shooter shooter;
 
   //outputs of command
@@ -36,33 +31,25 @@ public class TrackTargetStationaryLatency extends CommandBase {
   //from limelight
   double distance = 3, x = 0, y = 0, lastX = 0, lastY = 0;
 
-  double gyroYaw = 0;
+  //double gyroYaw = 0;
 
   double turretAngle = 0;
   //boolean isAllianceBall = true;
 
-  //needed for leading the shot
-  //double offsetAngle = 0;
+  double offsetAngle = 0;
   //double effectiveDistance = 3;
 
-  //private final Pose2d goalPose = new Pose2d(0, 0, new Rotation2d());
-  private Pose2d robotPose = new Pose2d();
-  //private Transform2d robotToGoal = new Transform2d();
-
   
-  //private Translation2d robotLocation = new Translation2d();
-  double estimatedDistance = 3;
-
-  
-  /** Creates a new TrackTargetStationary. */
-  public TrackTargetStationaryLatency(MecDriveTrain mecDriveTrain, Turret turret, Hood hood, Shooter shooter) {
+  /** Creates a new TrackTarget. */
+  public TrackTargetCenter(MecDriveTrain mecDriveTrain, Turret turret,/* Hood hood,*/ Shooter shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.mecDriveTrain = mecDriveTrain;
     this.turret = turret;
-    this.hood = hood;
+    //this.hood = hood;
     this.shooter = shooter;
 
-    addRequirements(mecDriveTrain, turret, hood, shooter);
+    //not adding drivetrain to requirements bc that would not let us drive?
+    addRequirements(turret,/* hood,*/ shooter);
   }
 
   // Called when the command is initially scheduled.
@@ -75,21 +62,13 @@ public class TrackTargetStationaryLatency extends CommandBase {
     if (Limelight.getTargetFound()) { //runs when the LL can see the target
       distance = Limelight.getTargetDistance();
       x = Limelight.getX();
-      gyroYaw = NavX.getGyroYaw();
+
+      //gyroYaw = NavX.getGyroYaw();
       turretAngle = turret.getAngle();
 
-      mecDriveTrain.updateOdometryWithVision(distance, gyroYaw, turretAngle, x);
-      robotPose = mecDriveTrain.getPoseEstimate();
-      //robotToGoal = new Transform2d(robotPose, goalPose);
-      //distance = Math.sqrt(Math.pow(robotToGoal.getX(), 2) + Math.pow(robotToGoal.getY(), 2)); 
-      estimatedDistance = Constants.goalLocation.getDistance(robotPose.getTranslation());
-      //TODO: get actual tx based on pose estimate?
-      //difference between turret pose and 
-      //it should be the same though if the rest of this works right?
-
       //velocities with respect to target
-      paraV = mecDriveTrain.getParaV(turretAngle);
-      perpV = mecDriveTrain.getPerpV(turretAngle);
+      paraV = mecDriveTrain.getParaV(turretAngle - x);
+      perpV = mecDriveTrain.getPerpV(turretAngle - x);
       
       angV = mecDriveTrain.getAngV();
 
@@ -101,20 +80,22 @@ public class TrackTargetStationaryLatency extends CommandBase {
       //desiredHoodAngle = -3 * distance + 85; //degrees
       //desiredTurretV = x / 100; //- 3 * perpV;
 
-      //hood.setMotorPosPID(estimatedDistance, paraV);
+      //hood.setMotorPosPID(distance, paraV);
 
-      turret.setMotorPosPID(x, perpV, estimatedDistance, angV); 
+      turret.setMotorPosPID(x, perpV, distance, 0); 
 
       //shooter.shootWithInitialBallVelocity(paraV, perpV, desiredHoodAngle, desiredTurretAngle, distance);
       //shooter.setMotorsVelPID(distance);
     }
     else //this runs when the target is not in view of camera
     {
+      paraV = mecDriveTrain.getParaV(turretAngle);
       distance = Limelight.getTargetDistance();
       /*the distance value here is calculated internally from lastX and lastY, so it doesnt matter that
       the target isnt in view*/
       //shooter.setMotorsVelPID(distance);
-            
+      //hood.setMotorPosPID(distance, paraV);
+      
       /*if target is out of view, x and y will default to zero, so we use the last values of them
       from before they went out of sight to guess how to move to get the target back in view*/
       lastX = Limelight.getLastX();
@@ -134,7 +115,7 @@ public class TrackTargetStationaryLatency extends CommandBase {
         turret.setMotor(0);
 
         for (int i = 0; i < 2; i++) { //repeated to emphasize to driver
-          DriverStation.reportWarning("LIMELIGHT CANNOT FIND TARGET, REASON UNKNOWN", false);
+          DriverStation.reportWarning("LIMELIGHT CANNOT FIND TARGET, CHECK CONNECTION", false);
         }
       }
       

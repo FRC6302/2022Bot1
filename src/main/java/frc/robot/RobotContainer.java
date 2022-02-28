@@ -7,29 +7,19 @@ package frc.robot;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.Utilities.InterpolatingDouble;
-import frc.robot.Utilities.InterpolatingTreeMap;
 import frc.robot.Utilities.LinearInterpolator;
-import frc.robot.commands.DriveGTA;
 import frc.robot.commands.DriveMec;
 import frc.robot.commands.DriveMecTrackTarget;
-import frc.robot.commands.MissTarget;
 import frc.robot.commands.Move;
 import frc.robot.commands.PPMecanumControllerCommand;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.TestNeo;
+import frc.robot.commands.TrackTargetCenter;
 import frc.robot.commands.TurnTurret;
-import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.MecDriveTrain;
 import frc.robot.subsystems.NavX;
@@ -40,7 +30,6 @@ import frc.robot.subsystems.TouchSensor;
 import frc.robot.subsystems.Turret;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.MecanumControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
@@ -71,6 +60,7 @@ public class RobotContainer {
 
   private Turret turret;
   private TurnTurret turnTurret;
+  private TrackTargetCenter trackTargetCenter;
 
   private Limelight limelight;
 
@@ -119,10 +109,12 @@ public class RobotContainer {
     turnTurret = new TurnTurret(turret);
     turnTurret.addRequirements(turret);
     //turret.setDefaultCommand(turnTurret);
+    trackTargetCenter = new TrackTargetCenter(mecDriveTrain, turret, shooter);
+    //turret.setDefaultCommand(trackTargetCenter);
 
     limelight = new Limelight();
 
-    //navX = new NavX();
+    navX = new NavX();
 
     //pneumaticsTest = new PneumaticsTest();
 
@@ -206,14 +198,18 @@ public class RobotContainer {
       turret.stopMotor();
     });*/
     turnTurretButton.whileHeld(new TurnTurret(turret));
+
+    final JoystickButton zeroTurretButton = new JoystickButton(driverController, Constants.zeroTurretButton);
+    zeroTurretButton.whenPressed(turret::resetEncoder);
+    
     //final JoystickButton LLDistanceButton = new JoystickButton(driverController, Constants.LLDistanceButton);
     //LLDistanceButton.whileHeld(Limelight::getTargetDistance);
 
-    //final JoystickButton zeroYawButton = new JoystickButton(driverController, Constants.zeroYawButton);
-    //zeroYawButton.whenPressed(NavX::zeroGyroYaw); //this is a method reference 
+    final JoystickButton zeroYawButton = new JoystickButton(driverController, Constants.zeroYawButton);
+    zeroYawButton.whenPressed(NavX::zeroGyroYaw); //this is a method reference 
 
-    //final JoystickButton zeroEncButton = new JoystickButton(driverController, Constants.zeroEncButton);
-    //zeroEncButton.whenPressed(mecDriveTrain::resetEncoders);
+    final JoystickButton zeroEncButton = new JoystickButton(driverController, Constants.zeroEncButton);
+    zeroEncButton.whenPressed(mecDriveTrain::resetEncoders);
 
     //final JoystickButton driveNormalButton = new JoystickButton(driverController, Constants.driveNormalButton);
     //driveNormalButton.whileHeld(new DriveMec(mecDriveTrain));

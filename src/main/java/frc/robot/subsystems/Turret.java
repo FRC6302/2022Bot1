@@ -13,6 +13,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -45,7 +46,7 @@ public class Turret extends SubsystemBase {
 
   private boolean needsReset = false;
 
-  //can you say "this" before constructor runs?
+  //can you say "this" before constructor runs???
   //private Trigger resetTrigger = new Trigger(this::getNeedsReset);
 
   /** Creates a new Turret. */
@@ -82,24 +83,27 @@ public class Turret extends SubsystemBase {
   }
 
   public void setMotorPosPID(double tx, double perpV, double distance, double angV){
-    tangentialFeedforward = perpV / distance;
+    tangentialFeedforward = Units.radiansToDegrees(perpV / distance);
     rotationalFeedforward = -angV;
     //double angle = getAngle();
     //double setpoint = angle - tx;
     double pidOutput = posPIDController.calculate(tx, 0);
+    //double pidOutput = 0;
     double turretVolts = simpleFeedforward.calculate(
-      pidOutput/* + tangentialFeedforward + rotationalFeedforward*/);
+      pidOutput + tangentialFeedforward + rotationalFeedforward);
     SmartDashboard.putNumber("turret volts", turretVolts);
     SmartDashboard.putNumber("pid turret", pidOutput);
+    SmartDashboard.putNumber("tangent ff", tangentialFeedforward);
+    SmartDashboard.putNumber("rot ff", rotationalFeedforward);
     motorTurret.setVoltage(turretVolts);
   }
 
-  public void setMotorPosPID(Pose2d robotPose, double perpV, double angV) {
+  public void setMotorPosPID(Pose2d robotPose, double offsetAngle, double perpV, double angV) {
     double estimatedDistance = Constants.goalLocation.getDistance(robotPose.getTranslation());
     tangentialFeedforward = perpV / estimatedDistance;
     rotationalFeedforward = -angV;
 
-    double posSetpoint = 0;
+    double posSetpoint = offsetAngle + Math.atan2(robotPose.getY() - Constants.goalLocation.getY(), robotPose.getX() - Constants.goalLocation.getX());
 
     motorTurret.setVoltage(simpleFeedforward.calculate(posPIDController.calculate(getAngle(), posSetpoint)
       + tangentialFeedforward + rotationalFeedforward));
@@ -187,6 +191,10 @@ public class Turret extends SubsystemBase {
 
   public void stopMotor() {
     motorTurret.set(0);
+  }
+
+  public void resetEncoder() {
+    turretEncoder.reset();
   }
 
 }

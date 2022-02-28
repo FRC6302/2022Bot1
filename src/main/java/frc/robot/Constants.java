@@ -20,8 +20,8 @@ public final class Constants {
     //motors
     public static final int motorL1Value = 1;
     public static final int motorL2Value = 2;
-    public static final int motorR1Value = 3;
-    public static final int motorR2Value = 4;
+    public static final int motorR1Value = 4;
+    public static final int motorR2Value = 3;
     public static final int motorTurret = 0;
     public static final int motorShooterTop = 3;
     public static final int motorShooterBottom = 2;
@@ -104,14 +104,14 @@ public final class Constants {
     public static final double limelightGetInRangeSpeed = 0.2;
     public static final double limelightTargetArea = 0.3;
     //the angle the limelight is pointing relative to the ground, 0 = parallel to floor
-    public static final double limelightMountDegreeOffset = -2; 
-    public static final double limelightLatency = 0.03;
+    public static final double limelightMountDegreeOffset = 21; 
+    public static final double limelightLatency = 0.02; //20 ms
 
     //pneumatics
 
 
     //turret
-    public static final double turretSeekSpeed = 0.2;
+    public static final double turretSeekSpeed = 0.5;
     //public static final double turretCircumference = 0;
     public static final double minTurretAngle = -180;
     public static final double maxTurretAngle = 180;
@@ -121,7 +121,7 @@ public final class Constants {
     public static final double kaTurret = 0.0019;
 
     //public static final double kpTurret = 0.05; 
-    public static final double kpPosTurret = 1.0; //sysid guessed 2
+    public static final double kpPosTurret = 1.5; //sysid guessed 2
     public static final double kpVelTurret = 0.05;
 
     public static final double maxTurretV = 180; //deg/s
@@ -157,11 +157,13 @@ public final class Constants {
 
     //miscellaneous
     public static final double turningRate = 0.5;
-    public static final double deadzone = 0.1;
+    public static final double deadzone = 0.3;
 
     //field
-    public static final double targetDeltaY = 1.549;
+    public static final double targetDeltaY = 0.724;
     public static final Translation2d goalLocation = new Translation2d(0, 0);
+    public static final double goalOutsideRadius = 0.67786;
+    public static final double limelightToRobotCenterDistance = -0.2;
     
     //driver contoller buttons
     public static final int limelightTargetButton = rightBumper;
@@ -169,13 +171,15 @@ public final class Constants {
     public static final int PneumForwardButton = xButton;
     public static final int PneumReverseButton = yButton;
     public static final int PneumToggleButton = rightBumper;
-    public static final int zeroYawButton = yButton;
+    public static final int zeroYawButton = leftBumper;
     public static final int shootButton = aButton;
-    public static final int zeroEncButton = xButton;
+    public static final int zeroEncButton = yButton;
     public static final int driveNormalButton = aButton;
     public static final int missTargetButton = 0;
     public static final int shootButton2 = bButton;
     public static final int turnTurretButton = bButton;
+    public static final int zeroTurretButton = xButton;
+    
     
     
     
