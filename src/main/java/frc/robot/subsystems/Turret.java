@@ -27,7 +27,7 @@ public class Turret extends SubsystemBase {
   private Encoder turretEncoder;
 
   //private ProfiledPIDController pidController = new ProfiledPIDController(Constants.kpTurret, 0, 0, Constants.turretConstraints);
-  private PIDController posPIDController = new PIDController(Constants.kpPosTurret, 0, 0);
+  private PIDController posPIDController = new PIDController(Constants.kpPosTurret, 0, Constants.kdPosTurret);
   private PIDController velPIDController = new PIDController(Constants.kpVelTurret, 0, 0);
 
   private SimpleMotorFeedforward simpleFeedforward = new SimpleMotorFeedforward(
@@ -90,11 +90,11 @@ public class Turret extends SubsystemBase {
     double pidOutput = posPIDController.calculate(tx, 0);
     //double pidOutput = 0;
     double turretVolts = simpleFeedforward.calculate(
-      pidOutput + tangentialFeedforward + rotationalFeedforward);
+      pidOutput /*+ tangentialFeedforward + rotationalFeedforward*/);
     SmartDashboard.putNumber("turret volts", turretVolts);
     SmartDashboard.putNumber("pid turret", pidOutput);
-    SmartDashboard.putNumber("tangent ff", tangentialFeedforward);
-    SmartDashboard.putNumber("rot ff", rotationalFeedforward);
+    //SmartDashboard.putNumber("tangent ff", tangentialFeedforward);
+    //SmartDashboard.putNumber("rot ff", rotationalFeedforward);
     motorTurret.setVoltage(turretVolts);
   }
 
@@ -112,13 +112,15 @@ public class Turret extends SubsystemBase {
   public void setMotorVelPID(double tx, double perpV, double distance, double angV) {
     tangentialFeedforward = perpV / distance;
     rotationalFeedforward = -angV;
-    double setpointVel = -tx / 1 + tangentialFeedforward + rotationalFeedforward;
-    
-    double pid = velPIDController.calculate(getEncVelocity(), setpointVel);
+    double setpointVel = -tx / 1 /*+ tangentialFeedforward + rotationalFeedforward*/;
+    double vel = getEncVelocity();
+    double pid = velPIDController.calculate(vel, setpointVel);
     double ff = simpleFeedforward.calculate(setpointVel);
-    double turretVolts = pid + ff;
-    SmartDashboard.putNumber("turret pid", pid);
-    SmartDashboard.putNumber("turret ff", ff);
+    double turretVolts = ff;
+    //SmartDashboard.putNumber("turret pid", pid);
+    //SmartDashboard.putNumber("turret ff", ff);
+    SmartDashboard.putNumber("turret v", vel);
+    SmartDashboard.putNumber("turret setpoint v", setpointVel);
     SmartDashboard.putNumber("turret volts", turretVolts);
     motorTurret.setVoltage(turretVolts);
   }

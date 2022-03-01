@@ -1,4 +1,24 @@
 {
+  "NetworkTables": {
+    "LiveWindow": {
+      "Turret": {
+        "open": true
+      }
+    },
+    "SmartDashboard": {
+      "open": true
+    },
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[3]": "PIDController",
+      "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/LiveWindow/Ungrouped/Talon SRX [0]": "Motor Controller",
+      "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
+      "/SmartDashboard/field": "Field2d"
+    }
+  },
   "NetworkTables Settings": {
     "mode": "Client",
     "serverTeam": "6302"
@@ -7,12 +27,47 @@
     "Plot <0>": {
       "plots": [
         {
-          "height": 338
+          "height": 155
+        },
+        {
+          "height": 155
         }
       ],
       "window": {
         "visible": false
       }
+    },
+    "Plot <1>": {
+      "plots": [
+        {
+          "axis": [
+            {
+              "autoFit": true
+            }
+          ],
+          "height": 338,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/turret setpoint v"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/turret v"
+            }
+          ]
+        }
+      ]
     }
   }
 }

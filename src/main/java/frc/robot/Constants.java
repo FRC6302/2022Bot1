@@ -78,7 +78,7 @@ public final class Constants {
 
     public static final double kpMecXController = 0.1; //determined through testing
     public static final double kpMecYController = 0.1;
-    public static final double kpMecThetaController = 0.1;
+    public static final double kpMecThetaController = 1.0;
 
     public static final double maxMecRotationVelocity = 5; // rad/s
     public static final double maxMecRotationAccel = 5; // rad/s/s
@@ -116,13 +116,18 @@ public final class Constants {
     public static final double minTurretAngle = -180;
     public static final double maxTurretAngle = 180;
 
-    public static final double ksTurret = 0.56996;
+    /*public static final double ksTurret = 0.56996;
     public static final double kvTurret = 0.0161;
-    public static final double kaTurret = 0.0019;
+    public static final double kaTurret = 0.0019;*/
+    public static final double ksTurret = 0.465;//generated with only one shooter axle on, v r^2=0.942
+    public static final double kvTurret = 0.0165;
+    public static final double kaTurret = 0.0031;
+
 
     //public static final double kpTurret = 0.05; 
-    public static final double kpPosTurret = 1.5; //sysid guessed 2
-    public static final double kpVelTurret = 0.05;
+    public static final double kpPosTurret = 3; //sysid guessed 5.67, 3 works perfect
+    public static final double kdPosTurret = 0; //sysid guessed 2.52, 0 is good
+    public static final double kpVelTurret = 0.05; //sysid said 0.13
 
     public static final double maxTurretV = 180; //deg/s
     public static final double maxTurretA = 90; //deg/s/s

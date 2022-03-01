@@ -209,12 +209,12 @@ public class MecDriveTrain extends SubsystemBase {
     motorR1.setVoltage(simpleFeedforward.calculate(speeds.frontRightMetersPerSecond));
     motorR2.setVoltage(simpleFeedforward.calculate(speeds.rearRightMetersPerSecond));
 
-    SmartDashboard.putNumber("motorL1", simpleFeedforward.calculate(speeds.frontLeftMetersPerSecond));
-    SmartDashboard.putNumber("motorR1", speeds.frontRightMetersPerSecond);
+    //SmartDashboard.putNumber("motorL1", simpleFeedforward.calculate(speeds.frontLeftMetersPerSecond));
+    //SmartDashboard.putNumber("motorR1", speeds.frontRightMetersPerSecond);
 
-    SmartDashboard.putNumber("angv", getAngV());
-    SmartDashboard.putNumber("vx", getVx());
-    SmartDashboard.putNumber("vy", getVy());
+    //SmartDashboard.putNumber("angv", getAngV());
+    //SmartDashboard.putNumber("vx", getVx());
+    //SmartDashboard.putNumber("vy", getVy());
   }
 
   public void stopDrive(){

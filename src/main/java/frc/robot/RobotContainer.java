@@ -100,19 +100,19 @@ public class RobotContainer {
     mecDriveTrain.setDefaultCommand(driveMec);
     //mecDriveTrain.setDefaultCommand(driveMec);
     
-    shooter = new Shooter();
+    //shooter = new Shooter();
     //shoot = new Shoot(shooter, 1, 1);
     //shoot.addRequirements(shooter);
     //shooter.setDefaultCommand(trackTarget);
 
-    turret = new Turret();
-    turnTurret = new TurnTurret(turret);
-    turnTurret.addRequirements(turret);
+    //turret = new Turret();
+    //turnTurret = new TurnTurret(turret);
+    //turnTurret.addRequirements(turret);
     //turret.setDefaultCommand(turnTurret);
-    trackTargetCenter = new TrackTargetCenter(mecDriveTrain, turret, shooter);
+    //trackTargetCenter = new TrackTargetCenter(mecDriveTrain, turret, shooter);
     //turret.setDefaultCommand(trackTargetCenter);
 
-    limelight = new Limelight();
+    //limelight = new Limelight();
 
     navX = new NavX();
 
@@ -190,26 +190,26 @@ public class RobotContainer {
     //final JoystickButton shootButton2 = new JoystickButton(driverController, Constants.shootButton2);
     //shootButton2.whileHeld(new Shoot(shooter, 0.5, 0.5));  
 
-    final JoystickButton turnTurretButton = new JoystickButton(driverController, Constants.turnTurretButton);
+    //final JoystickButton turnTurretButton = new JoystickButton(driverController, Constants.turnTurretButton);
     /*turnTurretButton.whileHeld(() -> {
       turret.setMotorPosPID(Limelight.getLastX(), 0, 2, 0);
     });
     turnTurretButton.whenReleased(() -> {
       turret.stopMotor();
     });*/
-    turnTurretButton.whileHeld(new TurnTurret(turret));
+    //turnTurretButton.whileHeld(new TurnTurret(turret));
 
-    final JoystickButton zeroTurretButton = new JoystickButton(driverController, Constants.zeroTurretButton);
-    zeroTurretButton.whenPressed(turret::resetEncoder);
+    //final JoystickButton zeroTurretButton = new JoystickButton(driverController, Constants.zeroTurretButton);
+    //zeroTurretButton.whenPressed(turret::resetEncoder);
     
     //final JoystickButton LLDistanceButton = new JoystickButton(driverController, Constants.LLDistanceButton);
     //LLDistanceButton.whileHeld(Limelight::getTargetDistance);
 
-    final JoystickButton zeroYawButton = new JoystickButton(driverController, Constants.zeroYawButton);
-    zeroYawButton.whenPressed(NavX::zeroGyroYaw); //this is a method reference 
+    //final JoystickButton zeroYawButton = new JoystickButton(driverController, Constants.zeroYawButton);
+    //zeroYawButton.whenPressed(NavX::zeroGyroYaw); //this is a method reference 
 
-    final JoystickButton zeroEncButton = new JoystickButton(driverController, Constants.zeroEncButton);
-    zeroEncButton.whenPressed(mecDriveTrain::resetEncoders);
+    //final JoystickButton zeroEncButton = new JoystickButton(driverController, Constants.zeroEncButton);
+    //zeroEncButton.whenPressed(mecDriveTrain::resetEncoders);
 
     //final JoystickButton driveNormalButton = new JoystickButton(driverController, Constants.driveNormalButton);
     //driveNormalButton.whileHeld(new DriveMec(mecDriveTrain));
@@ -259,6 +259,8 @@ public class RobotContainer {
             Constants.kpMecThetaController, 0., 0., 
             new Constraints(Constants.maxMecRotationVelocity, Constants.maxMecRotationAccel));
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
+
+    mecDriveTrain.setPose(Robot.testPath.getInitialPose());
 
     PPMecanumControllerCommand mecanumControllerCommand = new PPMecanumControllerCommand(
         Robot.testPath,
