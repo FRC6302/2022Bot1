@@ -90,7 +90,7 @@ public class Turret extends SubsystemBase {
     double pidOutput = posPIDController.calculate(tx, 0);
     //double pidOutput = 0;
     double turretVolts = simpleFeedforward.calculate(
-      pidOutput /*+ tangentialFeedforward + rotationalFeedforward*/);
+      pidOutput + tangentialFeedforward + rotationalFeedforward);
     SmartDashboard.putNumber("turret volts", turretVolts);
     SmartDashboard.putNumber("pid turret", pidOutput);
     //SmartDashboard.putNumber("tangent ff", tangentialFeedforward);

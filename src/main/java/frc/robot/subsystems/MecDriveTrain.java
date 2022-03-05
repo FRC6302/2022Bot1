@@ -6,8 +6,10 @@ package frc.robot.subsystems;
 
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxAlternateEncoder.Type;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -47,6 +49,8 @@ public class MecDriveTrain extends SubsystemBase {
   private Encoder encoderL2;
   private Encoder encoderR1;
   private Encoder encoderR2;
+
+  private RelativeEncoder encTest;
 
   SimpleMotorFeedforward simpleFeedforward = new SimpleMotorFeedforward(
     Constants.ksMecFeedForward, 
@@ -130,6 +134,12 @@ public class MecDriveTrain extends SubsystemBase {
     motorR1.setIdleMode(IdleMode.kBrake);
     motorR2.setIdleMode(IdleMode.kBrake);
 
+    //encTest = motorL2.getAlternateEncoder(Type.kQuadrature, 2048);
+    encTest = motorL2.getAlternateEncoder(2048);
+    //motorL1.getEncoder(encoderType, countsPerRev)
+    //encTest.setPositionConversionFactor(1);
+    //encTest.setVelocityConversionFactor(1);
+    
     motorL1.burnFlash();
     motorL2.burnFlash();
     motorR1.burnFlash();
@@ -141,10 +151,14 @@ public class MecDriveTrain extends SubsystemBase {
     encoderR1 = new Encoder(Constants.encR1A, Constants.encR1B, false, CounterBase.EncodingType.k4X);
     encoderR2 = new Encoder(Constants.encR2A, Constants.encR2B, false, CounterBase.EncodingType.k4X);
 
+
+
     encoderL1.setDistancePerPulse(distancePerPulse);
     encoderL2.setDistancePerPulse(distancePerPulse);
     encoderR1.setDistancePerPulse(distancePerPulse);
     encoderR2.setDistancePerPulse(distancePerPulse);
+
+    
     
     //mecDrive = new MecanumDrive(motorL1, motorL2, motorR1, motorR2);
 
@@ -152,6 +166,8 @@ public class MecDriveTrain extends SubsystemBase {
     //field.getObject("red balls").setPose(new Pose2d());
 
     SmartDashboard.putData("field", field);
+
+
   }
 
   @Override
@@ -161,6 +177,9 @@ public class MecDriveTrain extends SubsystemBase {
     SmartDashboard.putNumber("enc L2", encoderL2.getDistance());
     SmartDashboard.putNumber("enc R1", encoderR1.getDistance());
     SmartDashboard.putNumber("enc R2", encoderR2.getDistance());
+
+    //SmartDashboard.putNumber("test enc pos", encTest.getPosition());
+    //SmartDashboard.putNumber("test enc vel", encTest.getVelocity());
 
     updateOdometry();
 

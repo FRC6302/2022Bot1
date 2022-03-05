@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class ColorSensor extends SubsystemBase {
 
   //change the I2C port below to match the connection of your color sensor to the rio
-  private final I2C.Port i2cPort = I2C.Port.kOnboard;
+  private final I2C.Port i2cPort = I2C.Port.kMXP;
 
   /**
    * A Rev Color Sensor V3 object is constructed with an I2C port as a 

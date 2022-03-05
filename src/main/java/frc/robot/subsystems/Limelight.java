@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -17,7 +18,6 @@ public class Limelight extends SubsystemBase {
   private static double x = 0, y = 0, area = 0, targetFound = 0;
   private static double lastX = 0, lastY = 0;
 
-  private static double distance; //to target
   
   /**
    * Creates a new Limelight.
@@ -102,7 +102,7 @@ public class Limelight extends SubsystemBase {
     accurate due to how the camera works. See other method for more explanation.
     Limelight docs: https://docs.limelightvision.io/en/latest/cs_estimating_distance.html
     */
-    distance = Constants.targetDeltaY / Math.tan(Math.toRadians(lastY + Constants.limelightMountDegreeOffset));
+    double distance = Constants.targetDeltaY / Math.tan(Math.toRadians(lastY + Constants.limelightMountDegreeOffset));
     
     SmartDashboard.putNumber("target distance simple", distance);
     return distance;
@@ -117,11 +117,24 @@ public class Limelight extends SubsystemBase {
     and see here for the formula I used:
     https://www.chiefdelphi.com/t/calculating-distance-to-vision-target/387183/6?u=frc6302
     */
-    distance = Constants.limelightToRobotCenterDistance + Constants.goalOutsideRadius + 
+    /*distance = Constants.limelightToRobotCenterDistance + Constants.goalOutsideRadius + 
       Constants.targetDeltaY / (Math.tan(Math.toRadians(lastY + Constants.limelightMountDegreeOffset))
       * Math.cos(Math.toRadians(lastX)));
 
-    SmartDashboard.putNumber("target distance", distance);
+    SmartDashboard.putNumber("target distance", distance);*/
+    //return distance;
+
+    //law of cosines to still give the same distance when you rotate the turret
+    //we care about the distance to the robot center not to the limelight
+    double rawDistance = Constants.targetDeltaY / (Math.tan(Math.toRadians(lastY + Constants.limelightMountDegreeOffset))
+      * Math.cos(Math.toRadians(lastX)));
+    double radius = Constants.limelightToRobotCenterRadius;
+
+    double distance = Math.sqrt(
+      Math.pow(rawDistance, 2) + Math.pow(radius, 2) 
+      - 2 * rawDistance * radius * Math.cos(Units.degreesToRadians(180 - lastX))
+    );
+    SmartDashboard.putNumber("distance turret corrected", distance);
     return distance;
   }
 }

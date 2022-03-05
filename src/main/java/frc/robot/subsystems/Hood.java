@@ -8,8 +8,10 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -20,10 +22,16 @@ public class Hood extends SubsystemBase {
 
   private Encoder hoodEncoder = new Encoder(Constants.encHoodA, Constants.encHoodB, false);
 
-  private ProfiledPIDController pidController = new ProfiledPIDController(Constants.kpHood, 0, 0, Constants.hoodConstraints);
+  private ProfiledPIDController pidController = new ProfiledPIDController(Constants.kpHood, 0, 0, 
+    new Constraints(Constants.maxHoodV, Constants.maxHoodA));
 
-  private SimpleMotorFeedforward simpleFeedforward = new SimpleMotorFeedforward(
-    Constants.ksHood, Constants.kvHood, Constants.kaHood);
+  /*private SimpleMotorFeedforward simpleFeedforward = new SimpleMotorFeedforward(
+    Constants.ksHood, Constants.kvHood, Constants.kaHood);*/
+
+  //hood works the same as an would in this case. Just corrects for gravity pulling the hood/arm down
+  private ArmFeedforward feedforward = new ArmFeedforward(Constants.ksHood, 
+    Constants.kgHood, Constants.kvHood, Constants.kaHood);
+
   private double paraFeedforward = 0;
 
   private double gearReduction = 10;
@@ -62,7 +70,7 @@ public class Hood extends SubsystemBase {
     double desiredAngle = distanceAngleMap.getInterpolatedValue(distance);
     double pidOutput = pidController.calculate(getAngle(), desiredAngle);
 
-    motorHood.setVoltage(simpleFeedforward.calculate(pidOutput + paraFeedforward));
+    motorHood.setVoltage(feedforward.calculate(getAngleRad(), pidOutput + paraFeedforward));
 
     angleSetpoint = desiredAngle;
   }
@@ -73,7 +81,7 @@ public class Hood extends SubsystemBase {
     double setpointV = pidController.calculate(getAngle(), desiredAngle) + paraFeedforward;
     //this would need two different PID controllers? Waste of time
     motorHood.setVoltage(pidController.calculate(getEncVelocity(), setpointV) 
-      + simpleFeedforward.calculate(setpointV));
+      + feedforward.calculate(getAngleRad(), setpointV));
 
     angleSetpoint = desiredAngle;
   }
@@ -83,7 +91,7 @@ public class Hood extends SubsystemBase {
 
     //use PID to get to certain encoder values
     pidOutput = pidController.calculate(getAngle(), angleDeg);
-    motorHood.setVoltage(simpleFeedforward.calculate(pidOutput));
+    motorHood.setVoltage(feedforward.calculate(getAngleRad(), pidOutput));
   }
 
   public void setMotor(double speed) {
@@ -91,7 +99,11 @@ public class Hood extends SubsystemBase {
   }
 
   public double getAngle() {
-    return hoodEncoder.getDistance();
+    return hoodEncoder.getDistance() + Constants.hoodMinimumAngle;
+  }
+
+  public double getAngleRad() {
+    return Units.degreesToRadians(hoodEncoder.getDistance());
   }
 
   public double getAngleSetpoint() {

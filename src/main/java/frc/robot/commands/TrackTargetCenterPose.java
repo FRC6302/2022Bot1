@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Hood;
@@ -20,7 +21,7 @@ completely brake and then instantly shoot. It won't need time to adjust after st
 public class TrackTargetCenterPose extends CommandBase {
   MecDriveTrain mecDriveTrain;
   Turret turret;
-  Hood hood;
+  //Hood hood;
   Shooter shooter;
 
   //outputs of command
@@ -52,14 +53,14 @@ public class TrackTargetCenterPose extends CommandBase {
 
   
   /** Creates a new TrackTargetStationary. */
-  public TrackTargetCenterPose(MecDriveTrain mecDriveTrain, Turret turret, Hood hood, Shooter shooter) {
+  public TrackTargetCenterPose(MecDriveTrain mecDriveTrain, Turret turret,/* Hood hood,*/ Shooter shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.mecDriveTrain = mecDriveTrain;
     this.turret = turret;
-    this.hood = hood;
+    //this.hood = hood;
     this.shooter = shooter;
 
-    addRequirements(mecDriveTrain, turret, hood, shooter);
+    addRequirements(turret, /*hood,*/ shooter);
   }
 
   // Called when the command is initially scheduled.
@@ -100,10 +101,13 @@ public class TrackTargetCenterPose extends CommandBase {
 
       //hood.setMotorPosPID(estimatedDistance, paraV);
 
-      turret.setMotorPosPID(x, perpV, estimatedDistance, angV); 
+      turret.setMotorPosPID(x, perpV, estimatedDistance, 0); 
 
       //shooter.shootWithInitialBallVelocity(paraV, perpV, desiredHoodAngle, desiredTurretAngle, distance);
       //shooter.setMotorsVelPID(distance);
+
+      SmartDashboard.putNumber("vision pose x", robotPose.getX());
+      SmartDashboard.putNumber("vision pose y", robotPose.getY());
     }
     else //this runs when the target is not in view of camera
     {

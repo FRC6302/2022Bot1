@@ -24,6 +24,8 @@ public class Robot extends TimedRobot {
   public static RobotContainer robotContainer;
 
   public static PathPlannerTrajectory testPath;
+  public static PathPlannerTrajectory moveForwardPath;
+  public static PathPlannerTrajectory sixBallPath;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -40,6 +42,8 @@ public class Robot extends TimedRobot {
     // Since a PathPlannerTrajectory extends the WPILib Trajectory, it can be referenced as one
     // This will load the file "Example Path.path" and generate it with a max velocity of 8 m/s and a max acceleration of 5 m/s^2
     testPath = PathPlanner.loadPath("Test Path", 4, 1);
+    moveForwardPath = PathPlanner.loadPath("Move Forward", 2, 1);
+    sixBallPath = PathPlanner.loadPath("6 ball", 4, 1.5);
 
     NavX.zeroGyroYaw();
 

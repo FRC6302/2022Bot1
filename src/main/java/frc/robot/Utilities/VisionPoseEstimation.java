@@ -10,6 +10,11 @@ public class VisionPoseEstimation {
 
   }
 
+  /*gets the current pose (position) of the robot (relative to goal) based on limelight, turret, and gyro data.
+    Uses polar coordinates and treats the goal and the origin, with distance as the magnitude and theta as
+    the angle between the field x-axis and the goal
+  */
+  //TODO: add argument for current pose and check to see that it isn't too different
   public static Pose2d getGlobalPoseEstimation(double distance, double gyroAngle, double turretAngle, double tx) {
     //normal math conventions
     /*return new Pose2d(
@@ -19,8 +24,8 @@ public class VisionPoseEstimation {
 
     //wpilib conventions
     return new Pose2d(
-      distance * Math.cos(Units.degreesToRadians(gyroAngle + turretAngle - tx - 90)), 
-      distance * Math.sin(Units.degreesToRadians(gyroAngle + turretAngle - tx - 90)),
+      -distance * Math.cos(Units.degreesToRadians(gyroAngle + turretAngle - tx)), 
+      -distance * Math.sin(Units.degreesToRadians(gyroAngle + turretAngle - tx)),
       Rotation2d.fromDegrees(gyroAngle));
   }
 

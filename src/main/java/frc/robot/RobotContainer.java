@@ -5,12 +5,15 @@
 package frc.robot;
 
 
+import com.pathplanner.lib.PathPlannerTrajectory;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.Utilities.LinearInterpolator;
 import frc.robot.commands.DriveMec;
 import frc.robot.commands.DriveMecTrackTarget;
@@ -19,7 +22,9 @@ import frc.robot.commands.PPMecanumControllerCommand;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.TestNeo;
 import frc.robot.commands.TrackTargetCenter;
+import frc.robot.commands.TrackTargetCenterPose;
 import frc.robot.commands.TurnTurret;
+import frc.robot.subsystems.ColorSensor;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.MecDriveTrain;
 import frc.robot.subsystems.NavX;
@@ -61,10 +66,13 @@ public class RobotContainer {
   private Turret turret;
   private TurnTurret turnTurret;
   private TrackTargetCenter trackTargetCenter;
+  private TrackTargetCenterPose trackTargetCenterPose;
 
   private Limelight limelight;
 
   private NavX navX;
+
+  private ColorSensor colorSensor;
 
   private PneumaticsTest pneumaticsTest;
 
@@ -74,6 +82,10 @@ public class RobotContainer {
 
   private NeoTest neoTest;
   private TestNeo testNeo;
+
+  private SendableChooser<String> autonChooser;
+  private final String moveForward = "move forward";
+  private final String sixBall = "6 ball";
 
   //public InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> distanceVelocityMap;
   public LinearInterpolator distanceVelocityMap;
@@ -93,11 +105,10 @@ public class RobotContainer {
     //driveTrain.setDefaultCommand(driveGTA);
 
     mecDriveTrain = new MecDriveTrain();
-    driveMec = new DriveMec(mecDriveTrain);
-    driveMec.addRequirements(mecDriveTrain);
+    //driveMec = new DriveMec(mecDriveTrain);
+    //driveMec.addRequirements(mecDriveTrain);
     //driveMecTrackTarget = new DriveMecTrackTarget(mecDriveTrain);
     //driveMecTrackTarget.addRequirements(mecDriveTrain);
-    mecDriveTrain.setDefaultCommand(driveMec);
     //mecDriveTrain.setDefaultCommand(driveMec);
     
     //shooter = new Shooter();
@@ -109,12 +120,14 @@ public class RobotContainer {
     //turnTurret = new TurnTurret(turret);
     //turnTurret.addRequirements(turret);
     //turret.setDefaultCommand(turnTurret);
-    //trackTargetCenter = new TrackTargetCenter(mecDriveTrain, turret, shooter);
-    //turret.setDefaultCommand(trackTargetCenter);
+    //trackTargetCenterPose = new TrackTargetCenterPose(mecDriveTrain, turret, shooter);
+    //turret.setDefaultCommand(trackTargetCenterPose);
 
     //limelight = new Limelight();
 
     navX = new NavX();
+
+    colorSensor = new ColorSensor();
 
     //pneumaticsTest = new PneumaticsTest();
 
@@ -123,10 +136,10 @@ public class RobotContainer {
     //move = new Move(driveTrain);
     //move.addRequirements(driveTrain);
 
-    /*neoTest = new NeoTest();
-    testNeo = new TestNeo(neoTest);
-    testNeo.addRequirements(neoTest);
-    neoTest.setDefaultCommand(testNeo);*/
+    neoTest = new NeoTest();
+    //testNeo = new TestNeo(neoTest);
+    //testNeo.addRequirements(neoTest);
+    //neoTest.setDefaultCommand(testNeo); */
 
     //distanceVelocityMap = new InterpolatingTreeMap<>(100);
     distanceVelocityMap = new LinearInterpolator(distanceVelocityData);
@@ -135,6 +148,10 @@ public class RobotContainer {
     //TODO give more values and test output with smart dashboard
     //distanceVelocityMap.put(new IntesrpolatingDouble(10.), new InterpolatingDouble(16.)); 
     //distanceVelocityMap.put(new InterpolatingDouble(11.), new InterpolatingDouble(16.5)); 
+
+    autonChooser = new SendableChooser<>();
+    autonChooser.setDefaultOption(moveForward, moveForward);
+    autonChooser.addOption(sixBall, sixBall);
 
     // Configure the button bindings
     configureButtonBindings();
@@ -190,14 +207,14 @@ public class RobotContainer {
     //final JoystickButton shootButton2 = new JoystickButton(driverController, Constants.shootButton2);
     //shootButton2.whileHeld(new Shoot(shooter, 0.5, 0.5));  
 
-    //final JoystickButton turnTurretButton = new JoystickButton(driverController, Constants.turnTurretButton);
+    final JoystickButton turnTurretButton = new JoystickButton(driverController, Constants.turnTurretButton);
     /*turnTurretButton.whileHeld(() -> {
       turret.setMotorPosPID(Limelight.getLastX(), 0, 2, 0);
     });
     turnTurretButton.whenReleased(() -> {
       turret.stopMotor();
     });*/
-    //turnTurretButton.whileHeld(new TurnTurret(turret));
+    turnTurretButton.whileHeld(new TurnTurret(turret));
 
     //final JoystickButton zeroTurretButton = new JoystickButton(driverController, Constants.zeroTurretButton);
     //zeroTurretButton.whenPressed(turret::resetEncoder);
@@ -233,11 +250,43 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+    //return null;
+    String pathStr = autonChooser.getSelected();
+    PathPlannerTrajectory trajectory = null;
+
+    /*if (pathStr == null) {
+      return new InstantCommand();
+    }
+    else {
+      if (pathStr == moveForward) {
+        trajectory = Robot.moveForwardPath;
+        //return getMecControllerCommand(trajectory);
+      }
+      else if (pathStr == sixBall) {
+        trajectory = Robot.sixBallPath;
+
+      }
+    }*/
+
+    switch (pathStr) {
+      case moveForward:  
+        trajectory = Robot.moveForwardPath;
+        //return getMecControllerCommand(trajectory).alongWith(parallel);
+        break;
+      case sixBall:
+        trajectory = Robot.sixBallPath;
+        break;
+      default:
+        return new InstantCommand();
+    }
+
+    return getMecControllerCommand(trajectory);
+
     // An ExampleCommand will run in autonomous
-    return getMecControllerCommand();
+    //return getMecControllerCommand();
   }
 
-  public Command getMecControllerCommand() {
+  public Command getMecControllerCommand(PathPlannerTrajectory trajectory) {
     // Create config for trajectory
     /*TrajectoryConfig config =
         new TrajectoryConfig(Constants.maxMecSpeed,Constants.maxMecAcceleration)
@@ -263,7 +312,7 @@ public class RobotContainer {
     mecDriveTrain.setPose(Robot.testPath.getInitialPose());
 
     PPMecanumControllerCommand mecanumControllerCommand = new PPMecanumControllerCommand(
-        Robot.testPath,
+        trajectory,
         mecDriveTrain::getPoseEstimate,
         //TODO go to WPILIB source code for mecControlCommand and see how they use this feedforward
         //and then use that in the mecDriveTrain.setSpeeds() method
