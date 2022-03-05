@@ -67,11 +67,14 @@ public final class Constants {
   public static final int motorL2Value = 2;
   public static final int motorR1Value = 4;
   public static final int motorR2Value = 3;
+
   public static final int motorTurret = 0;
   public static final int motorShooterTop = 3;
   public static final int motorShooterBottom = 2;
   public static final int motorHood = 93;
   public static final int motorNeoTest = 1;
+  public static final int motorRightClimber = 0;
+  public static final int motorLeftClimber = 0;
 
   //encoders - DIO ports on rio or navx
   public static final int encL1A = 0;
@@ -82,6 +85,7 @@ public final class Constants {
   public static final int encR1B = 7;
   public static final int encR2A = 8;
   public static final int encR2B = 9;
+
   public static final int encTestA = navxDIO8;
   public static final int encTestB = navxDIO9;
   
@@ -90,6 +94,11 @@ public final class Constants {
   
   public static final int encHoodA = 90;
   public static final int encHoodB = 90;
+  
+  public static final int topShooterEncA = 7;
+  public static final int topShooterEncB = 8;
+  public static final int bottomShooterEncA = 0;
+  public static final int bottomShooterEncB = 1;
   
   //controller ports (where they plug in at) - laptop USB
   public static final int driverControllerPort = 0;
@@ -168,7 +177,6 @@ public final class Constants {
   
   
   //hood
-
   public static final double ksHood = 0.1; //from sysid
   public static final double kvHood = 0.1;
   public static final double kaHood = 0.1;
@@ -185,14 +193,21 @@ public final class Constants {
   //shooter
   public static final double shootSpeed = 0.65;
   public static final double defaultShooterSpeed = 0.8;
-  public static final double maxShooterV = 0;
-  public static final double maxShooterA = 0;
+  public static final double maxShooterV = 15; // m/s
+  public static final double maxShooterA = 5;
   public static final double kpTopShooter = 0;
   public static final double kpBottomShooter = 0;
-  public static final int topShooterEncA = 7;
-  public static final int topShooterEncB = 8;
-  public static final int bottomShooterEncA = 0;
-  public static final int bottomShooterEncB = 1;
+  
+
+  //climber
+  public static final double maxClimbV = 0.5; // m/s?
+  public static final double maxClimbA = 0.5;
+  public static final double kpPosClimb = 0.1;
+  
+  public static final double ksClimb = 0; //from sysid
+  public static final double kvClimb = 0;
+  public static final double kaClimb = 0;
+
 
   //move command
   public static final double leftMotorsMoveSpeed = 0.1;
@@ -225,6 +240,8 @@ public final class Constants {
   public static final int shootButton2 = bButton;
   public static final int turnTurretButton = bButton;
   public static final int zeroTurretButton = xButton;
+
+
 
   
     
