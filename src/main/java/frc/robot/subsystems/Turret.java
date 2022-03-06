@@ -45,6 +45,8 @@ public class Turret extends SubsystemBase {
   private double distancePerPulse = (360. / 2048.) / gearReduction;
 
   private boolean needsReset = false;
+  private boolean resettingForward = false;
+  private boolean resettingBackward = false;
 
   //can you say "this" before constructor runs???
   //private Trigger resetTrigger = new Trigger(this::getNeedsReset);
@@ -144,14 +146,23 @@ public class Turret extends SubsystemBase {
   }
   
 
-  //makes sure that the turret go past its limits
+  //makes sure that the turret doesn't go past its limits
   private void setVoltageBounded(double volts, double turretAngle) {
-    if (getAngle() <= Constants.minTurretAngle) {
-      motorTurret.setVoltage(-1);
+    if (turretAngle <= Constants.minTurretAngle || resettingForward) {
+      resettingForward = true;
+      motorTurret.setVoltage(Constants.turretResetVoltage);
+      if (turretAngle >= Constants.minTurretAngle + 300) {
+        resettingForward = false;
+      }
       return;
     }
-    else if (getAngle() >= Constants.maxTurretAngle) {
-      motorTurret.setVoltage(1);
+    else if (turretAngle >= Constants.maxTurretAngle || resettingBackward) {
+      resettingBackward = true;
+      motorTurret.setVoltage(-Constants.turretResetVoltage);
+      if (turretAngle <= Constants.maxTurretAngle - 300) {
+        resettingBackward = false;
+      }
+      return;
     }
     else {
       motorTurret.setVoltage(volts);

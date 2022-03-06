@@ -157,6 +157,7 @@ public final class Constants {
   //public static final double turretCircumference = 0;
   public static final double minTurretAngle = -180;
   public static final double maxTurretAngle = 180;
+  public static final double turretResetVoltage = 2;
 
   /*public static final double ksTurret = 0.56996;
   public static final double kvTurret = 0.0161;
@@ -240,6 +241,7 @@ public final class Constants {
   public static final int shootButton2 = bButton;
   public static final int turnTurretButton = bButton;
   public static final int zeroTurretButton = xButton;
+  
 
 
 

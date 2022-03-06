@@ -186,6 +186,10 @@ public class MecDriveTrain extends SubsystemBase {
     SmartDashboard.putNumber("pose x", getPoseEstimate().getX());
     SmartDashboard.putNumber("pose y", getPoseEstimate().getY());
 
+    SmartDashboard.putNumber("mecanum vx", getVx());
+    SmartDashboard.putNumber("mecanum vy", getVy());
+    SmartDashboard.putNumber("mecanum ang v", getAngV());
+
     //used for converting robot velocity into target-relative velocity
     curChassisSpeeds = kinematics.toChassisSpeeds(getCurrentWheelSpeeds());
     

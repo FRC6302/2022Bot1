@@ -105,11 +105,11 @@ public class RobotContainer {
     //driveTrain.setDefaultCommand(driveGTA);
 
     mecDriveTrain = new MecDriveTrain();
-    //driveMec = new DriveMec(mecDriveTrain);
-    //driveMec.addRequirements(mecDriveTrain);
+    driveMec = new DriveMec(mecDriveTrain);
+    driveMec.addRequirements(mecDriveTrain);
     //driveMecTrackTarget = new DriveMecTrackTarget(mecDriveTrain);
     //driveMecTrackTarget.addRequirements(mecDriveTrain);
-    //mecDriveTrain.setDefaultCommand(driveMec);
+    mecDriveTrain.setDefaultCommand(driveMec);
     
     //shooter = new Shooter();
     //shoot = new Shoot(shooter, 1, 1);
@@ -127,7 +127,7 @@ public class RobotContainer {
 
     navX = new NavX();
 
-    colorSensor = new ColorSensor();
+    //colorSensor = new ColorSensor();
 
     //pneumaticsTest = new PneumaticsTest();
 
@@ -136,7 +136,7 @@ public class RobotContainer {
     //move = new Move(driveTrain);
     //move.addRequirements(driveTrain);
 
-    neoTest = new NeoTest();
+    //neoTest = new NeoTest();
     //testNeo = new TestNeo(neoTest);
     //testNeo.addRequirements(neoTest);
     //neoTest.setDefaultCommand(testNeo); */

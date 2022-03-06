@@ -52,11 +52,12 @@ public class NavX extends SubsystemBase{
 
 
     SmartDashboard.putNumber("gyroYaw", getGyroYaw());
-    SmartDashboard.putNumber("gyroAccelX", getGyroAccelX());
-    SmartDashboard.putNumber("gyroAccelY", getGyroAccelY());
-    SmartDashboard.putNumber("gyroJerkX", jerkX);
-    SmartDashboard.putBoolean("gyroIsCalibrating", gyroIsCalibrating());
-    SmartDashboard.putBoolean("CollisionDetected", collisionDetected);
+    SmartDashboard.putNumber("gyroAngV", getGyroAngV());
+    //SmartDashboard.putNumber("gyroAccelX", getGyroAccelX());
+    //SmartDashboard.putNumber("gyroAccelY", getGyroAccelY());
+    //SmartDashboard.putNumber("gyroJerkX", jerkX);
+    //SmartDashboard.putBoolean("gyroIsCalibrating", gyroIsCalibrating());
+    //SmartDashboard.putBoolean("CollisionDetected", collisionDetected);
 
   }
 
@@ -77,6 +78,10 @@ public class NavX extends SubsystemBase{
 
   public static double getGyroAccelY(){
     return gyro.getWorldLinearAccelY();
+  }
+
+  public static double getGyroAngV() {
+    return gyro.getRate();
   }
 
   public static void zeroGyroYaw() {
