@@ -101,7 +101,7 @@ public class TrackTargetCenterPose extends CommandBase {
 
       //hood.setMotorPosPID(estimatedDistance, paraV);
 
-      turret.setMotorPosPID(x, perpV, estimatedDistance, 0); 
+      turret.setMotorPosPID(robotPose, 0, perpV, 0); 
 
       //shooter.shootWithInitialBallVelocity(paraV, perpV, desiredHoodAngle, desiredTurretAngle, distance);
       //shooter.setMotorsVelPID(distance);

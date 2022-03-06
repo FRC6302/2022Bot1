@@ -102,7 +102,7 @@ public class Limelight extends SubsystemBase {
     accurate due to how the camera works. See other method for more explanation.
     Limelight docs: https://docs.limelightvision.io/en/latest/cs_estimating_distance.html
     */
-    double distance = Constants.targetDeltaY / Math.tan(Math.toRadians(lastY + Constants.limelightMountDegreeOffset));
+    double distance = Constants.limelightToTargetHeight / Math.tan(Math.toRadians(lastY + Constants.limelightMountDegreeOffset));
     
     SmartDashboard.putNumber("target distance simple", distance);
     return distance;
@@ -126,7 +126,7 @@ public class Limelight extends SubsystemBase {
 
     //law of cosines to still give the same distance when you rotate the turret
     //we care about the distance to the robot center not to the limelight
-    double rawDistance = Constants.targetDeltaY / (Math.tan(Math.toRadians(lastY + Constants.limelightMountDegreeOffset))
+    double rawDistance = Constants.limelightToTargetHeight / (Math.tan(Math.toRadians(lastY + Constants.limelightMountDegreeOffset))
       * Math.cos(Math.toRadians(lastX)));
     double radius = Constants.limelightToRobotCenterRadius;
 

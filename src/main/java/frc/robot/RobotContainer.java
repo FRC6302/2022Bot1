@@ -207,14 +207,14 @@ public class RobotContainer {
     //final JoystickButton shootButton2 = new JoystickButton(driverController, Constants.shootButton2);
     //shootButton2.whileHeld(new Shoot(shooter, 0.5, 0.5));  
 
-    final JoystickButton turnTurretButton = new JoystickButton(driverController, Constants.turnTurretButton);
+    //final JoystickButton turnTurretButton = new JoystickButton(driverController, Constants.turnTurretButton);
     /*turnTurretButton.whileHeld(() -> {
       turret.setMotorPosPID(Limelight.getLastX(), 0, 2, 0);
     });
     turnTurretButton.whenReleased(() -> {
       turret.stopMotor();
     });*/
-    turnTurretButton.whileHeld(new TurnTurret(turret));
+    //turnTurretButton.whileHeld(new TurnTurret(turret));
 
     //final JoystickButton zeroTurretButton = new JoystickButton(driverController, Constants.zeroTurretButton);
     //zeroTurretButton.whenPressed(turret::resetEncoder);
@@ -304,10 +304,11 @@ public class RobotContainer {
             new Pose2d(3, 0, new Rotation2d(0)),
             config);*/
     
-    ProfiledPIDController thetaController = new ProfiledPIDController(
-            Constants.kpMecThetaController, 0., 0., 
-            new Constraints(Constants.maxMecRotationVelocity, Constants.maxMecRotationAccel));
+    ProfiledPIDController thetaController = new ProfiledPIDController(Constants.kpMecThetaController, 0., 0., 
+      new Constraints(Constants.maxMecRotationVelocity, Constants.maxMecRotationAccel));
+      
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
+    thetaController.reset(mecDriveTrain.getPoseEstimate().getRotation().getDegrees());
 
     mecDriveTrain.setPose(Robot.testPath.getInitialPose());
 

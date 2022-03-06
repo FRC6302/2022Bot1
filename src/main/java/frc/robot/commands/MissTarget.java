@@ -74,7 +74,7 @@ public class MissTarget extends CommandBase {
       hood.setMotorPosPID(distance, paraV);
       turret.setMotor(turretAdjust);
 
-      shooter.shootWithInitialBallVelocity(paraV, perpV, desiredHoodAngle, desiredTurretAngle, distance);
+      //shooter.shootWithInitialBallVelocity(paraV, perpV, desiredHoodAngle, desiredTurretAngle, distance);
     }
     else //this runs when the target is not in view of camera
     {

@@ -188,7 +188,7 @@ public final class Constants {
   public static final double maxHoodV = Units.degreesToRadians(30); // deg/s to rad/s
   public static final double maxHoodA = Units.degreesToRadians(10); // deg/s/s to rad/s/s
   
-  public static final double hoodMinimumAngle = Units.degreesToRadians(20);
+  public static final double hoodMinimumAngle = Units.degreesToRadians(0);
   
 
   //shooter
@@ -220,12 +220,13 @@ public final class Constants {
   public static final double deadzone = 0.3;
 
   //field
-  public static final double targetDeltaY = 0.724;
+  //public static final double targetHeightInches = 104;
   public static final Translation2d goalLocation = new Translation2d(0, 0);
   public static final double goalOutsideRadius = 0.67786;
 
   //robot construction
   public static final double limelightToRobotCenterRadius = Units.inchesToMeters(6);
+  public static final double limelightToTargetHeight = Units.inchesToMeters(104 - 30);
   
   //driver contoller buttons
   public static final int limelightTargetButton = rightBumper;

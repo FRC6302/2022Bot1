@@ -7,20 +7,29 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMax.SoftLimitDirection;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Utilities.LinearInterpolator;
 
 public class Hood extends SubsystemBase {
-  WPI_TalonSRX motorHood = new WPI_TalonSRX(Constants.motorHood);
+  //private WPI_TalonSRX motorHood = new WPI_TalonSRX(Constants.motorHood);
+  //private Encoder hoodEncoder = new Encoder(Constants.encHoodA, Constants.encHoodB, false);
 
-  private Encoder hoodEncoder = new Encoder(Constants.encHoodA, Constants.encHoodB, false);
+  private CANSparkMax motorHood = new CANSparkMax(Constants.motorHood, MotorType.kBrushless);
+  private RelativeEncoder encHood;
+  
 
   private ProfiledPIDController pidController = new ProfiledPIDController(Constants.kpHood, 0, 0, 
     new Constraints(Constants.maxHoodV, Constants.maxHoodA));
@@ -41,20 +50,38 @@ public class Hood extends SubsystemBase {
 
   //360 degrees
   //8192 for rev through bore encoder
-  private double distancePerPulse = (360 / 8192) / gearReduction;
+  private double distancePerPulse = (360 / 2048) / gearReduction;
 
   public LinearInterpolator distanceAngleMap;
   private double[][] distanceAngleData = { 
     {1.0, 80.0}, //{distance in meters, angle in degrees} format
     {3.0, 65.0}, 
-    {10, 50.0} };
+    {10, 50.0} 
+  };
 
   /** Creates a new Hood. */
   public Hood() {
-    motorHood.setNeutralMode(NeutralMode.Brake);
+    /*motorHood.setNeutralMode(NeutralMode.Brake);
     motorHood.setInverted(false);
     
-    hoodEncoder.setDistancePerPulse(distancePerPulse);
+    hoodEncoder.setDistancePerPulse(distancePerPulse);*/
+
+    motorHood.restoreFactoryDefaults();
+    motorHood.setIdleMode(IdleMode.kBrake);
+    motorHood.setInverted(false);
+
+    encHood = motorHood.getEncoder();
+    //the position one is unit per rotation and the velocity one is unit per RPM
+    encHood.setPositionConversionFactor(360);
+    encHood.setVelocityConversionFactor(360 * 60);
+
+    motorHood.setSoftLimit(SoftLimitDirection.kForward, 90);
+    motorHood.setSoftLimit(SoftLimitDirection.kReverse, 0);
+
+    motorHood.enableSoftLimit(SoftLimitDirection.kForward, true);
+    motorHood.enableSoftLimit(SoftLimitDirection.kReverse, true);
+
+    motorHood.burnFlash();
 
     distanceAngleMap = new LinearInterpolator(distanceAngleData);
   }
@@ -62,6 +89,7 @@ public class Hood extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("hood enc pos", getAngle());
   }
   
   //add boolean argument for whether scoring or missing?
@@ -95,15 +123,16 @@ public class Hood extends SubsystemBase {
   }
 
   public void setMotor(double speed) {
-    motorHood.set(ControlMode.PercentOutput, speed);
+    //motorHood.set(ControlMode.PercentOutput, speed);
+    motorHood.set(speed);
   }
 
   public double getAngle() {
-    return hoodEncoder.getDistance() + Constants.hoodMinimumAngle;
+    return encHood.getPosition() + Constants.hoodMinimumAngle;
   }
 
   public double getAngleRad() {
-    return Units.degreesToRadians(hoodEncoder.getDistance());
+    return Units.degreesToRadians(getAngle());
   }
 
   public double getAngleSetpoint() {
@@ -111,6 +140,14 @@ public class Hood extends SubsystemBase {
   }
 
   public double getEncVelocity() {
-    return hoodEncoder.getRate();
+    return encHood.getVelocity();
+  }
+
+  public double getEncVelocityRad() {
+    return Units.degreesToRadians(getEncVelocity());
+  }
+
+  public void stopMotor() {
+    motorHood.set(0);
   }
 }

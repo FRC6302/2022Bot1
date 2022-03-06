@@ -143,7 +143,7 @@ public class Shooter extends SubsystemBase {
   }
 
 
-  public void shootWithInitialBallVelocity(double paraV, double perpV, double hoodAngle, double offsetAngle, double distance) {
+  /*public void shootWithInitialBallVelocity(double paraV, double perpV, double hoodAngle, double offsetAngle, double distance) {
     //offsetAngle = 10 * perpV;
     
     double shotInitV = Math.pow(Math.pow(perpV / Math.tan(offsetAngle) + paraV, 2) 
@@ -152,7 +152,7 @@ public class Shooter extends SubsystemBase {
       * Math.cos(hoodAngle) * Math.sin(hoodAngle)), 0.5);
 
     setMotors(shotInitV / 10);
-  }
+  }*/
 
   /*public void setMotorsVelPID(double distance) {
     double setpointV = distanceVelocityMap.getInterpolatedValue(distance);

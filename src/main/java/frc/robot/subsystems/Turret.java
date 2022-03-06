@@ -63,6 +63,8 @@ public class Turret extends SubsystemBase {
 
     turretEncoder = new Encoder(Constants.encTurretA, Constants.encTurretB, false);
     turretEncoder.setDistancePerPulse(distancePerPulse);
+
+    posPIDController.enableContinuousInput(-180, 180);
   }
 
   @Override
@@ -71,7 +73,9 @@ public class Turret extends SubsystemBase {
     //tangentialFeedforward = 
 
     SmartDashboard.putNumber("turret enc pos", getAngle());
+    SmartDashboard.putNumber("turret constrained angle", constrainAngle(getAngle()));
     SmartDashboard.putNumber("turret enc vel", getEncVelocity());
+
 
     ///resetTrigger.whileActiveOnce(new ResetTurret(this, 0., false), false;)
 
@@ -97,22 +101,30 @@ public class Turret extends SubsystemBase {
     SmartDashboard.putNumber("pid turret", pidOutput);
     //SmartDashboard.putNumber("tangent ff", tangentialFeedforward);
     //SmartDashboard.putNumber("rot ff", rotationalFeedforward);
-    motorTurret.setVoltage(turretVolts);
+    setVoltageBounded(turretVolts);
   }
 
   public void setMotorPosPID(Pose2d robotPose, double offsetAngle, double perpV, double angV) {
     double estimatedDistance = Constants.goalLocation.getDistance(robotPose.getTranslation());
-    tangentialFeedforward = perpV / estimatedDistance;
+    /*feedforwards based on chassis movement to make turret react better.
+    We already know which way it needs to turn if the chassis moving a certain direction, so we can help
+    it along and then the pid can do the rest*/
+    tangentialFeedforward = Units.radiansToDegrees(perpV / estimatedDistance);
     rotationalFeedforward = -angV;
 
-    double posSetpoint = offsetAngle + Math.atan2(robotPose.getY() - Constants.goalLocation.getY(), robotPose.getX() - Constants.goalLocation.getX());
+    /*the arctan part gives the angle to the target relative to the field but you have to subtract the pose
+    heading (aka gyro angle) so you know what angle to send the turret to relative to the front of the robot*/
+    double posSetpoint = offsetAngle + Units.radiansToDegrees(Math.atan2(
+      robotPose.getY() - Constants.goalLocation.getY(), robotPose.getX() - Constants.goalLocation.getX()))
+      - robotPose.getRotation().getDegrees();
 
-    motorTurret.setVoltage(simpleFeedforward.calculate(posPIDController.calculate(getAngle(), posSetpoint)
-      + tangentialFeedforward + rotationalFeedforward));
+    //constraning both the angles so that turret goes to the closest correct angle instead of going all the way around
+    setVoltageBounded(simpleFeedforward.calculate(posPIDController.calculate(constrainAngle(getAngle()),
+      constrainAngle(posSetpoint)) + tangentialFeedforward + rotationalFeedforward));
   }
 
   public void setMotorVelPID(double tx, double perpV, double distance, double angV) {
-    tangentialFeedforward = perpV / distance;
+    tangentialFeedforward = Units.radiansToDegrees(perpV / distance);
     rotationalFeedforward = -angV;
     double setpointVel = -tx / 1 /*+ tangentialFeedforward + rotationalFeedforward*/;
     double vel = getEncVelocity();
@@ -127,12 +139,12 @@ public class Turret extends SubsystemBase {
     motorTurret.setVoltage(turretVolts);
   }
 
-  public void setMotorVelPID(Pose2d robotPose, double perpV, double angV) {
+  public void setMotorVelPID(Pose2d robotPose, double offsetAngle, double perpV, double angV, double gyroYaw) {
     double estimatedDistance = Constants.goalLocation.getDistance(robotPose.getTranslation());
-    tangentialFeedforward = perpV / estimatedDistance;
+    tangentialFeedforward = Units.radiansToDegrees(perpV / estimatedDistance);
     rotationalFeedforward = -angV;
 
-    double setpointVel = robotPose.getRotation().getDegrees();
+    double setpointVel = tangentialFeedforward + rotationalFeedforward;
 
     motorTurret.setVoltage(velPIDController.calculate(getEncVelocity(), setpointVel) 
       + simpleFeedforward.calculate(setpointVel));
@@ -180,10 +192,15 @@ public class Turret extends SubsystemBase {
     return turretEncoder.getDistance();
   }
 
-  //returns the angle but between -360 and 360 ???
-  public double getAngleBounded() {
+  //returns the turret angle but between -180 and 180
+  public double constrainAngle(double rawAngle) {
     //TODO: test this
-    return turretEncoder.getDistance() % 360;
+    double angle = (rawAngle + 180.0) % 360.0;
+    if (angle < 0) {
+      angle += 360;
+    }
+    return angle - 180;
+    
   }
 
   public Rotation2d getRotation2d() {
