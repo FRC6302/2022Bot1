@@ -225,7 +225,7 @@ public class MecDriveTrain extends SubsystemBase {
     motorR2.setVoltage(simpleFeedforward.calculate(speeds.rearRightMetersPerSecond)
       + pidController.calculate(getEncR2Rate(), speeds.rearRightMetersPerSecond));*/
 
-    /*motorL1.setVoltage(speeds.frontLeftMetersPerSecond);
+    /*motorL1.setVoltage(speeds.frontLeftMetersPerSecond); hey
     motorL2.setVoltage(speeds.rearLeftMetersPerSecond);
     motorR1.setVoltage(speeds.frontRightMetersPerSecond);
     motorR2.setVoltage(speeds.rearRightMetersPerSecond);*/
@@ -243,7 +243,7 @@ public class MecDriveTrain extends SubsystemBase {
     //SmartDashboard.putNumber("vy", getVy());
   }
 
-  public void stopDrive(){
+  public void stopDrive(){ 
     /*motorL1.set(ControlMode.PercentOutput, 0);
     motorL2.set(ControlMode.PercentOutput, 0);
     motorR1.set(ControlMode.PercentOutput, 0);
