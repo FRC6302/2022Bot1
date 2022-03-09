@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 //subsystem for the limelight camera on our robot. Used for vision tracking and stuff
-public class Limelight extends SubsystemBase {
+public class LimelightGoal extends SubsystemBase {
   private static double x = 0, y = 0, area = 0, targetFound = 0;
   private static double lastX = 0, lastY = 0;
 
@@ -22,7 +22,7 @@ public class Limelight extends SubsystemBase {
   /**
    * Creates a new Limelight.
    */
-  public Limelight() {
+  public LimelightGoal() {
     try {
       //camera controls
       NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(0);
@@ -50,10 +50,10 @@ public class Limelight extends SubsystemBase {
     
     //read values periodically
     //maybe change default value to return the last x? Then you dont need lastX variable
-    Limelight.x = tx.getDouble(0.0); //ranges from -29.8 to 29.8 degrees for LL2
-    Limelight.y = ty.getDouble(0.0); //ranges from -24.85 to 24.85 degrees for LL2
+    LimelightGoal.x = tx.getDouble(0.0); //ranges from -29.8 to 29.8 degrees for LL2
+    LimelightGoal.y = ty.getDouble(0.0); //ranges from -24.85 to 24.85 degrees for LL2
     double area = ta.getDouble(0.0); //ranges from 0 to 100% of image
-    Limelight.targetFound = tv.getDouble(0.0);
+    LimelightGoal.targetFound = tv.getDouble(0.0);
 
     if (getTargetFound()) {
       lastX = x;
@@ -102,7 +102,7 @@ public class Limelight extends SubsystemBase {
     accurate due to how the camera works. See other method for more explanation.
     Limelight docs: https://docs.limelightvision.io/en/latest/cs_estimating_distance.html
     */
-    double distance = Constants.limelightToTargetHeight / Math.tan(Math.toRadians(lastY + Constants.limelightMountDegreeOffset));
+    double distance = Constants.limelightToTargetHeight / Math.tan(Math.toRadians(lastY + Constants.limelightGoalMountDegreeOffset));
     
     SmartDashboard.putNumber("target distance simple", distance);
     return distance;
@@ -126,7 +126,7 @@ public class Limelight extends SubsystemBase {
 
     //law of cosines to still give the same distance when you rotate the turret
     //we care about the distance to the robot center not to the limelight
-    double rawDistance = Constants.limelightToTargetHeight / (Math.tan(Math.toRadians(lastY + Constants.limelightMountDegreeOffset))
+    double rawDistance = Constants.limelightToTargetHeight / (Math.tan(Math.toRadians(lastY + Constants.limelightGoalMountDegreeOffset))
       * Math.cos(Math.toRadians(lastX)));
     double radius = Constants.limelightToRobotCenterRadius;
 

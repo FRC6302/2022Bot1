@@ -30,7 +30,6 @@ public class Hood extends SubsystemBase {
   private CANSparkMax motorHood = new CANSparkMax(Constants.motorHood, MotorType.kBrushless);
   private RelativeEncoder encHood;
   
-
   private ProfiledPIDController pidController = new ProfiledPIDController(Constants.kpHood, 0, 0, 
     new Constraints(Constants.maxHoodV, Constants.maxHoodA));
 
@@ -43,20 +42,27 @@ public class Hood extends SubsystemBase {
 
   private double paraFeedforward = 0;
 
-  private double gearReduction = 10;
 
   private double angleSetpoint = 0;
   private double pidOutput = 0;
 
+  //gear ratio between encoder and hood. The track is 477 and the part that moves is 24 teeth
+  double gearReduction = 477.0 / 24.0;
+
   //360 degrees
   //8192 for rev through bore encoder
-  private double distancePerPulse = (360 / 2048) / gearReduction;
+  //10 is gear reduction
+  //private double distancePerPulse = (360 / 2048) / 10;
 
   public LinearInterpolator distanceAngleMap;
   private double[][] distanceAngleData = { 
-    {1.0, 80.0}, //{distance in meters, angle in degrees} format
-    {3.0, 65.0}, 
-    {10, 50.0} 
+    {1, Units.degreesToRadians(80)}, //{distance in meters, angle in degrees} format
+    {3, Units.degreesToRadians(75)}, 
+    {5, Units.degreesToRadians(70)},
+    {7, Units.degreesToRadians(65)},
+    {9, Units.degreesToRadians(60)},
+    {11, Units.degreesToRadians(55)},
+    {13, Units.degreesToRadians(50)}
   };
 
   /** Creates a new Hood. */
@@ -71,15 +77,19 @@ public class Hood extends SubsystemBase {
     motorHood.setInverted(false);
 
     encHood = motorHood.getEncoder();
-    //the position one is unit per rotation and the velocity one is unit per RPM
-    encHood.setPositionConversionFactor(360);
-    encHood.setVelocityConversionFactor(360 * 60);
 
-    motorHood.setSoftLimit(SoftLimitDirection.kForward, 90);
-    motorHood.setSoftLimit(SoftLimitDirection.kReverse, 0);
+    //the position factor is unit per rotation and the velocity one is unit per RPM
+    //2 pi radians per rotation
+    double posFactor = 2 * Math.PI / gearReduction;
+    encHood.setPositionConversionFactor(posFactor);
+    //60 changes min to sec
+    encHood.setVelocityConversionFactor(60 * posFactor);
 
-    motorHood.enableSoftLimit(SoftLimitDirection.kForward, true);
-    motorHood.enableSoftLimit(SoftLimitDirection.kReverse, true);
+    //motorHood.setSoftLimit(SoftLimitDirection.kForward, Units.degreesToRadians(70) - Constants.hoodMinimumAngle);
+    //motorHood.setSoftLimit(SoftLimitDirection.kReverse, Units.degreesToRadians(20) - Constants.hoodMinimumAngle);
+
+    //motorHood.enableSoftLimit(SoftLimitDirection.kForward, true);
+    //motorHood.enableSoftLimit(SoftLimitDirection.kReverse, true);
 
     motorHood.burnFlash();
 
@@ -89,36 +99,36 @@ public class Hood extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("hood enc pos", getAngle());
+    SmartDashboard.putNumber("hood enc pos deg", getAngleDeg());
   }
   
   //add boolean argument for whether scoring or missing?
   public void setMotorPosPID(double distance, double paraV) { 
     paraFeedforward = paraV / distance; //this is just a guess
     double desiredAngle = distanceAngleMap.getInterpolatedValue(distance);
-    double pidOutput = pidController.calculate(getAngle(), desiredAngle);
+    double pidOutput = pidController.calculate(getAngleRad(), desiredAngle);
 
-    motorHood.setVoltage(feedforward.calculate(getAngleRad(), pidOutput + paraFeedforward));
+    motorHood.setVoltage(feedforward.calculate(desiredAngle, pidOutput + paraFeedforward));
 
-    angleSetpoint = desiredAngle;
+    //angleSetpoint = desiredAngle;
   }
 
   public void setMotorVelPID(double distance, double paraV) {
-    paraFeedforward = paraV / distance; //this is just a guess
+    paraFeedforward = paraV / distance; //this is just a guess //radians
     double desiredAngle = distanceAngleMap.getInterpolatedValue(distance);
-    double setpointV = pidController.calculate(getAngle(), desiredAngle) + paraFeedforward;
+    double setpointV = pidController.calculate(getAngleRad(), desiredAngle) + paraFeedforward;
     //this would need two different PID controllers? Waste of time
-    motorHood.setVoltage(pidController.calculate(getEncVelocity(), setpointV) 
+    motorHood.setVoltage(pidController.calculate(getEncVelocityRad(), setpointV) 
       + feedforward.calculate(getAngleRad(), setpointV));
 
-    angleSetpoint = desiredAngle;
+    //oangleSetpoint = desiredAngle;
   }
 
-  public void setAngle(double angleDeg) {
-    angleSetpoint = angleDeg;
+  public void setAngle(double angleRad) {
+    //angleSetpoint = angleRad;
 
     //use PID to get to certain encoder values
-    pidOutput = pidController.calculate(getAngle(), angleDeg);
+    pidOutput = pidController.calculate(getAngleRad(), angleRad);
     motorHood.setVoltage(feedforward.calculate(getAngleRad(), pidOutput));
   }
 
@@ -127,24 +137,24 @@ public class Hood extends SubsystemBase {
     motorHood.set(speed);
   }
 
-  public double getAngle() {
-    return encHood.getPosition() + Constants.hoodMinimumAngle;
+  public double getAngleDeg() {
+    return Units.radiansToDegrees(getAngleRad());
   }
 
   public double getAngleRad() {
-    return Units.degreesToRadians(getAngle());
+    return encHood.getPosition() + Constants.hoodMinimumAngle;
   }
 
-  public double getAngleSetpoint() {
+  /*public double getAngleSetpoint() {
     return angleSetpoint;
-  }
+  }*/
 
-  public double getEncVelocity() {
-    return encHood.getVelocity();
+  public double getEncVelocityDeg() {
+    return Units.radiansToDegrees(getEncVelocityRad());
   }
 
   public double getEncVelocityRad() {
-    return Units.degreesToRadians(getEncVelocity());
+    return encHood.getVelocity();
   }
 
   public void stopMotor() {
