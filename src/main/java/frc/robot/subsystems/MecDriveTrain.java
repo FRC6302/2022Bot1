@@ -222,7 +222,7 @@ public class MecDriveTrain extends SubsystemBase {
     motorR2.setVoltage(simpleFeedforward.calculate(speeds.rearRightMetersPerSecond)
       + pidController.calculate(getEncR2Rate(), speeds.rearRightMetersPerSecond));*/
 
-    /*motorL1.setVoltage(speeds.frontLeftMetersPerSecond);
+    /*motorL1.setVoltage(speeds.frontLeftMetersPerSecond); hey
     motorL2.setVoltage(speeds.rearLeftMetersPerSecond);
     motorR1.setVoltage(speeds.frontRightMetersPerSecond);
     motorR2.setVoltage(speeds.rearRightMetersPerSecond);*/
