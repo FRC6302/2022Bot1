@@ -6,7 +6,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.LimelightGoal;
 import frc.robot.subsystems.Turret;
 
 public class TurretFollowTarget extends CommandBase {
@@ -28,12 +28,12 @@ public class TurretFollowTarget extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (!Limelight.getTargetFound()) {
+    if (!LimelightGoal.getTargetFound()) {
       steeringAdjust = Constants.turretSeekSpeed;
     }
     else //this runs when the target is in view of camera
     {
-      steeringAdjust = Limelight.getX() / 100;
+      steeringAdjust = LimelightGoal.getX() / 100;
     }
 
     turret.setMotor(steeringAdjust);

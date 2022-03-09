@@ -19,13 +19,15 @@ import frc.robot.commands.DriveMec;
 import frc.robot.commands.DriveMecTrackTarget;
 import frc.robot.commands.Move;
 import frc.robot.commands.PPMecanumControllerCommand;
+import frc.robot.commands.RaiseHood;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.TestNeo;
 import frc.robot.commands.TrackTargetCenter;
 import frc.robot.commands.TrackTargetCenterPose;
 import frc.robot.commands.TurnTurret;
 import frc.robot.subsystems.ColorSensor;
-import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.Hood;
+import frc.robot.subsystems.LimelightGoal;
 import frc.robot.subsystems.MecDriveTrain;
 import frc.robot.subsystems.NavX;
 import frc.robot.subsystems.NeoTest;
@@ -68,7 +70,10 @@ public class RobotContainer {
   private TrackTargetCenter trackTargetCenter;
   private TrackTargetCenterPose trackTargetCenterPose;
 
-  private Limelight limelight;
+  private Hood hood;
+  private RaiseHood raiseHood;
+
+  private LimelightGoal limelight;
 
   private NavX navX;
 
@@ -104,12 +109,12 @@ public class RobotContainer {
     //driveGTA.addRequirements(driveTrain);
     //driveTrain.setDefaultCommand(driveGTA);
 
-    mecDriveTrain = new MecDriveTrain();
-    driveMec = new DriveMec(mecDriveTrain);
-    driveMec.addRequirements(mecDriveTrain);
+    //mecDriveTrain = new MecDriveTrain();
+    //driveMec = new DriveMec(mecDriveTrain);
+    //driveMec.addRequirements(mecDriveTrain);
     //driveMecTrackTarget = new DriveMecTrackTarget(mecDriveTrain);
     //driveMecTrackTarget.addRequirements(mecDriveTrain);
-    mecDriveTrain.setDefaultCommand(driveMec);
+    //mecDriveTrain.setDefaultCommand(driveMec);
     
     //shooter = new Shooter();
     //shoot = new Shoot(shooter, 1, 1);
@@ -123,9 +128,15 @@ public class RobotContainer {
     //trackTargetCenterPose = new TrackTargetCenterPose(mecDriveTrain, turret, shooter);
     //turret.setDefaultCommand(trackTargetCenterPose);
 
+    hood = new Hood();
+    raiseHood = new RaiseHood(hood);
+    raiseHood.addRequirements(hood);
+    hood.setDefaultCommand(raiseHood);
+
+
     //limelight = new Limelight();
 
-    navX = new NavX();
+    //navX = new NavX();
 
     //colorSensor = new ColorSensor();
 

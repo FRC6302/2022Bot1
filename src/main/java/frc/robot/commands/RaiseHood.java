@@ -28,7 +28,7 @@ public class RaiseHood extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double output = -Robot.robotContainer.getDriverDeadzoneAxis(Constants.rightStickY) / 5;
+    double output = -Robot.robotContainer.getDriverDeadzoneAxis(Constants.rightStickY) / 6;
     SmartDashboard.putNumber("hood motor speed command", output);
     hood.setMotor(output);
   }

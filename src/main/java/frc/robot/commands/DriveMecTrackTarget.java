@@ -7,7 +7,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
-import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.LimelightGoal;
 import frc.robot.subsystems.MecDriveTrain;
 
 public class DriveMecTrackTarget extends CommandBase {
@@ -30,7 +30,7 @@ public class DriveMecTrackTarget extends CommandBase {
   public void execute() {
     x = -1 * Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftStickY);
     y = -1 * Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftStickX);
-    z = -1/2 * mecDriveTrain.getPerpV(Limelight.getLastX()) / Limelight.getTargetDistance();
+    z = -1/2 * mecDriveTrain.getPerpV(LimelightGoal.getLastX()) / LimelightGoal.getTargetDistance();
 
     mecDriveTrain.setMotors(x, y, z, true);
   }

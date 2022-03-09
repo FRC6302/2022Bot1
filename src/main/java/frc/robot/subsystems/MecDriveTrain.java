@@ -164,6 +164,7 @@ public class MecDriveTrain extends SubsystemBase {
 
     //use this to show balls on the field?
     //field.getObject("red balls").setPose(new Pose2d());
+    
 
     SmartDashboard.putData("field", field);
 
@@ -185,10 +186,12 @@ public class MecDriveTrain extends SubsystemBase {
 
     SmartDashboard.putNumber("pose x", getPoseEstimate().getX());
     SmartDashboard.putNumber("pose y", getPoseEstimate().getY());
+    
+    field.setRobotPose(getPoseEstimate());
 
-    SmartDashboard.putNumber("mecanum vx", getVx());
-    SmartDashboard.putNumber("mecanum vy", getVy());
-    SmartDashboard.putNumber("mecanum ang v", getAngV());
+    //SmartDashboard.putNumber("mecanum vx", getVx());
+    //SmartDashboard.putNumber("mecanum vy", getVy());
+    //SmartDashboard.putNumber("mecanum ang v", getAngV());
 
     //used for converting robot velocity into target-relative velocity
     curChassisSpeeds = kinematics.toChassisSpeeds(getCurrentWheelSpeeds());
@@ -378,24 +381,27 @@ public class MecDriveTrain extends SubsystemBase {
 
   public double getParaV(double turretAngleDeg) {
     //converts from robot-relative velocities directly to target relative velocities
-    double vz = curChassisSpeeds.vxMetersPerSecond; //velocity in the foward direction, relative to robot
-    double vx = -curChassisSpeeds.vyMetersPerSecond; //velocity towards the right, relative to robot
+    //double vz = curChassisSpeeds.vxMetersPerSecond; //velocity in the foward direction, relative to robot
+    //double vx = -curChassisSpeeds.vyMetersPerSecond; //velocity towards the right, relative to robot
     double theta = Math.toRadians(90 - turretAngleDeg);
-    double output = vx * Math.cos(theta) + vz * Math.sin(theta);
-    SmartDashboard.putNumber("paraV", output);
+    //double output = vx * Math.cos(theta) + vz * Math.sin(theta);
 
+    double output = -curChassisSpeeds.vyMetersPerSecond * Math.cos(theta) + curChassisSpeeds.vxMetersPerSecond * Math.sin(theta);
+
+    SmartDashboard.putNumber("paraV", output);
     return output;
   }
 
   public double getPerpV(double turretAngleDeg) {
     //converts from robot-relative velocities directly to target relative velocities
-    double vz = curChassisSpeeds.vxMetersPerSecond; //velocity in the foward direction, relative to robot
-    double vx = -curChassisSpeeds.vyMetersPerSecond; //velocity towards the right, relative to robot
+    //double vz = curChassisSpeeds.vxMetersPerSecond; //velocity in the foward direction, relative to robot
+    //double vx = -curChassisSpeeds.vyMetersPerSecond; //velocity towards the right, relative to robot
     double theta = Math.toRadians(90 - turretAngleDeg);
 
-    double output = -vx * Math.sin(theta) + vz * Math.cos(theta);
-    SmartDashboard.putNumber("perpV", output);
+    //double output = -vx * Math.sin(theta) + vz * Math.cos(theta);
+    double output = curChassisSpeeds.vyMetersPerSecond * Math.sin(theta) + curChassisSpeeds.vxMetersPerSecond * Math.cos(theta);
 
+    SmartDashboard.putNumber("perpV", output);
     return output;
   }
 

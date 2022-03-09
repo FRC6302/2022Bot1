@@ -7,7 +7,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.subsystems.Hood;
-import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.LimelightGoal;
 import frc.robot.subsystems.MecDriveTrain;
 import frc.robot.subsystems.NavX;
 import frc.robot.subsystems.Shooter;
@@ -68,9 +68,9 @@ public class TrackTargetLeadingPose extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (Limelight.getTargetFound()) { //runs when the LL can see the target
-      rawDistance = Limelight.getTargetDistance();
-      x = Limelight.getX();
+    if (LimelightGoal.getTargetFound()) { //runs when the LL can see the target
+      rawDistance = LimelightGoal.getTargetDistance();
+      x = LimelightGoal.getX();
 
       gyroYaw = NavX.getGyroYaw();
       turretAngle = turret.getAngle();

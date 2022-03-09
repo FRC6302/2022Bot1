@@ -19,6 +19,9 @@
       "/SmartDashboard/field": "Field2d"
     }
   },
+  "NetworkTables Log": {
+    "visible": true
+  },
   "NetworkTables Settings": {
     "mode": "Client",
     "serverTeam": "6302"

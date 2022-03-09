@@ -5,12 +5,13 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Hood;
-import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.LimelightGoal;
 import frc.robot.subsystems.MecDriveTrain;
 import frc.robot.subsystems.NavX;
 import frc.robot.subsystems.Shooter;
@@ -37,6 +38,8 @@ public class TrackTargetCenterPose extends CommandBase {
   double gyroYaw = 0;
 
   double turretAngle = 0;
+  double angleToTarget = 0;
+
   //boolean isAllianceBall = true;
 
   //needed for leading the shot
@@ -70,76 +73,51 @@ public class TrackTargetCenterPose extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (Limelight.getTargetFound()) { //runs when the LL can see the target
-      distance = Limelight.getTargetDistance();
-      x = Limelight.getX();
-      gyroYaw = NavX.getGyroYaw();
-      turretAngle = turret.getAngle();
+    gyroYaw = NavX.getGyroYaw();
+    turretAngle = turret.getAngle();
 
+    if (LimelightGoal.getTargetFound()) { //runs when the LL can see the target
+      distance = LimelightGoal.getTargetDistance();
+      x = LimelightGoal.getX();
+      
       mecDriveTrain.updateOdometryWithVision(distance, gyroYaw, turretAngle, x);
-      robotPose = mecDriveTrain.getPoseEstimate();
-      //robotToGoal = new Transform2d(robotPose, goalPose);
-      //distance = Math.sqrt(Math.pow(robotToGoal.getX(), 2) + Math.pow(robotToGoal.getY(), 2)); 
-      estimatedDistance = Constants.goalLocation.getDistance(robotPose.getTranslation());
-      //TODO: get actual tx based on pose estimate?
-      //difference between turret pose and 
-      //it should be the same though if the rest of this works right?
-
-      //velocities with respect to target
-      paraV = mecDriveTrain.getParaV(turretAngle);
-      perpV = mecDriveTrain.getPerpV(turretAngle);
-      
-      angV = mecDriveTrain.getAngV();
-
-      //offsetAngle = 10 * perpV / distance;
-      //effectiveDistance = distance / Math.cos(Math.toRadians(offsetAngle)); //something like this
-
-      //isAllianceBall = ColorSensor.getLastestBallIsAlliance();
-
-      //desiredHoodAngle = -3 * distance + 85; //degrees
-      //desiredTurretV = x / 100; //- 3 * perpV;
-
-      //hood.setMotorPosPID(estimatedDistance, paraV);
-
-      turret.setMotorPosPID(robotPose, 0, perpV, 0); 
-
-      //shooter.shootWithInitialBallVelocity(paraV, perpV, desiredHoodAngle, desiredTurretAngle, distance);
-      //shooter.setMotorsVelPID(distance);
-
-      SmartDashboard.putNumber("vision pose x", robotPose.getX());
-      SmartDashboard.putNumber("vision pose y", robotPose.getY());
     }
-    else //this runs when the target is not in view of camera
-    {
-      distance = Limelight.getTargetDistance();
-      /*the distance value here is calculated internally from lastX and lastY, so it doesnt matter that
-      the target isnt in view*/
-      //shooter.setMotorsVelPID(distance);
-            
-      /*if target is out of view, x and y will default to zero, so we use the last values of them
-      from before they went out of sight to guess how to move to get the target back in view*/
-      lastX = Limelight.getLastX();
-      lastY = Limelight.getLastY();
-      if (lastX < -29) { //happens when we turn too far to the right
-        turret.setMotor(Constants.turretSeekSpeed);
-      }
-      else if (lastX > 29) { //happens when we turn too far to the left
-        turret.setMotor(-Constants.turretSeekSpeed);
-      }
-      else if (Math.abs(lastY) > 24) { //happens when we got too close or far and target is out of view.
-        turret.setMotor(0); //because target is out of view vertically, rotating turret wont change anything
-      }
-      else{ 
-        /*happens when the target was not on the edge of field of view when target become out of sight,
-        which would only happen if the LL disconnected or something */
-        turret.setMotor(0);
 
-        for (int i = 0; i < 2; i++) { //repeated to emphasize to driver
-          DriverStation.reportWarning("LIMELIGHT CANNOT FIND TARGET, REASON UNKNOWN", false);
-        }
-      }
-      
-    }
+    robotPose = mecDriveTrain.getPoseEstimate();
+    //robotToGoal = new Transform2d(robotPose, goalPose);
+    //distance = Math.sqrt(Math.pow(robotToGoal.getX(), 2) + Math.pow(robotToGoal.getY(), 2)); 
+    estimatedDistance = Constants.goalLocation.getDistance(robotPose.getTranslation());
+    //TODO: get actual tx based on pose estimate?
+    //difference between turret pose and 
+    //it should be the same though if the rest of this works right?
+
+    angleToTarget = Units.radiansToDegrees(Math.atan2(robotPose.getY() - Constants.goalLocation.getY(),
+      robotPose.getX() - Constants.goalLocation.getX()));
+
+    //velocities with respect to target
+    paraV = mecDriveTrain.getParaV(angleToTarget - gyroYaw);
+    perpV = mecDriveTrain.getPerpV(angleToTarget - gyroYaw);
+    
+    angV = mecDriveTrain.getAngV();
+
+    //offsetAngle = 10 * perpV / distance;
+    //effectiveDistance = distance / Math.cos(Math.toRadians(offsetAngle)); //something like this
+
+    //isAllianceBall = ColorSensor.getLastestBallIsAlliance();
+
+    //desiredHoodAngle = -3 * distance + 85; //degrees
+    //desiredTurretV = x / 100; //- 3 * perpV;
+
+    //hood.setMotorPosPID(estimatedDistance, paraV);
+
+    turret.setMotorPosPID(angleToTarget, distance, 0, perpV, angV, gyroYaw); 
+
+    //shooter.shootWithInitialBallVelocity(paraV, perpV, desiredHoodAngle, desiredTurretAngle, distance);
+    //shooter.setMotorsVelPID(distance);
+
+    //SmartDashboard.putNumber("vision pose x", robotPose.getX());
+    //SmartDashboard.putNumber("vision pose y", robotPose.getY());
+
 
     //hood.setHoodAngle(hoodAdjust);
     //turret.setAngle(turretAdjust);

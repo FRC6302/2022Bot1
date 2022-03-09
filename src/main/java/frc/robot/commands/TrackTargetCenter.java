@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Hood;
-import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.LimelightGoal;
 import frc.robot.subsystems.MecDriveTrain;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Turret;
@@ -59,9 +59,9 @@ public class TrackTargetCenter extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (Limelight.getTargetFound()) { //runs when the LL can see the target
-      distance = Limelight.getTargetDistance();
-      x = Limelight.getX();
+    if (LimelightGoal.getTargetFound()) { //runs when the LL can see the target
+      distance = LimelightGoal.getTargetDistance();
+      x = LimelightGoal.getX();
 
       //gyroYaw = NavX.getGyroYaw();
       turretAngle = turret.getAngle();
@@ -90,7 +90,7 @@ public class TrackTargetCenter extends CommandBase {
     else //this runs when the target is not in view of camera
     {
       paraV = mecDriveTrain.getParaV(turretAngle);
-      distance = Limelight.getTargetDistance();
+      distance = LimelightGoal.getTargetDistance();
       /*the distance value here is calculated internally from lastX and lastY, so it doesnt matter that
       the target isnt in view*/
       //shooter.setMotorsVelPID(distance);
@@ -98,8 +98,8 @@ public class TrackTargetCenter extends CommandBase {
       
       /*if target is out of view, x and y will default to zero, so we use the last values of them
       from before they went out of sight to guess how to move to get the target back in view*/
-      lastX = Limelight.getLastX();
-      lastY = Limelight.getLastY();
+      lastX = LimelightGoal.getLastX();
+      lastY = LimelightGoal.getLastY();
       if (lastX < -29) { //happens when we turn too far to the right
         turret.setMotor(Constants.turretSeekSpeed);
       }

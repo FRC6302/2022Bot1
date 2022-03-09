@@ -71,10 +71,11 @@ public final class Constants {
   public static final int motorTurret = 0;
   public static final int motorShooterTop = 3;
   public static final int motorShooterBottom = 2;
-  public static final int motorHood = 93;
+  public static final int motorHood = 2;
   public static final int motorNeoTest = 1;
   public static final int motorRightClimber = 0;
   public static final int motorLeftClimber = 0;
+  public static final int motorIntake = 90;
 
   //encoders - DIO ports on rio or navx
   public static final int encL1A = 0;
@@ -137,18 +138,13 @@ public final class Constants {
   public static final double jerkXCollisionThreshold = 1;
 
   //limelight
-  public static final double limelightTXDeadzone = 0.5;
-  public static final double limelightTargetXScaling = 1;
-  public static final double limelightSpecificArea = 27;
-  public static final double limelightTargetDistanceSpeed = 0.3;
-  public static final double limelightSeekSpeed = 0.3;
-  public static final double limelightTargetXSpeed = 0.2;
-  public static final double limelightGetInRangeSpeed = 0.2;
-  public static final double limelightTargetArea = 0.3;
-  //the angle the limelight is pointing relative to the ground, 0 = parallel to floor
-  public static final double limelightMountDegreeOffset = 6; 
   public static final double limelightLatency = 0.02; //20 ms
+  //limelight goal
+  //the angle the limelight is pointing relative to the ground, 0 = parallel to floor
+  public static final double limelightGoalMountDegreeOffset = 6; 
+  //limelight balls
 
+public static final double limelightBallMountDegreeOffset = 0;
   //pneumatics
 
 
@@ -165,8 +161,6 @@ public final class Constants {
   public static final double ksTurret = 0.60;//generated with only one shooter axle on, v r^2=0.942
   public static final double kvTurret = 0.0165;
   public static final double kaTurret = 0.0031;
-
-
   //public static final double kpTurret = 0.05; 
   public static final double kpPosTurret = 3; //sysid guessed 5.67, 3 works perfect
   public static final double kdPosTurret = 0; //sysid guessed 2.52, 0 is good
@@ -188,7 +182,7 @@ public final class Constants {
   public static final double maxHoodV = Units.degreesToRadians(30); // deg/s to rad/s
   public static final double maxHoodA = Units.degreesToRadians(10); // deg/s/s to rad/s/s
   
-  public static final double hoodMinimumAngle = Units.degreesToRadians(0);
+  public static final double hoodMinimumAngle = Units.degreesToRadians(20);
   
 
   //shooter
@@ -198,6 +192,9 @@ public final class Constants {
   public static final double maxShooterA = 5;
   public static final double kpTopShooter = 0;
   public static final double kpBottomShooter = 0;
+
+  //intake
+
   
 
   //climber
@@ -227,6 +224,7 @@ public final class Constants {
   //robot construction
   public static final double limelightToRobotCenterRadius = Units.inchesToMeters(6);
   public static final double limelightToTargetHeight = Units.inchesToMeters(104 - 30);
+  public static final double limelightToBallCenterHeight = Units.inchesToMeters(40 - 4.25);
   
   //driver contoller buttons
   public static final int limelightTargetButton = rightBumper;
@@ -242,6 +240,8 @@ public final class Constants {
   public static final int shootButton2 = bButton;
   public static final int turnTurretButton = bButton;
   public static final int zeroTurretButton = xButton;
+
+
   
 
 

@@ -104,19 +104,17 @@ public class Turret extends SubsystemBase {
     setVoltageBounded(turretVolts);
   }
 
-  public void setMotorPosPID(Pose2d robotPose, double offsetAngle, double perpV, double angV) {
-    double estimatedDistance = Constants.goalLocation.getDistance(robotPose.getTranslation());
+  public void setMotorPosPID(double angleToTarget, double distance, double offsetAngle, double perpV, double angV, double gyroAngle) {
+    //double estimatedDistance = Constants.goalLocation.getDistance(robotPose.getTranslation());
     /*feedforwards based on chassis movement to make turret react better.
     We already know which way it needs to turn if the chassis moving a certain direction, so we can help
     it along and then the pid can do the rest*/
-    tangentialFeedforward = Units.radiansToDegrees(perpV / estimatedDistance);
+    tangentialFeedforward = Units.radiansToDegrees(perpV / distance);
     rotationalFeedforward = -angV;
 
     /*the arctan part gives the angle to the target relative to the field but you have to subtract the pose
     heading (aka gyro angle) so you know what angle to send the turret to relative to the front of the robot*/
-    double posSetpoint = offsetAngle + Units.radiansToDegrees(Math.atan2(
-      robotPose.getY() - Constants.goalLocation.getY(), robotPose.getX() - Constants.goalLocation.getX()))
-      - robotPose.getRotation().getDegrees();
+    double posSetpoint = offsetAngle + angleToTarget - gyroAngle;
 
     //constraning both the angles so that turret goes to the closest correct angle instead of going all the way around
     setVoltageBounded(simpleFeedforward.calculate(posPIDController.calculate(constrainAngle(getAngle()),
