@@ -16,8 +16,8 @@ import frc.robot.Constants;
 public class NavX extends SubsystemBase{
   private final static AHRS gyro = new AHRS(SPI.Port.kMXP);
   private static double gyroReverser = 1;
-  double currAccelX, lastAccelX = 0, jerkX, accelY;
-  boolean collisionDetected = false;
+  //double currAccelX, lastAccelX = 0, jerkX, accelY;
+  //boolean collisionDetected = false;
   
   /**
    * Creates a new NavX.
@@ -41,14 +41,14 @@ public class NavX extends SubsystemBase{
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    currAccelX = getGyroAccelX();
+    /*currAccelX = getGyroAccelX();
     jerkX = currAccelX - lastAccelX;
     lastAccelX = currAccelX;
     //accelY = getGyroAccelY();
 
     if (jerkX > Constants.jerkXCollisionThreshold) {
       collisionDetected = true;
-    }
+    }*/
 
 
     SmartDashboard.putNumber("gyroYaw", getGyroYaw());
