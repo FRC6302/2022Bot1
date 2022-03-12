@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.library.Data;
 import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.LimelightGoal;
 import frc.robot.subsystems.MecDriveTrain;
@@ -92,7 +93,7 @@ public class TrackTargetLeading extends CommandBase {
       //shooter.shootWithInitialBallVelocity(paraV, perpV, desiredHoodAngle, desiredTurretAngle, distance);
       //shooter.setMotorsVelPID(predictedDistance);
 
-      airTime = shooter.getTime(predictedDistance);
+      airTime = Data.getAirtime(predictedDistance);
     }
     else //this runs when the target is not in view of camera
     {}
