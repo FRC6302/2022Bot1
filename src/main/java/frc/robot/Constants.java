@@ -70,7 +70,7 @@ public final class Constants {
   public static final int motorTurret = 0;
   public static final int motorShooterTop = 3;
   public static final int motorShooterBottom = 2;
-  public static final int motorHood = 2;
+  public static final int motorHood = 7;
   public static final int motorNeoTest = 1;
   public static final int motorRightClimber = 0;
   public static final int motorLeftClimber = 0;
@@ -160,28 +160,27 @@ public static final double limelightBallMountDegreeOffset = 0;
   public static final double ksTurret = 0.60;//generated with only one shooter axle on, v r^2=0.942
   public static final double kvTurret = 0.0165;
   public static final double kaTurret = 0.0031;
-  //public static final double kpTurret = 0.05; 
   public static final double kpPosTurret = 3; //sysid guessed 5.67, 3 works perfect
   public static final double kdPosTurret = 0; //sysid guessed 2.52, 0 is good
   public static final double kpVelTurret = 0.05; //sysid said 0.13
 
   public static final double maxTurretV = 180; //deg/s
-  public static final double maxTurretA = 90; //deg/s/s
+  public static final double maxTurretA = 180; //deg/s/s
   
   
   
   //hood
-  public static final double ksHood = 0.1; //from sysid
-  public static final double kvHood = 0.1;
-  public static final double kaHood = 0.1;
-  public static final double kgHood = 0.1; //gravity term
+  public static final double ksHood = 0.23; //from sysid
+  public static final double kvHood = 28.24;
+  public static final double kaHood = 1.2381;
+  public static final double kgHood = 0.0088; //voltage needed to overcome gravity at horizontal. SYSId calcs it at enc=0?? That's problem
 
-  public static final double kpHood = 0.1;
+  public static final double kpHood = 1;
 
   public static final double maxHoodV = Units.degreesToRadians(30); // deg/s to rad/s
-  public static final double maxHoodA = Units.degreesToRadians(10); // deg/s/s to rad/s/s
+  public static final double maxHoodA = Units.degreesToRadians(30); // deg/s/s to rad/s/s
   
-  public static final double hoodMinimumAngle = Units.degreesToRadians(20);
+  public static final double hoodMinimumAngle = Units.degreesToRadians(15);
   
 
   //shooter
@@ -239,31 +238,10 @@ public static final double limelightBallMountDegreeOffset = 0;
   public static final int shootButton2 = bButton;
   public static final int turnTurretButton = bButton;
   public static final int zeroTurretButton = xButton;
+  public static final int raiseHoodButton = yButton;
+  public static final int raiseHood2Button = aButton;
 
 
-  
-
-
-
-  
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-	
-    
-    
-    
-    
-    
-    
-    
 
 
 }

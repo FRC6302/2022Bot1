@@ -21,7 +21,8 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Utilities.LinearInterpolator;
+import frc.robot.library.Data;
+import frc.robot.library.LinearInterpolator;
 
 public class Hood extends SubsystemBase {
   //private WPI_TalonSRX motorHood = new WPI_TalonSRX(Constants.motorHood);
@@ -46,24 +47,13 @@ public class Hood extends SubsystemBase {
   private double angleSetpoint = 0;
   private double pidOutput = 0;
 
-  //gear ratio between encoder and hood. The track is 477 and the part that moves is 24 teeth
-  double gearReduction = 477.0 / 24.0;
+  //gear ratio between encoder and hood. The track is 477 and the part that moves is 24 teeth. neo has 75:1 gearing on it
+  double gearReduction =  75. * 477. / 24.;
 
   //360 degrees
   //8192 for rev through bore encoder
   //10 is gear reduction
   //private double distancePerPulse = (360 / 2048) / 10;
-
-  public LinearInterpolator distanceAngleMap;
-  private double[][] distanceAngleData = { 
-    {1, Units.degreesToRadians(80)}, //{distance in meters, angle in degrees} format
-    {3, Units.degreesToRadians(75)}, 
-    {5, Units.degreesToRadians(70)},
-    {7, Units.degreesToRadians(65)},
-    {9, Units.degreesToRadians(60)},
-    {11, Units.degreesToRadians(55)},
-    {13, Units.degreesToRadians(50)}
-  };
 
   /** Creates a new Hood. */
   public Hood() {
@@ -74,7 +64,7 @@ public class Hood extends SubsystemBase {
 
     motorHood.restoreFactoryDefaults();
     motorHood.setIdleMode(IdleMode.kBrake);
-    motorHood.setInverted(false);
+    motorHood.setInverted(true);
 
     encHood = motorHood.getEncoder();
 
@@ -93,29 +83,36 @@ public class Hood extends SubsystemBase {
 
     motorHood.burnFlash();
 
-    distanceAngleMap = new LinearInterpolator(distanceAngleData);
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("hood enc pos deg", getAngleDeg());
+
+    //SmartDashboard.putNumber("hood angle interpolated", Units.radiansToDegrees(distanceAngleMap.getInterpolatedValue(20.2)));
   }
   
   //add boolean argument for whether scoring or missing?
   public void setMotorPosPID(double distance, double paraV) { 
     paraFeedforward = paraV / distance; //this is just a guess
-    double desiredAngle = distanceAngleMap.getInterpolatedValue(distance);
+    double desiredAngle = Data.getHoodAngle(distance);
     double pidOutput = pidController.calculate(getAngleRad(), desiredAngle);
 
-    motorHood.setVoltage(feedforward.calculate(desiredAngle, pidOutput + paraFeedforward));
+    //double volts = feedforward.calculate(desiredAngle, pidOutput + paraFeedforward);
+    double volts = feedforward.calculate(desiredAngle, pidOutput);
+    SmartDashboard.putNumber("angle rad", getAngleRad());
+    SmartDashboard.putNumber("desired ang rad", desiredAngle);
+    SmartDashboard.putNumber("hood pid", pidOutput);
+    SmartDashboard.putNumber("hood volts", volts);
+    motorHood.setVoltage(volts);
 
     //angleSetpoint = desiredAngle;
   }
 
   public void setMotorVelPID(double distance, double paraV) {
     paraFeedforward = paraV / distance; //this is just a guess //radians
-    double desiredAngle = distanceAngleMap.getInterpolatedValue(distance);
+    double desiredAngle = Data.getHoodAngle(distance);
     double setpointV = pidController.calculate(getAngleRad(), desiredAngle) + paraFeedforward;
     //this would need two different PID controllers? Waste of time
     motorHood.setVoltage(pidController.calculate(getEncVelocityRad(), setpointV) 
@@ -142,6 +139,7 @@ public class Hood extends SubsystemBase {
   }
 
   public double getAngleRad() {
+    //return Math.PI - (encHood.getPosition() + Constants.hoodMinimumAngle);
     return encHood.getPosition() + Constants.hoodMinimumAngle;
   }
 

@@ -6,6 +6,8 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.math.geometry.Pose2d;
+import frc.robot.Constants;
+import frc.robot.library.Data;
 import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.LimelightGoal;
 import frc.robot.subsystems.MecDriveTrain;
@@ -39,6 +41,7 @@ public class TrackTargetLeadingPose extends CommandBase {
   //leading stuff
   double offsetAngle = 0;
   double effectiveDistance = 3;
+  double actualDistance;
   double airTime = 3;
   double temp = 0;
 
@@ -77,9 +80,9 @@ public class TrackTargetLeadingPose extends CommandBase {
 
       mecDriveTrain.updateOdometryWithVision(rawDistance, gyroYaw, turretAngle, x);
       robotPose = mecDriveTrain.getPoseEstimate();
+      actualDistance = robotPose.getTranslation().getDistance(Constants.goalLocation);
       //robotToGoal = new Transform2d(robotPose, goalPose);
       //distance = Math.sqrt(Math.pow(robotToGoal.getX(), 2) + Math.pow(robotToGoal.getY(), 2)); 
-      //estimatedActualDistance = Constants.goalLocation.getDistance(robotPose.getTranslation());
 
       //velocities with respect to target
       paraV = mecDriveTrain.getParaV(turretAngle);
@@ -90,14 +93,18 @@ public class TrackTargetLeadingPose extends CommandBase {
       
       angV = mecDriveTrain.getAngV();
 
-      //temp = airTime * (vy * (robotPose.getX() - Constants.goalLocation.getX()) 
-        //+ vx * (robotPose.getY() - Constants.goalLocation.getY()));
+      temp = airTime * (vy * (robotPose.getX() - Constants.goalLocation.getX()) 
+        + vx * (robotPose.getY() - Constants.goalLocation.getY()));
 
-      temp = airTime * (vy * Math.sin(gyroYaw + turretAngle - x) + vx * Math.cos(gyroYaw + turretAngle - x));
+      //temp = airTime * (vy * Math.sin(gyroYaw + turretAngle - x) + vx * Math.cos(gyroYaw + turretAngle - x));
       //TODO: compare these temp values and make sure they are close
 
+      //change so it doesn't use the old effective distance
       offsetAngle = Math.asin(temp / effectiveDistance);
       effectiveDistance = temp / Math.sin(offsetAngle);
+
+      //take derivate of effective distance formula to get distance adjustment approximation to plug into airtime. a = 0
+
       //predictedDistance = distance / Math.cos(Math.toRadians(offsetAngle)); //something like this
 
       //desiredHoodAngle = -3 * distance + 85; //degrees
@@ -110,7 +117,7 @@ public class TrackTargetLeadingPose extends CommandBase {
       //shooter.shootWithInitialBallVelocity(paraV, perpV, desiredHoodAngle, desiredTurretAngle, distance);
       //shooter.setMotorsVelPID(predictedDistance);
 
-      airTime = shooter.getTime(effectiveDistance);
+      airTime = Data.getAirtime(effectiveDistance);
     }
     else //this runs when the target is not in view of camera
     {}

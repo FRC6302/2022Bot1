@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.led.CANdle.LEDStripType;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -12,6 +13,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxAnalogSensor;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxRelativeEncoder.Type;
@@ -25,11 +27,12 @@ import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Utilities.LinearInterpolator;
 
 public class Shooter extends SubsystemBase {
   private final double topkS = 0, topkV = 0, topkA = 0;
   private final double bottomkS = 0, bottomkV = 0, bottomkA = 0;
+
+  
 
   private WPI_TalonSRX motorShooterTop = new WPI_TalonSRX(Constants.motorShooterTop);
   private WPI_TalonSRX motorShooterBottom = new WPI_TalonSRX(Constants.motorShooterBottom);
@@ -61,18 +64,6 @@ public class Shooter extends SubsystemBase {
   //rev through bore encoder is 8192 counts per rev?
   //ctre mag encoder is 4096
   private final double distancePerPulse = Math.PI * 0.1524; // / 4096) / 1; //blue wheel diam is 6 inches or 0.1524 meters
-
-  private LinearInterpolator distanceVelocityMap;
-  private double[][] distanceVelocityData = { 
-    {1.0, 12}, //{distance in meters, velocity in m/s} format
-    {3.0, 14}, 
-    {10, 16} };
-
-  private LinearInterpolator distanceTimeMap; 
-  private double[][] distanceTimeData = { 
-      {1.0, 2}, //{distance in meters, time in sec} format
-      {3.0, 3}, 
-      {10, 5} };
   
   /** Creates a new Shooter. */
   public Shooter() {
@@ -128,8 +119,6 @@ public class Shooter extends SubsystemBase {
     motorShooterTop.burnFlash();
     motorShooterBottom.burnFlash();*/
 
-    distanceVelocityMap = new LinearInterpolator(distanceVelocityData);
-    distanceTimeMap = new LinearInterpolator(distanceTimeData);
   }
 
   @Override
@@ -240,8 +229,4 @@ public class Shooter extends SubsystemBase {
     setMotors(0);
   }
 
-  public double getTime(double distance) {
-    return distanceTimeMap.getInterpolatedValue(distance);
-  }
-  
 }

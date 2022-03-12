@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import frc.robot.Utilities.LinearInterpolator;
 import frc.robot.commands.DriveMec;
 import frc.robot.commands.DriveMecTrackTarget;
 import frc.robot.commands.Move;
@@ -25,8 +24,11 @@ import frc.robot.commands.TestNeo;
 import frc.robot.commands.TrackTargetCenter;
 import frc.robot.commands.TrackTargetCenterPose;
 import frc.robot.commands.TurnTurret;
+import frc.robot.library.Data;
+import frc.robot.library.LinearInterpolator;
 import frc.robot.subsystems.ColorSensor;
 import frc.robot.subsystems.Hood;
+import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.LimelightGoal;
 import frc.robot.subsystems.MecDriveTrain;
 import frc.robot.subsystems.NavX;
@@ -79,6 +81,8 @@ public class RobotContainer {
 
   private ColorSensor colorSensor;
 
+  private LEDs leds;
+
   private PneumaticsTest pneumaticsTest;
 
   private TouchSensor touchSensor;
@@ -92,12 +96,7 @@ public class RobotContainer {
   private final String moveForward = "move forward";
   private final String sixBall = "6 ball";
 
-  //public InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> distanceVelocityMap;
-  public LinearInterpolator distanceVelocityMap;
-  private double[][] distanceVelocityData = { 
-    {1.0, 10.0}, //{distance, velocity} format
-    {3.0, 11.0}, 
-    {10, 13.0} };
+  Data data;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -131,14 +130,16 @@ public class RobotContainer {
     hood = new Hood();
     raiseHood = new RaiseHood(hood);
     raiseHood.addRequirements(hood);
-    hood.setDefaultCommand(raiseHood);
+    //hood.setDefaultCommand(raiseHood);
 
 
     //limelight = new Limelight();
 
-    //navX = new NavX();
+    navX = new NavX();
 
     //colorSensor = new ColorSensor();
+
+    //leds = new LEDs();
 
     //pneumaticsTest = new PneumaticsTest();
 
@@ -152,8 +153,8 @@ public class RobotContainer {
     //testNeo.addRequirements(neoTest);
     //neoTest.setDefaultCommand(testNeo); */
 
-    //distanceVelocityMap = new InterpolatingTreeMap<>(100);
-    distanceVelocityMap = new LinearInterpolator(distanceVelocityData);
+
+    data = new Data();
 
     //when distance is 10 m, velocity should be 16 m/s ??
     //TODO give more values and test output with smart dashboard
@@ -226,6 +227,18 @@ public class RobotContainer {
       turret.stopMotor();
     });*/
     //turnTurretButton.whileHeld(new TurnTurret(turret));
+
+    final JoystickButton raiseHoodButton = new JoystickButton(driverController, Constants.raiseHoodButton);
+    raiseHoodButton.whileHeld(new RaiseHood(hood));
+
+    final JoystickButton raiseHood2Button = new JoystickButton(driverController, Constants.raiseHood2Button);
+    raiseHood2Button.whileHeld(() -> {
+      hood.setMotor(getDriverDeadzoneAxis(Constants.rightStickY) / -4);
+    });
+    raiseHood2Button.whenReleased(() -> {
+      hood.stopMotor();
+    });
+
 
     //final JoystickButton zeroTurretButton = new JoystickButton(driverController, Constants.zeroTurretButton);
     //zeroTurretButton.whenPressed(turret::resetEncoder);

@@ -13,6 +13,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -27,8 +28,12 @@ public class Turret extends SubsystemBase {
   private Encoder turretEncoder;
 
   //private ProfiledPIDController pidController = new ProfiledPIDController(Constants.kpTurret, 0, 0, Constants.turretConstraints);
-  private PIDController posPIDController = new PIDController(Constants.kpPosTurret, 0, Constants.kdPosTurret);
-  private PIDController velPIDController = new PIDController(Constants.kpVelTurret, 0, 0);
+  //private PIDController posPIDController = new PIDController(Constants.kpPosTurret, 0, Constants.kdPosTurret);
+  //private PIDController velPIDController = new PIDController(Constants.kpVelTurret, 0, 0);
+  private ProfiledPIDController posPIDController = new ProfiledPIDController(Constants.kpPosTurret, 0, Constants.kdPosTurret, 
+    new Constraints(Constants.maxTurretV, Constants.maxTurretA));
+  private ProfiledPIDController velPIDController = new ProfiledPIDController(Constants.kpVelTurret, 0, 0, 
+    new Constraints(Constants.maxTurretV, Constants.maxTurretA));
 
   private SimpleMotorFeedforward simpleFeedforward = new SimpleMotorFeedforward(
     Constants.ksTurret, Constants.kvTurret, Constants.kaTurret);
@@ -44,7 +49,7 @@ public class Turret extends SubsystemBase {
   //8192 cpr for rev through bore encoder
   private double distancePerPulse = (360. / 2048.) / gearReduction;
 
-  private boolean needsReset = false;
+  //private boolean needsReset = false;
   private boolean resettingForward = false;
   private boolean resettingBackward = false;
 
@@ -213,9 +218,9 @@ public class Turret extends SubsystemBase {
     return turretEncoder.getRate();
   }
 
-  public boolean getNeedsReset() {
+  /*public boolean getNeedsReset() {
     return needsReset;
-  }
+  }*/
 
   public void stopMotor() {
     motorTurret.set(0);
