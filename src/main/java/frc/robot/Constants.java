@@ -184,13 +184,21 @@ public static final double limelightBallMountDegreeOffset = 0;
   
 
   //shooter
-  public static final double shootSpeed = 0.65;
   public static final double defaultShooterSpeed = 0.8;
   public static final double maxShooterV = 15; // m/s
-  public static final double maxShooterA = 5;
-  public static final double kpTopShooter = 0;
-  public static final double kpBottomShooter = 0;
+  public static final double maxShooterA = 5; // m/s/s
+  public static final double kpTopShooter = 0.1;
+  public static final double kpBottomShooter = 0.1;
+  
+  public static final double ksTopShooter = 0.1;
+  public static final double kVTopShooter = 0.1;
+  public static final double kATopShooter = 0.1;
 
+  public static final double ksBottomShooter = 0.1;
+  public static final double kVBottomShooter = 0.1;
+  public static final double kABottomShooter = 0.1;
+  
+  
   //intake
 
   
@@ -240,6 +248,8 @@ public static final double limelightBallMountDegreeOffset = 0;
   public static final int zeroTurretButton = xButton;
   public static final int raiseHoodButton = yButton;
   public static final int raiseHood2Button = aButton;
+
+public static final double loopTime = 0.020;
 
 
 

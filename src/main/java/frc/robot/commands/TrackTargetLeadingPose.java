@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 import frc.robot.library.Data;
 import frc.robot.subsystems.Hood;
@@ -39,11 +40,16 @@ public class TrackTargetLeadingPose extends CommandBase {
   //boolean isAllianceBall = true;
 
   //leading stuff
-  double offsetAngle = 0;
-  double effectiveDistance = 3;
+  double offsetAngle = 0; //radians
+  double effectiveDistance = 3; //meters
   double actualDistance;
-  double airTime = 3;
+  double airTime = 3; //seconds
   double temp = 0;
+
+  //approximating derivative stuff
+  double prevOffset = offsetAngle, offsetDerivative = 1;
+  double prevAirtime = airTime, airTimeDerivative = 1;
+  double effectiveDistanceDerivative = 1, effectiveDistancePrediction = effectiveDistance;
 
   //pose stuff
   private Pose2d robotPose = new Pose2d();
@@ -66,61 +72,88 @@ public class TrackTargetLeadingPose extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    /*airTime = Data.getAirtime(3);
+
+    temp = airTime * (vy * (robotPose.getX() - Constants.goalLocation.getX()) 
+      + vx * (robotPose.getY() - Constants.goalLocation.getY()));
+    offsetAngle = Math.asin(temp / effectiveDistance);*/
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    gyroYaw = NavX.getGyroYaw();
+    turretAngle = turret.getAngle();
+
     if (LimelightGoal.getTargetFound()) { //runs when the LL can see the target
       rawDistance = LimelightGoal.getTargetDistance();
       x = LimelightGoal.getX();
-
-      gyroYaw = NavX.getGyroYaw();
-      turretAngle = turret.getAngle();
-
-      mecDriveTrain.updateOdometryWithVision(rawDistance, gyroYaw, turretAngle, x);
-      robotPose = mecDriveTrain.getPoseEstimate();
-      actualDistance = robotPose.getTranslation().getDistance(Constants.goalLocation);
-      //robotToGoal = new Transform2d(robotPose, goalPose);
-      //distance = Math.sqrt(Math.pow(robotToGoal.getX(), 2) + Math.pow(robotToGoal.getY(), 2)); 
-
-      //velocities with respect to target
-      paraV = mecDriveTrain.getParaV(turretAngle);
-      perpV = mecDriveTrain.getPerpV(turretAngle);
-
-      vx = mecDriveTrain.getVx();
-      vy = mecDriveTrain.getVy();
       
-      angV = mecDriveTrain.getAngV();
-
-      temp = airTime * (vy * (robotPose.getX() - Constants.goalLocation.getX()) 
-        + vx * (robotPose.getY() - Constants.goalLocation.getY()));
-
-      //temp = airTime * (vy * Math.sin(gyroYaw + turretAngle - x) + vx * Math.cos(gyroYaw + turretAngle - x));
-      //TODO: compare these temp values and make sure they are close
-
-      //change so it doesn't use the old effective distance
-      offsetAngle = Math.asin(temp / effectiveDistance);
-      effectiveDistance = temp / Math.sin(offsetAngle);
-
-      //take derivate of effective distance formula to get distance adjustment approximation to plug into airtime. a = 0
-
-      //predictedDistance = distance / Math.cos(Math.toRadians(offsetAngle)); //something like this
-
-      //desiredHoodAngle = -3 * distance + 85; //degrees
-      //desiredTurretV = x / 100; //- 3 * perpV;
-
-      hood.setMotorPosPID(effectiveDistance, paraV);
-
-      turret.setMotorPosPID(x - offsetAngle, perpV, effectiveDistance, angV); 
-
-      //shooter.shootWithInitialBallVelocity(paraV, perpV, desiredHoodAngle, desiredTurretAngle, distance);
-      //shooter.setMotorsVelPID(predictedDistance);
-
-      airTime = Data.getAirtime(effectiveDistance);
+      mecDriveTrain.updateOdometryWithVision(rawDistance, gyroYaw, turretAngle, x);
     }
-    else //this runs when the target is not in view of camera
-    {}
+
+    robotPose = mecDriveTrain.getPoseEstimate();
+    actualDistance = robotPose.getTranslation().getDistance(Constants.goalLocation);
+    //robotToGoal = new Transform2d(robotPose, goalPose);
+    //distance = Math.sqrt(Math.pow(robotToGoal.getX(), 2) + Math.pow(robotToGoal.getY(), 2)); 
+
+    //velocities with respect to target
+    paraV = mecDriveTrain.getParaV(turretAngle);
+    perpV = mecDriveTrain.getPerpV(turretAngle);
+
+    vx = mecDriveTrain.getVx();
+    vy = mecDriveTrain.getVy();
+    
+    angV = mecDriveTrain.getAngV();
+
+    //guess airtime 0.020 sec into future? linear approximation?
+    // airtime = airtime + 0.020 * derivative
+
+    temp = airTime * (vy * (robotPose.getX() - Constants.goalLocation.getX()) 
+      + vx * (robotPose.getY() - Constants.goalLocation.getY()));
+
+    //temp = airTime * (vy * Math.sin(gyroYaw + turretAngle - x) + vx * Math.cos(gyroYaw + turretAngle - x));
+    //TODO: compare these temp values and make sure they are close
+
+    //change so it doesn't use the effective distance from previous loop
+    //offsetAngle = Math.asin(temp / effectiveDistance);
+    effectiveDistance = temp / (actualDistance * Math.sin(offsetAngle));
+
+    //take derivate of effective distance formula to get distance adjustment approximation to plug into airtime. a = 0?
+
+    //predictedDistance = distance / Math.cos(Math.toRadians(offsetAngle)); //something like this
+
+    //desiredHoodAngle = -3 * distance + 85; //degrees
+
+    hood.setMotorPosPID(effectiveDistance, paraV);
+
+    turret.setMotorPosPID(x - Units.radiansToDegrees(offsetAngle), perpV, effectiveDistance, angV); 
+
+    //shooter.shootWithInitialBallVelocity(paraV, perpV, desiredHoodAngle, desiredTurretAngle, distance);
+    //shooter.setMotorsVelPID(predictedDistance);
+
+    prevOffset = offsetAngle;
+    prevAirtime = airTime;
+
+    //effectiveDistance += 0.020 * derivative gives the effective distance in 0.020 seconds.
+    //then you can get the air time and offset angle for the next loop
+    airTime = Data.getAirtime(effectiveDistance);
+
+    //these derivatives are very approximate
+    offsetDerivative = (offsetAngle - prevOffset) / 2.;
+    airTimeDerivative = (airTime - prevAirtime) / 2.;
+
+    //updates airtime based on approximate of 
+    effectiveDistanceDerivative = airTimeDerivative * effectiveDistance / airTime; 
+
+    //predicts what the effective distance will be in 20 ms when the loop run again
+    effectiveDistancePrediction = effectiveDistance + 0.020 * effectiveDistanceDerivative;
+    //double temp2 = temp / airTime;
+    airTime = Data.getAirtime(effectiveDistancePrediction); 
+    offsetAngle = Math.asin((airTime * temp / prevAirtime) / effectiveDistancePrediction);
+
+
   }
 
   // Called once the command ends or is interrupted.

@@ -6,7 +6,7 @@ package frc.robot.library;
 
 import edu.wpi.first.math.util.Units;
 
-/** Add your docs here. */
+/** class for storing all of data that we got from testing our shooter/hood */
 public class Data {
 
   private static double[][] distanceAngleData = { 

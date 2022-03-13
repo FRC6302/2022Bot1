@@ -18,42 +18,45 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxRelativeEncoder.Type;
 
+import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.BangBangController;
+import edu.wpi.first.math.controller.LinearQuadraticRegulator;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.estimator.KalmanFilter;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.system.LinearSystem;
+import edu.wpi.first.math.system.LinearSystemLoop;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.library.Data;
 
 public class Shooter extends SubsystemBase {
-  private final double topkS = 0, topkV = 0, topkA = 0;
-  private final double bottomkS = 0, bottomkV = 0, bottomkA = 0;
+  //private WPI_TalonSRX motorShooterTop = new WPI_TalonSRX(Constants.motorShooterTop);
+  //private WPI_TalonSRX motorShooterBottom = new WPI_TalonSRX(Constants.motorShooterBottom);
 
-  
+  private CANSparkMax motorShooterTop = new CANSparkMax(Constants.motorShooterTop, MotorType.kBrushless);
+  private CANSparkMax motorShooterBottom = new CANSparkMax(Constants.motorShooterBottom, MotorType.kBrushless);
 
-  private WPI_TalonSRX motorShooterTop = new WPI_TalonSRX(Constants.motorShooterTop);
-  private WPI_TalonSRX motorShooterBottom = new WPI_TalonSRX(Constants.motorShooterBottom);
-
-  //private CANSparkMax motorShooterTop = new CANSparkMax(Constants.motorShooterTop, MotorType.kBrushless);
-  //private CANSparkMax motorShooterBottom = new CANSparkMax(Constants.motorShooterBottom, MotorType.kBrushless);
-
-  /*private Encoder topShooterEncoder = new Encoder(Constants.topShooterEncA, Constants.topShooterEncB, 
+  private Encoder topShooterEncoder = new Encoder(Constants.topShooterEncA, Constants.topShooterEncB, 
     false, EncodingType.k4X);
   private Encoder bottomShooterEncoder = new Encoder(Constants.bottomShooterEncA, Constants.bottomShooterEncB, 
-    true, EncodingType.k4X);*/
+    true, EncodingType.k4X);
 
-  //private RelativeEncoder topShooterEncoder;
-  //private RelativeEncoder bottomShooterEncoder;
-
-  private BangBangController bangBangTop = new BangBangController(0.05);
-  private BangBangController bangBangBottom = new BangBangController(0.05);
+  //private BangBangController bangBangTop = new BangBangController(0.05);
+  //private BangBangController bangBangBottom = new BangBangController(0.05);
 
   // Create a new SimpleMotorFeedforward with gains kS, kV, and kA
-  private SimpleMotorFeedforward topFeedforward = new SimpleMotorFeedforward(topkS, topkV, topkA);
-  private SimpleMotorFeedforward bottomFeedforward = new SimpleMotorFeedforward(bottomkS, bottomkV, bottomkA);
+  private SimpleMotorFeedforward topFeedforward = new SimpleMotorFeedforward(
+    Constants.ksTopShooter, Constants.kVTopShooter, Constants.kATopShooter);
+  private SimpleMotorFeedforward bottomFeedforward = new SimpleMotorFeedforward(
+    Constants.ksBottomShooter, Constants.kVBottomShooter, Constants.kABottomShooter);
   
   private ProfiledPIDController topPID = new ProfiledPIDController(Constants.kpTopShooter, 0, 0, 
     new Constraints(Constants.maxShooterV, Constants.maxShooterA));
@@ -64,11 +67,68 @@ public class Shooter extends SubsystemBase {
   //rev through bore encoder is 8192 counts per rev?
   //ctre mag encoder is 4096
   private final double distancePerPulse = Math.PI * 0.1524; // / 4096) / 1; //blue wheel diam is 6 inches or 0.1524 meters
+
+
+  // The plant holds a state-space model of our flywheel. This system has the following properties:
+  // States: [velocity], in meters per second.
+  // Inputs (what we can "put in"): [voltage], in volts.
+  // Outputs (what we can measure): [velocity], in meters per second.
+  private final LinearSystem<N1, N1, N1> topPlant = LinearSystemId.identifyVelocitySystem(
+    Constants.kVTopShooter, Constants.kATopShooter);
+  private final LinearSystem<N1, N1, N1> bottomPlant = LinearSystemId.identifyVelocitySystem(
+      Constants.kVBottomShooter, Constants.kABottomShooter);
+
+  // The observer fuses our encoder data and voltage inputs to reject noise.
+  private final KalmanFilter<N1, N1, N1> topObserver = new KalmanFilter<>(
+    Nat.N1(),
+    Nat.N1(),
+    topPlant,
+    VecBuilder.fill(3.0), // How accurate we think our model is, standard deviation in m/s
+    VecBuilder.fill(0.01), // How accurate we think our encoder data is, standard deviation in m/s
+    Constants.loopTime
+  );
+  private final KalmanFilter<N1, N1, N1> bottomObserver = new KalmanFilter<>(
+    Nat.N1(),
+    Nat.N1(),
+    topPlant,
+    VecBuilder.fill(3.0), // How accurate we think our model is, standard deviation in m/s
+    VecBuilder.fill(0.01), // How accurate we think our encoder data is, standard deviation in m/s
+    Constants.loopTime
+  );
+
+  // A LQR uses feedback to create voltage commands.
+  private final LinearQuadraticRegulator<N1, N1, N1> topController = new LinearQuadraticRegulator<>(
+    topPlant,
+    VecBuilder.fill(8.0), // qelms. Velocity error tolerance, in meters per second. Decrease
+    // this to more heavily penalize state excursion, or make the controller behave more
+    // aggressively.
+    VecBuilder.fill(12.0), // relms. Control effort (voltage) tolerance. Decrease this to more
+    // heavily penalize control effort, or make the controller less aggressive. 12 is a good
+    // starting point because that is the (approximate) maximum voltage of a battery.
+    Constants.loopTime
+  ); 
+  private final LinearQuadraticRegulator<N1, N1, N1> bottomController = new LinearQuadraticRegulator<>(
+    bottomPlant,
+    VecBuilder.fill(8.0), // qelms. Velocity error tolerance, in meters per second. Decrease
+    // this to more heavily penalize state excursion, or make the controller behave more
+    // aggressively.
+    VecBuilder.fill(12.0), // relms. Control effort (voltage) tolerance. Decrease this to more
+    // heavily penalize control effort, or make the controller less aggressive. 12 is a good
+    // starting point because that is the (approximate) maximum voltage of a battery.
+    Constants.loopTime
+  ); 
+
+  // The state-space loop combines a controller, observer, feedforward and plant for easy control.
+  private final LinearSystemLoop<N1, N1, N1> topLoop = new LinearSystemLoop<>(
+    topPlant, topController, topObserver, 12.0, Constants.loopTime);
+  private final LinearSystemLoop<N1, N1, N1> bottomLoop = new LinearSystemLoop<>(
+    bottomPlant, bottomController, bottomObserver, 12.0, Constants.loopTime);
+
   
   /** Creates a new Shooter. */
   public Shooter() {
 
-    motorShooterTop.configFactoryDefault();
+    /*motorShooterTop.configFactoryDefault();
     motorShooterBottom.configFactoryDefault();
 
     //DO NOT CHANGE OR BANG BANG CONTROL WILL NOT WORK AND SHOOTER WILL BREAK
@@ -84,14 +144,12 @@ public class Shooter extends SubsystemBase {
     motorShooterBottom.setSensorPhase(false);
     
     motorShooterTop.setInverted(false);
-    motorShooterBottom.setInverted(true);
+    motorShooterBottom.setInverted(true);*/
     
-    //topShooterEncoder.setDistancePerPulse(distancePerPulse);
-    //bottomShooterEncoder.setDistancePerPulse(distancePerPulse);
+    topShooterEncoder.setDistancePerPulse(distancePerPulse);
+    bottomShooterEncoder.setDistancePerPulse(distancePerPulse);
 
-    //motorShooterBottom.configAllSettings(new TalonSRXConfiguration());
-
-    /*motorShooterTop.restoreFactoryDefaults();
+    motorShooterTop.restoreFactoryDefaults();
     motorShooterBottom.restoreFactoryDefaults();
 
     motorShooterTop.setInverted(false);
@@ -99,59 +157,58 @@ public class Shooter extends SubsystemBase {
 
     //DO NOT CHANGE OR BANG BANG CONTROL WILL NOT WORK AND SHOOTER WILL BREAK
     motorShooterTop.setIdleMode(IdleMode.kCoast);
-    motorShooterBottom.setIdleMode(IdleMode.kCoast);*/
+    motorShooterBottom.setIdleMode(IdleMode.kCoast);
 
-    /*this line only works if using neo built-in encoders, otherwise you need arguments that describe
-    the encoder that you are using instead*/
-    /*topShooterEncoder = motorShooterTop.getEncoder();
-    bottomShooterEncoder = motorShooterTop.getEncoder();
-
-    topShooterEncoder.setInverted(false);
-    bottomShooterEncoder.setInverted(false);
-
-    topShooterEncoder.setPositionConversionFactor(distancePerPulse);
-    bottomShooterEncoder.setPositionConversionFactor(distancePerPulse);
-
-    topShooterEncoder.setVelocityConversionFactor(distancePerPulse);
-    bottomShooterEncoder.setVelocityConversionFactor(distancePerPulse / 60); //changes per min to per sec
-
-    //saves the settings
+    //saves the settings to the motors
     motorShooterTop.burnFlash();
-    motorShooterBottom.burnFlash();*/
-
+    motorShooterBottom.burnFlash();
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    //SmartDashboard.putNumber("top shooter encoder", topShooterEncoder.getRate());
-    //SmartDashboard.putNumber("bottom shooter encoder", bottomShooterEncoder.getRate());
-
-    //SmartDashboard.putNumber("top shooter encoder", getTopShooterEncRate());
-    //SmartDashboard.putNumber("bottom shooter encoder", getBottomShooterEncRate());
+    SmartDashboard.putNumber("top shooter encoder", getTopShooterEncVel());
+    SmartDashboard.putNumber("bottom shooter encoder", getBottomShooterEncVel());
   }
 
+  public void setMotorsStateSpace(double distance) {
+    double topSetpoint = Data.getTopShooterVoltage(distance);
+    double bottomSetpoint = Data.getBottomShooterVoltage(distance);
 
-  /*public void shootWithInitialBallVelocity(double paraV, double perpV, double hoodAngle, double offsetAngle, double distance) {
-    //offsetAngle = 10 * perpV;
+    // Sets the target speed of our flywheel. This is similar to setting the setpoint of a PID controller.
+    topLoop.setNextR(topSetpoint);
+    bottomLoop.setNextR(bottomSetpoint);
+
+    // Correct our Kalman filter's state vector estimate with encoder data.
+    topLoop.correct(VecBuilder.fill(getTopShooterEncVel()));
+    bottomLoop.correct(VecBuilder.fill(getBottomShooterEncVel()));
+
+    // Update our LQR to generate new voltage commands and use the voltages to predict the next state with out Kalman filter.
+    topLoop.predict(Constants.loopTime);
+    bottomLoop.predict(Constants.loopTime);
+
+    // Send the new calculated voltage to the motors.
+    motorShooterTop.setVoltage(topLoop.getU(0));
+    motorShooterBottom.setVoltage(bottomLoop.getU(0));
+
+    //graph these + enc data on glass in same graph and tune the controller std dev values
+    SmartDashboard.putNumber("top shooter state estimate", topLoop.getXHat(0));
+    SmartDashboard.putNumber("bottom shooter state estimate", bottomLoop.getXHat(0));
+    SmartDashboard.putNumber("top shooter setpoint", topSetpoint);
+    SmartDashboard.putNumber("bottom shooter setpoint", bottomSetpoint);
     
-    double shotInitV = Math.pow(Math.pow(perpV / Math.tan(offsetAngle) + paraV, 2) 
-      + Math.pow(perpV, 2) - 9.807 * Math.pow(distance, 2) * Math.pow(Math.sin(hoodAngle), 2) 
-      / (2 * Constants.targetDeltaY * Math.pow(Math.cos(hoodAngle), 2) - 2 * distance 
-      * Math.cos(hoodAngle) * Math.sin(hoodAngle)), 0.5);
-
-    setMotors(shotInitV / 10);
-  }*/
-
-  /*public void setMotorsVelPID(double distance) {
-    double setpointV = distanceVelocityMap.getInterpolatedValue(distance);
-
-    motorShooterTop.setVoltage(topPID.calculate(getTopShooterEncRate(), setpointV) + topFeedforward.calculate(setpointV));
-    motorShooterBottom.setVoltage(bottomPID.calculate(getBottomShooterEncRate(), setpointV) + bottomFeedforward.calculate(setpointV));
   }
 
-  public void setMotorsVelPID(double distance, double perpV, double paraV) {
-    double setpointV = distanceVelocityMap.getInterpolatedValue(distance);
+
+  public void setMotorsVelPID(double distance) {
+    double setpointV = Data.getTopShooterVoltage(distance);
+
+    motorShooterTop.setVoltage(topPID.calculate(getTopShooterEncVel(), setpointV) + topFeedforward.calculate(setpointV));
+    motorShooterBottom.setVoltage(bottomPID.calculate(getBottomShooterEncVel(), setpointV) + bottomFeedforward.calculate(setpointV));
+  }
+
+  /*public void setMotorsVelPID(double distance, double perpV, double paraV) {
+    double setpointV = Data.getTopShooterVoltage(distance);
     
     //break setpointV into component parts
     //add perpV and paraV to their respective components
@@ -174,48 +231,34 @@ public class Shooter extends SubsystemBase {
     motorShooterBottom.set(bottomSpeed);
   }
 
-  /*public void setTopMotor(double speed) {
-    motorShooterTop.set(ControlMode.PercentOutput, speed);
+  public void setTopMotor(double speed) {
+    motorShooterTop.set(speed);
   }
 
   public void setBottomMotor(double speed) {
-    motorShooterBottom.set(ControlMode.PercentOutput, speed);
-  }*/
+    motorShooterBottom.set(speed);
+  }
 
-  /*public double getTopShooterEncRate() {
+  public double getTopShooterEncVel() {
     //multiplying by 10 because to turn 100 ms to 1 sec because it reports with per 100 ms units
     //return 10.0 * motorShooterTop.getSelectedSensorVelocity() * distancePerPulse;
 
     return topShooterEncoder.getRate();
   }
 
-  public double getBottomShooterEncRate() {
+  public double getBottomShooterEncVel() {
     //return 10.0 * motorShooterBottom.getSelectedSensorVelocity() * distancePerPulse;
 
     return bottomShooterEncoder.getRate();
-  }*/
-
-  /*public void setWithBangBang(double desiredSpeed) {
-    // Controls a motor with the output of the BangBang controller
-    setMotors(
-      bangBangTop.calculate(getTopShooterEncRate(), desiredSpeed), 
-      bangBangBottom.calculate(getBottomShooterEncRate(), desiredSpeed));
   }
 
-  public void setWithBangBang(double desiredTop, double desiredBottom) {
+  /*public void setWithBangBang(double desiredTop, double desiredBottom) {
     // Controls a motor with the output of the BangBang controller
     setMotors(
       bangBangTop.calculate(getTopShooterEncRate(), desiredTop), 
       bangBangBottom.calculate(getBottomShooterEncRate(), desiredBottom));
   }
 
-  public void setWithBangBangAndFeedForward(double desiredSpeed) {
-    setMotors(
-      bangBangTop.calculate(getTopShooterEncRate(), desiredSpeed) 
-        + 0.9 * topFeedforward.calculate(desiredSpeed),
-      bangBangBottom.calculate(getBottomShooterEncRate(), desiredSpeed) 
-        + 0.9 * bottomFeedforward.calculate(desiredSpeed));
-  }
 
   public void setWithBangBangAndFeedForward(double desiredTop, double desiredBottom) {
     setMotors(
