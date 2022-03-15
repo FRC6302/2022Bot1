@@ -5,6 +5,9 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+
+import javax.print.attribute.standard.MediaSize.NA;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
@@ -34,7 +37,7 @@ public class TrackTargetLeadingPose extends CommandBase {
   //from limelight
   double rawDistance = 3, x = 0, y = 0, lastX = 0, lastY = 0;
 
-  double gyroYaw = 0;
+  double gyroYaw = 0, ax = 0, ay = 0;
 
   double turretAngle = 0;
   //boolean isAllianceBall = true;
@@ -53,6 +56,7 @@ public class TrackTargetLeadingPose extends CommandBase {
 
   //pose stuff
   private Pose2d robotPose = new Pose2d();
+  double poseX = 0, poseY = 0;
   //private Transform2d robotToGoal = new Transform2d();
   //private Translation2d robotLocation = new Translation2d();
   //double estimatedActualDistance = 0;
@@ -66,18 +70,14 @@ public class TrackTargetLeadingPose extends CommandBase {
     this.hood = hood;
     this.shooter = shooter;
 
-    //not adding drivetrain to requirements bc that would not let us drive?
+    //not adding drivetrain to requirements bc that would not let us drive
     addRequirements(turret, hood, shooter);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    /*airTime = Data.getAirtime(3);
 
-    temp = airTime * (vy * (robotPose.getX() - Constants.goalLocation.getX()) 
-      + vx * (robotPose.getY() - Constants.goalLocation.getY()));
-    offsetAngle = Math.asin(temp / effectiveDistance);*/
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -94,6 +94,9 @@ public class TrackTargetLeadingPose extends CommandBase {
     }
 
     robotPose = mecDriveTrain.getPoseEstimate();
+    poseX = robotPose.getX();
+    poseY = robotPose.getY();
+
     actualDistance = robotPose.getTranslation().getDistance(Constants.goalLocation);
     //robotToGoal = new Transform2d(robotPose, goalPose);
     //distance = Math.sqrt(Math.pow(robotToGoal.getX(), 2) + Math.pow(robotToGoal.getY(), 2)); 
@@ -107,18 +110,23 @@ public class TrackTargetLeadingPose extends CommandBase {
     
     angV = mecDriveTrain.getAngV();
 
+    ax = NavX.getGyroAccelX();
+    ay = NavX.getGyroAccelY();
+
     //guess airtime 0.020 sec into future? linear approximation?
     // airtime = airtime + 0.020 * derivative
 
-    temp = airTime * (vy * (robotPose.getX() - Constants.goalLocation.getX()) 
-      + vx * (robotPose.getY() - Constants.goalLocation.getY()));
+    //temp value storing a calculation so that it doesnt have recalc it every time i need the value
+    temp = airTime * (vy * (poseX - Constants.goalLocation.getX()) 
+      + vx * (poseY - Constants.goalLocation.getY()));
 
     //temp = airTime * (vy * Math.sin(gyroYaw + turretAngle - x) + vx * Math.cos(gyroYaw + turretAngle - x));
     //TODO: compare these temp values and make sure they are close
 
-    //change so it doesn't use the effective distance from previous loop
-    //offsetAngle = Math.asin(temp / effectiveDistance);
+    //this effectiveDistance calculation uses the offset angle prediction from previous loop
     effectiveDistance = temp / (actualDistance * Math.sin(offsetAngle));
+    //once we know the effective distance, then we can determine what the actual offset angle should be
+    offsetAngle = Math.asin(temp / effectiveDistance);
 
     //take derivate of effective distance formula to get distance adjustment approximation to plug into airtime. a = 0?
 
@@ -140,17 +148,22 @@ public class TrackTargetLeadingPose extends CommandBase {
     //then you can get the air time and offset angle for the next loop
     airTime = Data.getAirtime(effectiveDistance);
 
-    //these derivatives are very approximate
-    offsetDerivative = (offsetAngle - prevOffset) / 2.;
-    airTimeDerivative = (airTime - prevAirtime) / 2.;
+    //these derivatives are very approximate, find better way to do them?
+    offsetDerivative = (offsetAngle - prevOffset) / Constants.loopTime;
+    airTimeDerivative = (airTime - prevAirtime) / Constants.loopTime;
 
-    //updates airtime based on approximate of 
-    effectiveDistanceDerivative = airTimeDerivative * effectiveDistance / airTime; 
+    //found the formula for this by differentiating by hand
+    effectiveDistanceDerivative = airTimeDerivative * effectiveDistance / airTime
+      + airTime *  ((poseX * ay - poseY * ax) / (actualDistance * Math.sin(offsetAngle)) 
+      - (poseX * vy - poseY * vx) * (Math.sin(offsetAngle) * (poseX * vx + poseY * vy) / actualDistance + actualDistance * Math.cos(offsetAngle) * offsetDerivative)) 
+      / Math.pow(actualDistance * Math.sin(offsetAngle), 2);
 
-    //predicts what the effective distance will be in 20 ms when the loop run again
-    effectiveDistancePrediction = effectiveDistance + 0.020 * effectiveDistanceDerivative;
-    //double temp2 = temp / airTime;
-    airTime = Data.getAirtime(effectiveDistancePrediction); 
+    //predicts what the effective distance will be in 20 ms when the loop runs again
+    effectiveDistancePrediction = effectiveDistance + Constants.loopTime * effectiveDistanceDerivative;
+
+    //predicts airtime for the next loop based on the effective distance prediction
+    airTime = Data.getAirtime(effectiveDistancePrediction);
+    //predicts the next offset angle 
     offsetAngle = Math.asin((airTime * temp / prevAirtime) / effectiveDistancePrediction);
 
 
