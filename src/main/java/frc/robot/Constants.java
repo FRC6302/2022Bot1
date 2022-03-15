@@ -62,19 +62,21 @@ public final class Constants {
   public static final int navxDIO9 = 23;
   
   //motors
-  public static final int motorL1Value = 1;
-  public static final int motorL2Value = 2;
-  public static final int motorR1Value = 4;
-  public static final int motorR2Value = 3;
+  public static final int motorL1Value = 58; //front left drive
+  public static final int motorL2Value = 60;
+  public static final int motorR1Value = 52;
+  public static final int motorR2Value = 51;
 
-  public static final int motorTurret = 0;
-  public static final int motorShooterTop = 3;
-  public static final int motorShooterBottom = 2;
-  public static final int motorHood = 7;
-  public static final int motorNeoTest = 1;
-  public static final int motorRightClimber = 0;
-  public static final int motorLeftClimber = 0;
-  public static final int motorIntake = 90;
+  public static final int motorTurret = 11;
+  public static final int motorShooterTop = 53;
+  public static final int motorShooterBottom = 54;
+  public static final int motorHood = 55;
+  public static final int motorNeoTest = 91;
+  public static final int motorRightClimber = 57;
+  public static final int motorLeftClimber = 59;
+  public static final int motorIntake = 56;
+  public static final int motorFeederFront = 12;
+  public static final int motorFeederMiddle = 13;
 
   //encoders - DIO ports on rio or navx
   public static final int encL1A = 0;
@@ -221,6 +223,9 @@ public static final double limelightBallMountDegreeOffset = 0;
   //miscellaneous
   public static final double turningRate = 0.5;
   public static final double deadzone = 0.3;
+  public static final double loopTime = 0.020;
+  public static final double visionPoseDeltaTolerance = 2; //meters
+
 
   //field
   //public static final double targetHeightInches = 104;
@@ -248,8 +253,10 @@ public static final double limelightBallMountDegreeOffset = 0;
   public static final int zeroTurretButton = xButton;
   public static final int raiseHoodButton = yButton;
   public static final int raiseHood2Button = aButton;
+  public static final int feedBothButton = aButton;
+public static final int intakeButton = bButton;
 
-public static final double loopTime = 0.020;
+
 
 
 

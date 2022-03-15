@@ -39,37 +39,37 @@ public class LimelightBall extends SubsystemBase {
   /** Creates a new BallLimelight. */
   public LimelightBall() {
     try {
+      NetworkTable table = NetworkTableInstance.getDefault().getTable(tableName);
       //camera controls
-      NetworkTableInstance.getDefault().getTable(tableName).getEntry("pipeline").setNumber(0);
+      table.getEntry("pipeline").setNumber(0);
       
-      //changing camMode can be used to switch between the normal cam and the darkened targeting mode
-      NetworkTableInstance.getDefault().getTable(tableName).getEntry("camMode").setNumber(0); //1 is light mode
+      //changing camMode can be used to switch between the normal targeting mode and light mode for driving
+      table.getEntry("camMode").setNumber(0); //1 is light mode, 0 is normal
       
-      NetworkTableInstance.getDefault().getTable(tableName).getEntry("ledMode").setNumber(0);
-      NetworkTableInstance.getDefault().getTable(tableName).getEntry("stream").setNumber(0);
-      }
-      catch (RuntimeException ex){
+      table.getEntry("ledMode").setNumber(0);
+      table.getEntry("stream").setNumber(0);
+    }
+    catch (RuntimeException ex){
         DriverStation.reportError("error setting limelight values because: " + ex.getMessage(), true);
-      }
+    }
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    // This method will be called once per scheduler run
     NetworkTable table = NetworkTableInstance.getDefault().getTable(tableName);
     
-    NetworkTableEntry tx = table.getEntry("tx"); 
+    /*NetworkTableEntry tx = table.getEntry("tx"); 
     NetworkTableEntry ty = table.getEntry("ty"); 
-    //NetworkTableEntry ta = table.getEntry("ta");
-    NetworkTableEntry tv = table.getEntry("tv");
+    NetworkTableEntry ta = table.getEntry("ta");
+    NetworkTableEntry tv = table.getEntry("tv");*/
     
     //read values periodically
     //maybe change default value to return the last x? Then you dont need lastX variable
-    x = tx.getDouble(0.0); //ranges from -29.8 to 29.8 degrees for LL2
-    y = ty.getDouble(0.0); //ranges from -24.85 to 24.85 degrees for LL2
-    //double area = ta.getDouble(0.0); //ranges from 0 to 100% of image
-    targetFound = tv.getDouble(0.0);
+    x = table.getEntry("tx").getDouble(0); //ranges from -29.8 to 29.8 degrees for LL2
+    y = table.getEntry("ty").getDouble(0); //ranges from -24.85 to 24.85 degrees for LL2
+    double area = table.getEntry("ta").getDouble(0); //ranges from 0 to 100% of image
+    targetFound = table.getEntry("tv").getDouble(0);
 
     if (getTargetFound()) {
       lastX = x;

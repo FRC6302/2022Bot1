@@ -18,12 +18,13 @@ public class NavX extends SubsystemBase{
   private static double gyroReverser = 1;
   //double currAccelX, lastAccelX = 0, jerkX, accelY;
   //boolean collisionDetected = false;
+
+  private  static double offsetAngle = 0;
   
   /**
    * Creates a new NavX.
    */
   public NavX() { 
-    //all methods are static so this constructor will never be called
     /*new Thread( () -> { 
       try {
         Thread.sleep(1000); 
@@ -63,7 +64,12 @@ public class NavX extends SubsystemBase{
 
   public static double getGyroYaw() { //yaw is rotation (turning) left or right
     //negative because trajectory requires counterclockwise rotation to be positive
-    return gyro.getYaw() * gyroReverser; 
+    return gyro.getYaw() - offsetAngle; 
+  }
+
+  //ccw+
+  public static void setAngleOffset(double offsetDeg) {
+    offsetAngle = offsetDeg;
   }
 
   //navx didnt have a built in getRotation2d method (in this WPILIB version) so i had to get it like this
@@ -86,6 +92,7 @@ public class NavX extends SubsystemBase{
 
   public static void zeroGyroYaw() {
     gyro.zeroYaw();
+    //gyro.setAngleAdjustment(adjustment);
   }
 
   public static boolean gyroIsCalibrating() {

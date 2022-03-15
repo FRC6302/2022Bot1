@@ -16,10 +16,12 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.commands.DriveMec;
 import frc.robot.commands.DriveMecTrackTarget;
+import frc.robot.commands.FeedBoth;
 import frc.robot.commands.Move;
 import frc.robot.commands.PPMecanumControllerCommand;
 import frc.robot.commands.RaiseHood;
 import frc.robot.commands.Shoot;
+import frc.robot.commands.SuckBalls;
 import frc.robot.commands.TestNeo;
 import frc.robot.commands.TrackTargetCenter;
 import frc.robot.commands.TrackTargetCenterPose;
@@ -27,7 +29,10 @@ import frc.robot.commands.TurnTurret;
 import frc.robot.library.Data;
 import frc.robot.library.LinearInterpolator;
 import frc.robot.subsystems.ColorSensor;
+import frc.robot.subsystems.FeederFront;
+import frc.robot.subsystems.FeederMiddle;
 import frc.robot.subsystems.Hood;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.LimelightGoal;
 import frc.robot.subsystems.MecDriveTrain;
@@ -74,6 +79,13 @@ public class RobotContainer {
 
   private Hood hood;
   private RaiseHood raiseHood;
+
+  private Intake intake;
+  private SuckBalls suckBalls;
+
+  private FeederFront feederFront;
+  private FeederMiddle feederMiddle;
+  private FeedBoth feedBoth;
 
   private LimelightGoal limelight;
 
@@ -127,10 +139,19 @@ public class RobotContainer {
     //trackTargetCenterPose = new TrackTargetCenterPose(mecDriveTrain, turret, shooter);
     //turret.setDefaultCommand(trackTargetCenterPose);
 
-    hood = new Hood();
-    raiseHood = new RaiseHood(hood);
-    raiseHood.addRequirements(hood);
+    //hood = new Hood();
+    //raiseHood = new RaiseHood(hood);
+    //raiseHood.addRequirements(hood);
     //hood.setDefaultCommand(raiseHood);
+
+    intake = new Intake();
+    suckBalls = new SuckBalls(intake);
+    suckBalls.addRequirements(intake);
+
+    feederFront = new FeederFront();
+    feederMiddle = new FeederMiddle();
+    feedBoth = new FeedBoth(feederFront, feederMiddle);
+    feedBoth.addRequirements(feederFront, feederMiddle);
 
 
     //limelight = new Limelight();
@@ -228,16 +249,23 @@ public class RobotContainer {
     });*/
     //turnTurretButton.whileHeld(new TurnTurret(turret));
 
-    final JoystickButton raiseHoodButton = new JoystickButton(driverController, Constants.raiseHoodButton);
-    raiseHoodButton.whileHeld(new RaiseHood(hood));
+    //final JoystickButton raiseHoodButton = new JoystickButton(driverController, Constants.raiseHoodButton);
+    //raiseHoodButton.whileHeld(new RaiseHood(hood));
 
-    final JoystickButton raiseHood2Button = new JoystickButton(driverController, Constants.raiseHood2Button);
-    raiseHood2Button.whileHeld(() -> {
+    //final JoystickButton raiseHood2Button = new JoystickButton(driverController, Constants.raiseHood2Button);
+    /*raiseHood2Button.whileHeld(() -> {
       hood.setMotor(getDriverDeadzoneAxis(Constants.rightStickY) / -4);
     });
     raiseHood2Button.whenReleased(() -> {
       hood.stopMotor();
-    });
+    });*/
+
+    final JoystickButton intakeButton = new JoystickButton(driverController, Constants.intakeButton); 
+    intakeButton.whileHeld(new SuckBalls(intake));
+
+    final JoystickButton feedBothButton = new JoystickButton(driverController, Constants.feedBothButton);
+    feedBothButton.whileHeld(new FeedBoth(feederFront, feederMiddle));
+
 
 
     //final JoystickButton zeroTurretButton = new JoystickButton(driverController, Constants.zeroTurretButton);

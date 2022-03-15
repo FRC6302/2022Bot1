@@ -18,6 +18,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxRelativeEncoder.Type;
 
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.BangBangController;
@@ -162,6 +163,10 @@ public class Shooter extends SubsystemBase {
     //saves the settings to the motors
     motorShooterTop.burnFlash();
     motorShooterBottom.burnFlash();
+
+    //these might mess things up
+    topLoop.reset(VecBuilder.fill(0));
+    bottomLoop.reset(VecBuilder.fill(0));
   }
 
   @Override

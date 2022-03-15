@@ -1,80 +1,100 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
 package frc.robot.library;
 
-import java.util.Map;
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
 import java.util.TreeMap;
 
 /**
- * Interpolating Tree Maps are used to get values at points that are not defined by making a guess from points that are
- * defined. This uses linear interpolation.
- *
- * @param <K> The type of the key (must implement InverseInterpolable)
- * @param <V> The type of the value (must implement Interpolable)
+ * Interpolating Tree Maps are used to get values at points that are not defined by making a guess
+ * from points that are defined. This uses linear interpolation.
  */
-public class InterpolatingTreeMap<K extends InverseInterpolatable<K> & Comparable<K>, V extends Interpolatable<V>>
-  extends TreeMap<K, V> {
-  //private static final long serialVersionUID = 8347275262778054124L;
-
-  final int max_;
-
-  public InterpolatingTreeMap(int maximumSize) {
-    max_ = maximumSize;
-  }
-
-  public InterpolatingTreeMap() {
-    this(0);
-  }
+public class InterpolatingTreeMap<K extends Number, V extends Number> {
+  private final TreeMap<K, V> m_map = new TreeMap<>();
 
   /**
-   * Inserts a key value pair, and trims the tree if a max size is specified
+   * Inserts a key-value pair.
    *
-   * @param key   Key for inserted data
-   * @param value Value for inserted data
-   * @return the value
+   * @param key The key.
+   * @param value The value.
    */
-  @Override
-  public V put(K key, V value) {
-      if (max_ > 0 && max_ <= size()) {
-          // "Prune" the tree if it is oversize
-          K first = firstKey();
-          remove(first);
-      }
-
-      super.put(key, value);
-
-      return value;
-  }
-
-  @Override
-  public void putAll(Map<? extends K, ? extends V> map) {
-      System.out.println("Unimplemented Method");
+  public void put(K key, V value) {
+    m_map.put(key, value);
   }
 
   /**
-   * @param key Lookup for a value (does not have to exist)
-   * @return V or null; V if it is Interpolable or exists, null if it is at a bound and cannot average
+   * Returns the value associated with a given key.
+   *
+   * <p>If there's no matching key, the value returned will be a linear interpolation between the
+   * keys before and after the provided one.
+   *
+   * @param key The key.
+   * @return The value associated with the given key.
    */
-  public V getInterpolated(K key) {
-      V gotval = get(key);
-      if (gotval == null) {
-          // get surrounding keys for interpolation
-          K topBound = ceilingKey(key);
-          K bottomBound = floorKey(key);
+  public Double get(K key) {
+    V val = m_map.get(key);
+    if (val == null) {
+      K ceilingKey = m_map.ceilingKey(key);
+      K floorKey = m_map.floorKey(key);
 
-          // if attempting interpolation at ends of tree, return the nearest data point
-          if (topBound == null && bottomBound == null) {
-              return null;
-          } else if (topBound == null) {
-              return get(bottomBound);
-          } else if (bottomBound == null) {
-              return get(topBound);
-          }
-
-          // get surrounding values for interpolation
-          V topElem = get(topBound);
-          V bottomElem = get(bottomBound);
-          return bottomElem.interpolate(topElem, bottomBound.inverseInterpolate(topBound, key));
-      } else {
-          return gotval;
+      if (ceilingKey == null && floorKey == null) {
+        return null;
       }
+      if (ceilingKey == null) {
+        return m_map.get(floorKey).doubleValue();
+      }
+      if (floorKey == null) {
+        return m_map.get(ceilingKey).doubleValue();
+      }
+      V floor = m_map.get(floorKey);
+      V ceiling = m_map.get(ceilingKey);
+
+      return interpolate(floor, ceiling, inverseInterpolate(ceilingKey, key, floorKey));
+    } else {
+      return val.doubleValue();
+    }
+  }
+
+  /** Clears the contents. */
+  public void clear() {
+    m_map.clear();
+  }
+
+  /**
+   * Return the value interpolated between val1 and val2 by the interpolant d.
+   *
+   * @param val1 The lower part of the interpolation range.
+   * @param val2 The upper part of the interpolation range.
+   * @param d The interpolant in the range [0, 1].
+   * @return The interpolated value.
+   */
+  private double interpolate(V val1, V val2, double d) {
+    double dydx = val2.doubleValue() - val1.doubleValue();
+    return dydx * d + val1.doubleValue();
+  }
+
+  /**
+   * Return where within interpolation range [0, 1] q is between down and up.
+   *
+   * @param up Upper part of interpolation range.
+   * @param q Query.
+   * @param down Lower part of interpolation range.
+   * @return Interpolant in range [0, 1].
+   */
+  private double inverseInterpolate(K up, K q, K down) {
+    double upperToLower = up.doubleValue() - down.doubleValue();
+    if (upperToLower <= 0) {
+      return 0.0;
+    }
+    double queryToLower = q.doubleValue() - down.doubleValue();
+    if (queryToLower <= 0) {
+      return 0.0;
+    }
+    return queryToLower / upperToLower;
   }
 }

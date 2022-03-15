@@ -297,7 +297,7 @@ public class MecDriveTrain extends SubsystemBase {
     poseEstimator.update(NavX.getGyroRotation2d(), getCurrentWheelSpeeds());
 
     poseEstimator.addVisionMeasurement(
-      VisionPoseEstimation.getGlobalPoseEstimation(distance, gyroAngle, turretAngle, tx), 
+      VisionPoseEstimation.getGlobalPoseEstimation(getPoseEstimate(), distance, gyroAngle, turretAngle, tx), 
       Timer.getFPGATimestamp() - Constants.limelightLatency);
   }
 

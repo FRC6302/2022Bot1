@@ -27,4 +27,8 @@ public class Intake extends SubsystemBase {
   public void setMotor(double speed) {
     motorIntake.set(speed);
   }
+
+  public void stopMotor() {
+    motorIntake.set(0);
+  }
 }
