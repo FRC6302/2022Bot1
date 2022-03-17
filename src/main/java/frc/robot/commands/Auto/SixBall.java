@@ -4,13 +4,22 @@
 
 package frc.robot.commands.Auto;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
 
-public class AutoTest extends CommandBase {
-  /** Creates a new AutoTest. */
-  public AutoTest() {
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.library.Utilities;
+import frc.robot.subsystems.MecDriveTrain;
+
+public class SixBall extends CommandBase {
+  MecDriveTrain mecDriveTrain;
+  PathPlannerTrajectory sixBallTrajectory = PathPlanner.loadPath("6 ball", 4, 1.5);
+
+  /** Creates a new SixBall. */
+  public SixBall(MecDriveTrain mecDriveTrain) {
     // Use addRequirements() here to declare subsystem dependencies.
+    this.mecDriveTrain = mecDriveTrain;
+    addRequirements(mecDriveTrain);
   }
 
   // Called when the command is initially scheduled.
@@ -20,7 +29,8 @@ public class AutoTest extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    new InstantCommand().schedule(true);
+    Utilities.getMecControllerCommand(sixBallTrajectory, mecDriveTrain).andThen(mecDriveTrain::stopDrive).schedule(true);
+
   }
 
   // Called once the command ends or is interrupted.
@@ -30,6 +40,6 @@ public class AutoTest extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
   }
 }

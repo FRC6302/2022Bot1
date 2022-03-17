@@ -158,7 +158,8 @@ public class MecDriveTrain extends SubsystemBase {
     encoderR1.setDistancePerPulse(distancePerPulse);
     encoderR2.setDistancePerPulse(distancePerPulse);
 
-    
+    //how accurate the vision pose estimation is. The error comes from gyro and turret encoder drift and limelight targeting the wrong thing
+    poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.1, 0.1, 0.001));
     
     //mecDrive = new MecanumDrive(motorL1, motorL2, motorR1, motorR2);
 
@@ -182,6 +183,7 @@ public class MecDriveTrain extends SubsystemBase {
     //SmartDashboard.putNumber("test enc pos", encTest.getPosition());
     //SmartDashboard.putNumber("test enc vel", encTest.getVelocity());
 
+    //updates the drive odometry every loop. Not updating using vision here because we prob wont be able to see the goal the whole match
     updateOdometry();
 
     SmartDashboard.putNumber("pose x", getPoseEstimate().getX());

@@ -69,9 +69,9 @@ public final class Constants {
 
   public static final int motorTurret = 11;
   public static final int motorShooterTop = 53;
-  public static final int motorShooterBottom = 54;
+  public static final int motorShooterBottom = 54; //53
   public static final int motorHood = 55;
-  public static final int motorNeoTest = 91;
+  public static final int motorNeoTest = 53;
   public static final int motorRightClimber = 57;
   public static final int motorLeftClimber = 59;
   public static final int motorIntake = 56;
@@ -244,17 +244,17 @@ public static final double limelightBallMountDegreeOffset = 0;
   public static final int PneumReverseButton = yButton;
   public static final int PneumToggleButton = rightBumper;
   public static final int zeroYawButton = leftBumper;
-  public static final int shootButton = aButton;
+  public static final int shootButton = xButton; //
   public static final int zeroEncButton = yButton;
   public static final int driveNormalButton = aButton;
   public static final int missTargetButton = 0;
   public static final int shootButton2 = bButton;
-  public static final int turnTurretButton = bButton;
+  public static final int turnTurretButton = yButton; //
   public static final int zeroTurretButton = xButton;
   public static final int raiseHoodButton = yButton;
-  public static final int raiseHood2Button = aButton;
+  public static final int raiseHood2Button = leftBumper; //
   public static final int feedBothButton = aButton;
-public static final int intakeButton = bButton;
+  public static final int intakeButton = bButton;
 
 
 

@@ -17,36 +17,36 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class NeoTest extends SubsystemBase {
-  //private CANSparkMax motorNeoTest = new CANSparkMax(Constants.motorNeoTest, MotorType.kBrushless);
+  private CANSparkMax motorNeoTest = new CANSparkMax(Constants.motorNeoTest, MotorType.kBrushless);
 
-  //private RelativeEncoder encNeoTest;
+  private RelativeEncoder encNeoTest;
 
-  private Encoder encNeoTest = new Encoder(Constants.encTestA, Constants.encTestB, false, EncodingType.k4X);
+  //private Encoder encNeoTest = new Encoder(Constants.encTestA, Constants.encTestB, false, EncodingType.k4X);
 
   /** Creates a new NeoTest. */
   public NeoTest() {
-    /*motorNeoTest.restoreFactoryDefaults();
+    motorNeoTest.restoreFactoryDefaults();
     motorNeoTest.setInverted(false);
     motorNeoTest.setIdleMode(IdleMode.kCoast);
-    motorNeoTest.setSoftLimit(SoftLimitDirection.kForward, 720);*/
+    //motorNeoTest.setSoftLimit(SoftLimitDirection.kForward, 720);*/
 
-    //encNeoTest = motorNeoTest.getEncoder();
+    encNeoTest = motorNeoTest.getEncoder();
     //encNeoTest.setInverted(false);
     //encNeoTest.setPositionConversionFactor(Math.PI * 0.1524); //6 in = 0.1524 m wheel
     //encNeoTest.setVelocityConversionFactor(Math.PI * 0.1524);
 
-    encNeoTest.setDistancePerPulse(1);
+    //encNeoTest.setDistancePerPulse(1);
 
-    //motorNeoTest.burnFlash();
+    motorNeoTest.burnFlash();
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("test enc p", encNeoTest.getDistance());
+    SmartDashboard.putNumber("test enc p", encNeoTest.getPosition());
   }
 
   public void setMotor(double speed) {
-    //motorNeoTest.set(speed); //values from -1 to 1
+    motorNeoTest.set(speed); //values from -1 to 1
   }
 }

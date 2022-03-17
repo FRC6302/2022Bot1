@@ -23,6 +23,14 @@ public class Shoot extends CommandBase {
     addRequirements(shooter); 
   }
 
+  public Shoot(Shooter shooter) {
+    this.shooter = shooter;
+    topSpeed = 0.1;
+    bottomSpeed = 0;
+
+    addRequirements(shooter); 
+  }
+
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
@@ -32,11 +40,8 @@ public class Shoot extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    //while (true) {
-      //shooter.setBothMotors(Constants.shootSpeed);
-
-      shooter.setMotors(topSpeed, bottomSpeed);
-    //}
+    //shooter.setMotors(topSpeed, bottomSpeed);
+    shooter.setTopMotor(0.2);
     
   }
 

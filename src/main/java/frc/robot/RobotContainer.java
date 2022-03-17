@@ -115,11 +115,6 @@ public class RobotContainer {
     driverController = new XboxController(Constants.driverControllerPort);
     //operatorController = new XboxController(Constants.operatorControllerPort);
 
-    //driveTrain = DriveTrain.getInstance();
-    //driveGTA = new DriveGTA();
-    //driveGTA.addRequirements(driveTrain);
-    //driveTrain.setDefaultCommand(driveGTA);
-
     //mecDriveTrain = new MecDriveTrain();
     //driveMec = new DriveMec(mecDriveTrain);
     //driveMec.addRequirements(mecDriveTrain);
@@ -128,13 +123,13 @@ public class RobotContainer {
     //mecDriveTrain.setDefaultCommand(driveMec);
     
     //shooter = new Shooter();
-    //shoot = new Shoot(shooter, 1, 1);
+    //shoot = new Shoot(shooter);
     //shoot.addRequirements(shooter);
     //shooter.setDefaultCommand(trackTarget);
 
-    //turret = new Turret();
-    //turnTurret = new TurnTurret(turret);
-    //turnTurret.addRequirements(turret);
+    /*turret = new Turret();
+    turnTurret = new TurnTurret(turret);
+    turnTurret.addRequirements(turret);*/
     //turret.setDefaultCommand(turnTurret);
     //trackTargetCenterPose = new TrackTargetCenterPose(mecDriveTrain, turret, shooter);
     //turret.setDefaultCommand(trackTargetCenterPose);
@@ -144,19 +139,19 @@ public class RobotContainer {
     //raiseHood.addRequirements(hood);
     //hood.setDefaultCommand(raiseHood);
 
-    intake = new Intake();
+    /*intake = new Intake();
     suckBalls = new SuckBalls(intake);
     suckBalls.addRequirements(intake);
 
     feederFront = new FeederFront();
     feederMiddle = new FeederMiddle();
     feedBoth = new FeedBoth(feederFront, feederMiddle);
-    feedBoth.addRequirements(feederFront, feederMiddle);
+    feedBoth.addRequirements(feederFront, feederMiddle);*/
 
 
     //limelight = new Limelight();
 
-    navX = new NavX();
+    //navX = new NavX();
 
     //colorSensor = new ColorSensor();
 
@@ -169,17 +164,17 @@ public class RobotContainer {
     //move = new Move(driveTrain);
     //move.addRequirements(driveTrain);
 
-    //neoTest = new NeoTest();
-    //testNeo = new TestNeo(neoTest);
-    //testNeo.addRequirements(neoTest);
-    //neoTest.setDefaultCommand(testNeo); */
+    neoTest = new NeoTest();
+    testNeo = new TestNeo(neoTest);
+    testNeo.addRequirements(neoTest);
+    neoTest.setDefaultCommand(testNeo); 
 
 
     data = new Data();
 
     //when distance is 10 m, velocity should be 16 m/s ??
     //TODO give more values and test output with smart dashboard
-    //distanceVelocityMap.put(new IntesrpolatingDouble(10.), new InterpolatingDouble(16.)); 
+    //distanceVelocityMap.put(new InterpolatingDouble(10.), new InterpolatingDouble(16.)); 
     //distanceVelocityMap.put(new InterpolatingDouble(11.), new InterpolatingDouble(16.5)); 
 
     autonChooser = new SendableChooser<>();
@@ -228,14 +223,14 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    /*final JoystickButton shootButton = new JoystickButton(driverController, Constants.shootButton);
-    shootButton.whileHeld(() -> {
+    //final JoystickButton shootButton = new JoystickButton(driverController, Constants.shootButton);
+    /*shootButton.whileHeld(() -> {
       shooter.setMotors(.99);
     });
     shootButton.whenReleased(() -> {
       shooter.stop();
     });*/
-    //shootButton.whileHeld(shoot);
+    //shootButton.whileHeld(new Shoot(shooter, 0.1, 0.));
 
     //final JoystickButton shootButton2 = new JoystickButton(driverController, Constants.shootButton2);
     //shootButton2.whileHeld(new Shoot(shooter, 0.5, 0.5));  
@@ -252,19 +247,19 @@ public class RobotContainer {
     //final JoystickButton raiseHoodButton = new JoystickButton(driverController, Constants.raiseHoodButton);
     //raiseHoodButton.whileHeld(new RaiseHood(hood));
 
-    //final JoystickButton raiseHood2Button = new JoystickButton(driverController, Constants.raiseHood2Button);
-    /*raiseHood2Button.whileHeld(() -> {
+    /*final JoystickButton raiseHood2Button = new JoystickButton(driverController, Constants.raiseHood2Button);
+    raiseHood2Button.whileHeld(() -> {
       hood.setMotor(getDriverDeadzoneAxis(Constants.rightStickY) / -4);
     });
     raiseHood2Button.whenReleased(() -> {
       hood.stopMotor();
     });*/
 
-    final JoystickButton intakeButton = new JoystickButton(driverController, Constants.intakeButton); 
-    intakeButton.whileHeld(new SuckBalls(intake));
+    //final JoystickButton intakeButton = new JoystickButton(driverController, Constants.intakeButton); 
+    //intakeButton.whileHeld(new SuckBalls(intake));
 
-    final JoystickButton feedBothButton = new JoystickButton(driverController, Constants.feedBothButton);
-    feedBothButton.whileHeld(new FeedBoth(feederFront, feederMiddle));
+    //final JoystickButton feedBothButton = new JoystickButton(driverController, Constants.feedBothButton);
+    //feedBothButton.whileHeld(new FeedBoth(feederFront, feederMiddle));
 
 
 

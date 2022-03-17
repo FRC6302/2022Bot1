@@ -42,13 +42,16 @@ public class Shooter extends SubsystemBase {
   //private WPI_TalonSRX motorShooterTop = new WPI_TalonSRX(Constants.motorShooterTop);
   //private WPI_TalonSRX motorShooterBottom = new WPI_TalonSRX(Constants.motorShooterBottom);
 
-  private CANSparkMax motorShooterTop = new CANSparkMax(Constants.motorShooterTop, MotorType.kBrushless);
-  private CANSparkMax motorShooterBottom = new CANSparkMax(Constants.motorShooterBottom, MotorType.kBrushless);
+  private CANSparkMax motorShooterTop;
+  private CANSparkMax motorShooterBottom;
 
-  private Encoder topShooterEncoder = new Encoder(Constants.topShooterEncA, Constants.topShooterEncB, 
+  /*private Encoder topShooterEncoder = new Encoder(Constants.topShooterEncA, Constants.topShooterEncB, 
     false, EncodingType.k4X);
   private Encoder bottomShooterEncoder = new Encoder(Constants.bottomShooterEncA, Constants.bottomShooterEncB, 
-    true, EncodingType.k4X);
+    true, EncodingType.k4X);*/
+
+  private RelativeEncoder topShooterEncoder;
+  private RelativeEncoder bottomShooterEncoder;
 
   //private BangBangController bangBangTop = new BangBangController(0.05);
   //private BangBangController bangBangBottom = new BangBangController(0.05);
@@ -147,18 +150,24 @@ public class Shooter extends SubsystemBase {
     motorShooterTop.setInverted(false);
     motorShooterBottom.setInverted(true);*/
     
-    topShooterEncoder.setDistancePerPulse(distancePerPulse);
-    bottomShooterEncoder.setDistancePerPulse(distancePerPulse);
+    //topShooterEncoder.setDistancePerPulse(distancePerPulse);
+    //bottomShooterEncoder.setDistancePerPulse(distancePerPulse);
+
+    motorShooterTop = new CANSparkMax(Constants.motorShooterTop, MotorType.kBrushless);
+    motorShooterBottom = new CANSparkMax(Constants.motorShooterBottom, MotorType.kBrushless);
 
     motorShooterTop.restoreFactoryDefaults();
     motorShooterBottom.restoreFactoryDefaults();
 
     motorShooterTop.setInverted(false);
-    motorShooterBottom.setInverted(true);
+    motorShooterBottom.setInverted(false);
 
-    //DO NOT CHANGE OR BANG BANG CONTROL WILL NOT WORK AND SHOOTER WILL BREAK
+    //DO NOT CHANGE TO BRAKE OR BANG BANG CONTROL WILL NOT WORK AND SHOOTER WILL BREAK
     motorShooterTop.setIdleMode(IdleMode.kCoast);
     motorShooterBottom.setIdleMode(IdleMode.kCoast);
+
+    topShooterEncoder = motorShooterTop.getEncoder();
+    bottomShooterEncoder = motorShooterBottom.getEncoder();
 
     //saves the settings to the motors
     motorShooterTop.burnFlash();
@@ -248,13 +257,15 @@ public class Shooter extends SubsystemBase {
     //multiplying by 10 because to turn 100 ms to 1 sec because it reports with per 100 ms units
     //return 10.0 * motorShooterTop.getSelectedSensorVelocity() * distancePerPulse;
 
-    return topShooterEncoder.getRate();
+    return topShooterEncoder.getVelocity();
+    //return 0;
   }
 
   public double getBottomShooterEncVel() {
     //return 10.0 * motorShooterBottom.getSelectedSensorVelocity() * distancePerPulse;
 
-    return bottomShooterEncoder.getRate();
+    return bottomShooterEncoder.getVelocity();
+    //return 0;
   }
 
   /*public void setWithBangBang(double desiredTop, double desiredBottom) {

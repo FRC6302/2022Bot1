@@ -28,8 +28,8 @@ public class TrackTargetLeadingPose extends CommandBase {
   Shooter shooter;
 
   //outputs of command
-  double desiredTurretV = 0, desiredTurretAngle = 0;
-  double hoodAdjust = 0, desiredHoodAngle = 0;
+  //double desiredTurretV = 0, desiredTurretAngle = 0;
+  //double hoodAdjust = 0, desiredHoodAngle = 0;
 
   //from chassis
   double paraV = 0, perpV = 0, angV = 0, vx = 0, vy = 0;
@@ -50,9 +50,9 @@ public class TrackTargetLeadingPose extends CommandBase {
   double temp = 0;
 
   //approximating derivative stuff
-  double prevOffset = offsetAngle, offsetDerivative = 1;
-  double prevAirtime = airTime, airTimeDerivative = 1;
-  double effectiveDistanceDerivative = 1, effectiveDistancePrediction = effectiveDistance;
+  double prevOffset = offsetAngle, offsetDerivative = 0;
+  double prevAirtime = airTime, airTimeDerivative = 0;
+  double effectiveDistanceDerivative = 0, effectiveDistancePrediction = effectiveDistance;
 
   //pose stuff
   private Pose2d robotPose = new Pose2d();
