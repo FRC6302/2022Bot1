@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
@@ -27,5 +28,48 @@ public class Feeders extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+  }
+
+  public void setBothMotors(double frontSpeed, double middleSpeed) {
+    motorFeederFront.set(ControlMode.PercentOutput, frontSpeed);
+    motorFeederMiddle.set(ControlMode.PercentOutput, middleSpeed);
+  }
+
+  public void setBothMotorVolts(double frontVolts, double middleVolts) {
+    motorFeederFront.setVoltage(frontVolts);
+    motorFeederMiddle.setVoltage(middleVolts);
+  }
+
+  public void stopBothMotors() {
+    motorFeederFront.set(ControlMode.PercentOutput, 0);
+    motorFeederMiddle.set(ControlMode.PercentOutput, 0);
+  }
+
+
+
+  public void setFrontMotor(double speed) {
+    motorFeederFront.set(ControlMode.PercentOutput, speed);
+  }
+
+  public void setFrontMotorVolts(double volts) {
+    motorFeederFront.setVoltage(volts);
+  }
+
+  public void stopFrontMotor() {
+    motorFeederFront.set(ControlMode.PercentOutput, 0);
+  }
+
+  
+
+  public void setMiddleMotor(double speed) {
+    motorFeederMiddle.set(ControlMode.PercentOutput, speed);
+  }
+
+  public void setMiddleMotorVolts(double volts) {
+    motorFeederMiddle.setVoltage(volts);
+  }
+
+  public void stopMiddleMotor() {
+    motorFeederMiddle.set(ControlMode.PercentOutput, 0);
   }
 }

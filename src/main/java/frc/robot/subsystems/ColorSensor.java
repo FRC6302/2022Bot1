@@ -10,6 +10,7 @@ import com.revrobotics.ColorSensorV3;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -48,7 +49,13 @@ public class ColorSensor extends SubsystemBase {
   
   private static double ballsPickedUp;
   private static String latestBall = "hey";
+  private static String currentBall = "unknown";
   private static String allianceColorStr = "girl";
+
+  //tracks the time its been since we last saw the opposing team's ball
+  private static Timer lastOppositeBallTimer;
+  //how long have we been seeing the opposing ball color
+  private static Timer currentOppositeBallTimer;
 
 
   /** Creates a new ColorSensor. */
@@ -57,6 +64,9 @@ public class ColorSensor extends SubsystemBase {
     colorMatcher.addColorMatch(green);
     colorMatcher.addColorMatch(red);
     colorMatcher.addColorMatch(yellow);
+
+    //how confident the sensor has to be in order to say something is a color
+    colorMatcher.setConfidenceThreshold(0.95);
 
     alliance = DriverStation.getAlliance();
     if (alliance == DriverStation.Alliance.Blue) {
@@ -72,6 +82,8 @@ public class ColorSensor extends SubsystemBase {
       allianceColor = yellow;
       allianceColorStr = "yellow";
     }
+
+    lastOppositeBallTimer.start();
   }
 
   @Override
@@ -114,7 +126,19 @@ public class ColorSensor extends SubsystemBase {
       colorString = "Yellow";*/
     } else {
       colorString = "unknown";
+      currentBall = "unknown";
       //i dont update lastestBall here because the whole point of the variable is to have the lastest ball
+    }
+
+    if (getLatestBallIsAlliance()) {
+      lastOppositeBallTimer.reset();
+    }
+
+    if (getCurrentBallIsAlliance()) {
+      currentOppositeBallTimer.reset();
+    }
+    else {
+      currentOppositeBallTimer.start(); //doesnt effect the timer if its already running
     }
 
     SmartDashboard.putNumber("Red", detectedColor.red);
@@ -130,7 +154,25 @@ public class ColorSensor extends SubsystemBase {
     return ballsPickedUp;
   }
 
-  public static boolean getLastestBallIsAlliance() {
+  public static boolean getLatestBallIsAlliance() {
     return latestBall == allianceColorStr;
+  }
+
+  public static boolean getCurrentBallIsAlliance() {
+    if (currentBall == "unknown") {
+      /*defaults to true if we dont see a ball so that everything is ready for when we do get a ball. We're more likely to get 
+      our color next than the other color so everything should already be in place*/
+      return true;
+    }
+    return currentBall == allianceColorStr;
+  }
+
+  public static double getTimeSinceOppositeBall() {
+    return lastOppositeBallTimer.get();
+
+  }
+
+  public static double getTimeSeeingOppositeBall() {
+    return currentOppositeBallTimer.get();
   }
 }

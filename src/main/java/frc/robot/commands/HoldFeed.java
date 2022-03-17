@@ -6,16 +6,16 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Feeders;
+import frc.robot.subsystems.Turret;
 
-public class FeedBoth extends CommandBase {
+public class HoldFeed extends CommandBase {
   Feeders feeders;
-
-  /** Creates a new FeedBoth. */
-  public FeedBoth(Feeders feeders) {
+  //Turret turret;
+  
+  /** Creates a new HoldFeed. */
+  public HoldFeed(Feeders feeders) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.feeders = feeders;
-
-    addRequirements(feeders);
   }
 
   // Called when the command is initially scheduled.
@@ -25,14 +25,12 @@ public class FeedBoth extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    feeders.setBothMotors(0.3, 0.3);
+    feeders.stopBothMotors();
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    feeders.stopBothMotors();
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override

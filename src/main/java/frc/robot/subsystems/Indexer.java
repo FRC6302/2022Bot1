@@ -17,7 +17,7 @@ public class Indexer extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     ballsPickedUp = ColorSensor.getBallsPickedUp();
-    ballsShot = Feeder.getBallsShot();
+    //ballsShot = Feeder.getBallsShot();
 
     ballsHolding = ballsPickedUp - ballsShot;
 
@@ -29,7 +29,7 @@ public class Indexer extends SubsystemBase {
       return true;
     }
     else if (ballsHolding == 1) {
-      return ColorSensor.getLastestBallIsAlliance();
+      return ColorSensor.getCurrentBallIsAlliance();
     }
     else {
       return true;

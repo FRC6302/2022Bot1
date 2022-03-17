@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import org.opencv.core.Mat;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
@@ -77,7 +78,7 @@ public class LimelightBall extends SubsystemBase {
     }
   }
 
-  public static Translation2d getNearestBallTranslation(Pose2d robotPose) {
+  public static Pose2d getNearestBallPose(Pose2d robotPose) {
     double currX = getX();
     double currY = getY();
     ballPositionsList.add(new Translation2d(currX, currY));
@@ -122,8 +123,11 @@ public class LimelightBall extends SubsystemBase {
       distance = 0;
     }
 
-    return new Translation2d(robotPose.getX() + distance * Math.cos(Units.degreesToRadians(currX)),
-      robotPose.getY() + distance * Math.sin(Units.degreesToRadians(currX)));
+    return new Pose2d(
+      robotPose.getX() + distance * Math.cos(Units.degreesToRadians(currX)),
+      robotPose.getY() + distance * Math.sin(Units.degreesToRadians(currX)),
+      //base rotation of what way the robot should face in order to intake. Based on tx of ball
+      new Rotation2d());
 
   }
 

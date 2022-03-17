@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
+import frc.robot.subsystems.ColorSensor;
 import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.LimelightGoal;
 import frc.robot.subsystems.MecDriveTrain;
@@ -22,7 +23,7 @@ completely brake and then instantly shoot. It won't need time to adjust after st
 public class TrackTargetCenterPose extends CommandBase {
   MecDriveTrain mecDriveTrain;
   Turret turret;
-  //Hood hood;
+  Hood hood;
   Shooter shooter;
 
   //outputs of command
@@ -40,7 +41,7 @@ public class TrackTargetCenterPose extends CommandBase {
   double turretAngle = 0;
   double angleToTarget = 0;
 
-  //boolean isAllianceBall = true;
+  boolean isAllianceBall = true;
 
   //needed for leading the shot
   //double offsetAngle = 0;
@@ -56,14 +57,14 @@ public class TrackTargetCenterPose extends CommandBase {
 
   
   /** Creates a new TrackTargetStationary. */
-  public TrackTargetCenterPose(MecDriveTrain mecDriveTrain, Turret turret,/* Hood hood,*/ Shooter shooter) {
+  public TrackTargetCenterPose(MecDriveTrain mecDriveTrain, Turret turret, Hood hood, Shooter shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.mecDriveTrain = mecDriveTrain;
     this.turret = turret;
-    //this.hood = hood;
+    this.hood = hood;
     this.shooter = shooter;
 
-    addRequirements(turret, /*hood,*/ shooter);
+    addRequirements(turret, hood, shooter);
   }
 
   // Called when the command is initially scheduled.
@@ -103,14 +104,27 @@ public class TrackTargetCenterPose extends CommandBase {
     //offsetAngle = 10 * perpV / distance;
     //effectiveDistance = distance / Math.cos(Math.toRadians(offsetAngle)); //something like this
 
-    //isAllianceBall = ColorSensor.getLastestBallIsAlliance();
+    //isAllianceBall = ColorSensor.getCurrentBallIsAlliance();
+    //if we pick up the wrong color ball, we wanna shoot it out in a way that misses the goal on purpose but stays on the field
+    if (ColorSensor.getTimeSinceOppositeBall() < Constants.timeToShootOppositeBall) {
+      shooter.missTarget();
+      hood.missTarget();
+
+      //makes sure the turret doesnt try to offset the ball into arm. Adding plus 10 for leeway
+      if (angleToTarget + Constants.turretOffsetForMissing + 10 < Constants.maxTurretAngle) {
+        turret.setMotorPosPID(angleToTarget + Constants.turretOffsetForMissing, distance, 0, perpV, angV, gyroYaw); 
+      }
+      else { //if it cant offset to the left, then do it to the right instead
+        turret.setMotorPosPID(angleToTarget - Constants.turretOffsetForMissing, distance, 0, perpV, angV, gyroYaw); 
+      }
+    }
 
     //desiredHoodAngle = -3 * distance + 85; //degrees
     //desiredTurretV = x / 100; //- 3 * perpV;
 
     //hood.setMotorPosPID(estimatedDistance, paraV);
 
-    turret.setMotorPosPID(angleToTarget, distance, 0, perpV, angV, gyroYaw); 
+    
 
     //shooter.shootWithInitialBallVelocity(paraV, perpV, desiredHoodAngle, desiredTurretAngle, distance);
     //shooter.setMotorsVelPID(distance);

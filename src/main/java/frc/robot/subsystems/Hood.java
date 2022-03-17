@@ -158,4 +158,9 @@ public class Hood extends SubsystemBase {
   public void stopMotor() {
     motorHood.set(0);
   }
+
+  //want to give the hood a low angle so that ball goes as straight up as possible so that it doesnt go off the field
+  public void missTarget() {
+    setAngle(Constants.hoodAngleForMissingTarget);
+  }
 }

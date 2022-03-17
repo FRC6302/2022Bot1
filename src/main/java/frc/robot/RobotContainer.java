@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.commands.DriveMec;
 import frc.robot.commands.DriveMecTrackTarget;
 import frc.robot.commands.FeedBoth;
+import frc.robot.commands.FeedColorBased;
 import frc.robot.commands.Move;
 import frc.robot.commands.PPMecanumControllerCommand;
 import frc.robot.commands.RaiseHood;
@@ -31,6 +32,7 @@ import frc.robot.library.LinearInterpolator;
 import frc.robot.subsystems.ColorSensor;
 import frc.robot.subsystems.FeederFront;
 import frc.robot.subsystems.FeederMiddle;
+import frc.robot.subsystems.Feeders;
 import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.LEDs;
@@ -83,9 +85,11 @@ public class RobotContainer {
   private Intake intake;
   private SuckBalls suckBalls;
 
-  private FeederFront feederFront;
-  private FeederMiddle feederMiddle;
+  //private FeederFront feederFront;
+  //private FeederMiddle feederMiddle;
+  private Feeders feeders;
   private FeedBoth feedBoth;
+  private FeedColorBased feedColorBased;
 
   private LimelightGoal limelight;
 
@@ -122,9 +126,9 @@ public class RobotContainer {
     //driveMecTrackTarget.addRequirements(mecDriveTrain);
     //mecDriveTrain.setDefaultCommand(driveMec);
     
-    //shooter = new Shooter();
-    //shoot = new Shoot(shooter);
-    //shoot.addRequirements(shooter);
+    shooter = new Shooter();
+    shoot = new Shoot(shooter);
+    shoot.addRequirements(shooter);
     //shooter.setDefaultCommand(trackTarget);
 
     /*turret = new Turret();
@@ -134,19 +138,19 @@ public class RobotContainer {
     //trackTargetCenterPose = new TrackTargetCenterPose(mecDriveTrain, turret, shooter);
     //turret.setDefaultCommand(trackTargetCenterPose);
 
-    //hood = new Hood();
+    hood = new Hood();
     //raiseHood = new RaiseHood(hood);
     //raiseHood.addRequirements(hood);
     //hood.setDefaultCommand(raiseHood);
 
-    /*intake = new Intake();
+    intake = new Intake();
     suckBalls = new SuckBalls(intake);
     suckBalls.addRequirements(intake);
 
-    feederFront = new FeederFront();
-    feederMiddle = new FeederMiddle();
-    feedBoth = new FeedBoth(feederFront, feederMiddle);
-    feedBoth.addRequirements(feederFront, feederMiddle);*/
+    feeders = new Feeders();
+    feedBoth = new FeedBoth(feeders);
+    //feedColorBased = new FeedColorBased(feeders);
+    //feeders.setDefaultCommand(feedColorBased);
 
 
     //limelight = new Limelight();
@@ -164,10 +168,10 @@ public class RobotContainer {
     //move = new Move(driveTrain);
     //move.addRequirements(driveTrain);
 
-    neoTest = new NeoTest();
-    testNeo = new TestNeo(neoTest);
-    testNeo.addRequirements(neoTest);
-    neoTest.setDefaultCommand(testNeo); 
+    //neoTest = new NeoTest();
+    //testNeo = new TestNeo(neoTest);
+    //testNeo.addRequirements(neoTest);
+    //neoTest.setDefaultCommand(testNeo); 
 
 
     data = new Data();
@@ -187,34 +191,7 @@ public class RobotContainer {
 
 
 
-  public double getDriverRawAxis(final int axis){
-    //try to make it easier to adjust using that fancy stuff
-    try {
-      return driverController.getRawAxis(axis);
-    }
-    catch(final RuntimeException exception) {
-      DriverStation.reportError("Error getting raw axis because: " + exception.getMessage(), true);
-    }
-    //this error might have something to do with the squared values in DriveGTA
-    return 0;
-  }
-
-  public double getDriverDeadzoneAxis(final int axis){
-    try {
-    final double rawValue = driverController.getRawAxis(axis);
-    return (Math.abs(rawValue) <= Constants.deadzone) ? 0.0 : rawValue;
-    }
-    catch(final RuntimeException exception) {
-      DriverStation.reportError("Error getting raw axis or returning deadzone axis because: " + exception.getMessage(), true);
-    }
-    return 0;
-  }
-  /*
-  public double getOperatorDeadzoneAxis(int axis){
-    double rawValue = operatorController.getRawAxis(axis);
-    return Math.abs(rawValue) < Constants.deadzone ? 0.0 : rawValue;
-  }
-  */
+  
 
   /**
    * Use this method to define your button->command mappings. Buttons can be created by
@@ -223,14 +200,14 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    //final JoystickButton shootButton = new JoystickButton(driverController, Constants.shootButton);
+    final JoystickButton shootButton = new JoystickButton(driverController, Constants.shootButton);
     /*shootButton.whileHeld(() -> {
       shooter.setMotors(.99);
     });
     shootButton.whenReleased(() -> {
       shooter.stop();
     });*/
-    //shootButton.whileHeld(new Shoot(shooter, 0.1, 0.));
+    shootButton.whileHeld(new Shoot(shooter, 0.3, 0.3));
 
     //final JoystickButton shootButton2 = new JoystickButton(driverController, Constants.shootButton2);
     //shootButton2.whileHeld(new Shoot(shooter, 0.5, 0.5));  
@@ -247,19 +224,19 @@ public class RobotContainer {
     //final JoystickButton raiseHoodButton = new JoystickButton(driverController, Constants.raiseHoodButton);
     //raiseHoodButton.whileHeld(new RaiseHood(hood));
 
-    /*final JoystickButton raiseHood2Button = new JoystickButton(driverController, Constants.raiseHood2Button);
+    final JoystickButton raiseHood2Button = new JoystickButton(driverController, Constants.raiseHood2Button);
     raiseHood2Button.whileHeld(() -> {
       hood.setMotor(getDriverDeadzoneAxis(Constants.rightStickY) / -4);
     });
     raiseHood2Button.whenReleased(() -> {
       hood.stopMotor();
-    });*/
+    });
 
-    //final JoystickButton intakeButton = new JoystickButton(driverController, Constants.intakeButton); 
-    //intakeButton.whileHeld(new SuckBalls(intake));
+    final JoystickButton intakeButton = new JoystickButton(driverController, Constants.intakeButton); 
+    intakeButton.whileHeld(new SuckBalls(intake));
 
-    //final JoystickButton feedBothButton = new JoystickButton(driverController, Constants.feedBothButton);
-    //feedBothButton.whileHeld(new FeedBoth(feederFront, feederMiddle));
+    final JoystickButton feedBothButton = new JoystickButton(driverController, Constants.feedBothButton);
+    feedBothButton.whileHeld(new FeedBoth(feeders));
 
 
 
@@ -392,4 +369,34 @@ public class RobotContainer {
   public void updateOdometry() {
     mecDriveTrain.updateOdometry();
   }
+  
+  
+  public double getDriverRawAxis(final int axis){
+    //try to make it easier to adjust using that fancy stuff
+    try {
+      return driverController.getRawAxis(axis);
+    }
+    catch(final RuntimeException exception) {
+      DriverStation.reportError("Error getting raw axis because: " + exception.getMessage(), true);
+    }
+    //this error might have something to do with the squared values in DriveGTA
+    return 0;
+  }
+
+  public double getDriverDeadzoneAxis(final int axis){
+    try {
+    final double rawValue = driverController.getRawAxis(axis);
+    return (Math.abs(rawValue) <= Constants.deadzone) ? 0.0 : rawValue;
+    }
+    catch(final RuntimeException exception) {
+      DriverStation.reportError("Error getting raw axis or returning deadzone axis because: " + exception.getMessage(), true);
+    }
+    return 0;
+  }
+  /*
+  public double getOperatorDeadzoneAxis(int axis){
+    double rawValue = operatorController.getRawAxis(axis);
+    return Math.abs(rawValue) < Constants.deadzone ? 0.0 : rawValue;
+  }
+  */
 }

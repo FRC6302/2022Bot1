@@ -159,7 +159,7 @@ public class Shooter extends SubsystemBase {
     motorShooterTop.restoreFactoryDefaults();
     motorShooterBottom.restoreFactoryDefaults();
 
-    motorShooterTop.setInverted(false);
+    motorShooterTop.setInverted(true);
     motorShooterBottom.setInverted(false);
 
     //DO NOT CHANGE TO BRAKE OR BANG BANG CONTROL WILL NOT WORK AND SHOOTER WILL BREAK
@@ -245,6 +245,11 @@ public class Shooter extends SubsystemBase {
     motorShooterBottom.set(bottomSpeed);
   }
 
+  public void setMotorVolts(double topVolts, double bottomVolts) {
+    motorShooterTop.setVoltage(topVolts);
+    motorShooterBottom.setVoltage(bottomVolts);
+  }
+
   public void setTopMotor(double speed) {
     motorShooterTop.set(speed);
   }
@@ -286,6 +291,11 @@ public class Shooter extends SubsystemBase {
 
   public void stop() {
     setMotors(0);
+  }
+
+  //want to give the ball a lot of backspin so that it doesn't go out of the field after it bounces
+  public void missTarget() {
+    setMotorVolts(Constants.topShooterVoltsForMissing, Constants.bottomShooterVoltsForMissing);
   }
 
 }

@@ -69,9 +69,9 @@ public final class Constants {
 
   public static final int motorTurret = 11;
   public static final int motorShooterTop = 53;
-  public static final int motorShooterBottom = 54; //53
+  public static final int motorShooterBottom = 24; //spark 54 is broke!!!!
   public static final int motorHood = 55;
-  public static final int motorNeoTest = 53;
+  public static final int motorNeoTest = 24; //new is 24
   public static final int motorRightClimber = 57;
   public static final int motorLeftClimber = 59;
   public static final int motorIntake = 56;
@@ -184,6 +184,7 @@ public static final double limelightBallMountDegreeOffset = 0;
   
   public static final double hoodMinimumAngle = Units.degreesToRadians(15);
   
+  
 
   //shooter
   public static final double defaultShooterSpeed = 0.8;
@@ -199,9 +200,16 @@ public static final double limelightBallMountDegreeOffset = 0;
   public static final double ksBottomShooter = 0.1;
   public static final double kVBottomShooter = 0.1;
   public static final double kABottomShooter = 0.1;
+
   
   
   //intake
+
+
+  //feeder
+  public static final double frontFeederDefaultVolts = 3;
+  public static final double middleFeederDefaultVolts = 3;
+
 
   
 
@@ -226,6 +234,18 @@ public static final double limelightBallMountDegreeOffset = 0;
   public static final double loopTime = 0.020;
   public static final double visionPoseDeltaTolerance = 2; //meters
 
+  //missing the goal on purpose
+  public static final double turretOffsetForMissing = 40;
+  
+  //make top volts negative? Ultra backspin
+  public static final double topShooterVoltsForMissing = 2;
+  public static final double bottomShooterVoltsForMissing = 8;
+
+  public static final double hoodAngleForMissingTarget = hoodMinimumAngle +  Units.degreesToRadians(10);
+  
+  public static final double waitToFeedOppositeBallTime = 2; //seconds
+  public static final double timeToShootOppositeBall = 2;
+
 
   //field
   //public static final double targetHeightInches = 104;
@@ -235,7 +255,7 @@ public static final double limelightBallMountDegreeOffset = 0;
   //robot construction
   public static final double limelightToRobotCenterRadius = Units.inchesToMeters(6);
   public static final double limelightToTargetHeight = Units.inchesToMeters(104 - 30);
-  public static final double limelightToBallCenterHeight = Units.inchesToMeters(40 - 4.25);
+  public static final double limelightToBallCenterHeight = Units.inchesToMeters(40 - 4.25); //find out what ball height to use
   
   //driver contoller buttons
   public static final int limelightTargetButton = rightBumper;
@@ -255,6 +275,12 @@ public static final double limelightBallMountDegreeOffset = 0;
   public static final int raiseHood2Button = leftBumper; //
   public static final int feedBothButton = aButton;
   public static final int intakeButton = bButton;
+
+
+
+
+  
+  
 
 
 

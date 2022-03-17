@@ -230,4 +230,7 @@ public class Turret extends SubsystemBase {
     turretEncoder.reset();
   }
 
+public void missTarget() {
+}
+
 }
