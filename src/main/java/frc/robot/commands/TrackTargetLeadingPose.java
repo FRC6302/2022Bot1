@@ -136,7 +136,7 @@ public class TrackTargetLeadingPose extends CommandBase {
 
     hood.setMotorPosPID(effectiveDistance, paraV);
 
-    turret.setMotorPosPID(x - Units.radiansToDegrees(offsetAngle), perpV, effectiveDistance, angV); 
+    //turret.setMotorPosPID(angleToTarget + Units.radiansToDegrees(offsetAngle) - gyroYaw, perpV, effectiveDistance, angV); 
 
     //shooter.shootWithInitialBallVelocity(paraV, perpV, desiredHoodAngle, desiredTurretAngle, distance);
     //shooter.setMotorsVelPID(predictedDistance);

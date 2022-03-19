@@ -14,6 +14,7 @@ import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
@@ -31,13 +32,14 @@ public class Hood extends SubsystemBase {
   private CANSparkMax motorHood = new CANSparkMax(Constants.motorHood, MotorType.kBrushless);
   private RelativeEncoder encHood;
   
-  private ProfiledPIDController pidController = new ProfiledPIDController(Constants.kpHood, 0, 0, 
-    new Constraints(Constants.maxHoodV, Constants.maxHoodA));
+  //private ProfiledPIDController pidController = new ProfiledPIDController(Constants.kpHood, 0, Constants.kdHood, 
+    //new Constraints(Constants.maxHoodV, Constants.maxHoodA));
+  private PIDController pidController = new PIDController(Constants.kpHood, 0, Constants.kdHood);
 
   /*private SimpleMotorFeedforward simpleFeedforward = new SimpleMotorFeedforward(
     Constants.ksHood, Constants.kvHood, Constants.kaHood);*/
 
-  //hood works the same as an would in this case. Just corrects for gravity pulling the hood/arm down
+  //hood works the same as an arm would in this case. Just corrects for gravity pulling the hood/arm down
   private ArmFeedforward feedforward = new ArmFeedforward(Constants.ksHood, 
     Constants.kgHood, Constants.kvHood, Constants.kaHood);
 
@@ -95,7 +97,7 @@ public class Hood extends SubsystemBase {
   
   //add boolean argument for whether scoring or missing?
   public void setMotorPosPID(double distance, double paraV) { 
-    paraFeedforward = paraV / distance; //this is just a guess
+    //paraFeedforward = paraV / distance; //this is just a guess
     double desiredAngle = Data.getHoodAngle(distance);
     double pidOutput = pidController.calculate(getAngleRad(), desiredAngle);
 
@@ -155,12 +157,17 @@ public class Hood extends SubsystemBase {
     return encHood.getVelocity();
   }
 
+  public void resetEncoder() {
+    encHood.setPosition(0);
+  }
+
   public void stopMotor() {
     motorHood.set(0);
   }
 
   //want to give the hood a low angle so that ball goes as straight up as possible so that it doesnt go off the field
   public void missTarget() {
-    setAngle(Constants.hoodAngleForMissingTarget);
+    //setAngle(Constants.hoodAngleForMissingTarget);
+    setMotorPosPID(3, 0);
   }
 }

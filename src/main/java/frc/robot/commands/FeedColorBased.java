@@ -4,8 +4,6 @@
 
 package frc.robot.commands;
 
-import java.sql.Time;
-
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -54,6 +52,16 @@ public class FeedColorBased extends CommandBase {
         feeders.stopBothMotors();
       }
     }
+
+
+
+    //if we have seen a red ball in the last 3 seconds - doesnt work for both mounting spots because it stops after you send the ball to shoot because it has seen red recently
+    /*if (ColorSensor.getTimeSinceOppositeBall() + ColorSensor.getTimeSeeingOppositeBall() < Constants.waitToFeedOppositeBallTime) {
+      feeders.stopBothMotors();
+    }
+    else {
+      feeders.setBothMotorVolts(Constants.frontFeederDefaultVolts, Constants.middleFeederDefaultVolts);
+    }*/
   }
 
   // Called once the command ends or is interrupted.

@@ -33,8 +33,10 @@ public class LimelightBall extends SubsystemBase {
   //private static double yTolerance = 1; //degrees
   private static double distanceTolerance = 3;
   
-  private static double frameCountMin = 3;
-  private static ArrayList<Translation2d> ballPositionsList = new ArrayList<Translation2d>();
+  private static int frameCountMin = 3;
+  private static int framesTracked = 4;
+  //private static ArrayList<Translation2d> ballPositionsList = new ArrayList<Translation2d>();
+  private static Translation2d[] ballPositionArray = new Translation2d[framesTracked];
 
 
   /** Creates a new BallLimelight. */
@@ -81,8 +83,15 @@ public class LimelightBall extends SubsystemBase {
   public static Pose2d getNearestBallPose(Pose2d robotPose) {
     double currX = getX();
     double currY = getY();
-    ballPositionsList.add(new Translation2d(currX, currY));
+    //ballPositionsList.add(new Translation2d(currX, currY));
+    frameCount = 0;
 
+    //shifts all the array elements over by 1 to make room for the new measurement
+    for (int i = 0; i < framesTracked - 1; i++) {
+      ballPositionArray[i] = ballPositionArray[i + 1];
+    }
+    //adds the new measurement to end of array
+    ballPositionArray[framesTracked] = new Translation2d(currX, currY);
     
     //if ball is close to where it was in the last frame, then it is probably the same ball
     /*if ((currX <= previousX + xTolerance || currX >= previousX - xTolerance) && (currY <= previousY + yTolerance || currY >= previousY - yTolerance)) {
@@ -95,16 +104,29 @@ public class LimelightBall extends SubsystemBase {
     }*/
 
     //make it so if the ball has been in at least 3 of the last 4 frames, then track it
-    for (int i = 0; i < frameCountMin; i++) {
-      Translation2d firstLocation = new Translation2d(ballPositionsList.get(0).getX(), ballPositionsList.get(0).getY());
-      double ballDelta = ballPositionsList.get(i).getDistance(firstLocation);
+    /*for (int i = 0; i < frameCountMin; i++) {
+      Translation2d prevLocation = new Translation2d(ballPositionsList.get(i).getX(), ballPositionsList.get(i).getY());
+      double ballDelta = ballPositionsList.get(i + 1).getDistance(prevLocation);
       if (ballDelta < distanceTolerance) {
         //moves 2nd frame to 1st place in list to open up the end of list for the new frame
-        ballPositionsList.set(i, ballPositionsList.get(i + 1));
+        frameCount++;
+      }
+      //ballPositionsList.set(i, ballPositionsList.get(i + 1));
+    }
+    ballPositionsList.remove(framesTracked - 1);*/
+
+    for (int i = 1; i < framesTracked; i++) {
+      //gets the distance that the ball traveled inbetween frames. If the limelight is switching between targets then the distance will be high
+      double ballDelta = ballPositionArray[i].getDistance(ballPositionArray[i - 1]);
+      //if the target is close to where it was last frame, it can be assumed it is the same ball
+      if (ballDelta < distanceTolerance) {
+        frameCount++;
       }
     }
     
-    double ballDelta = Math.sqrt(Math.pow(currX - previousX, 2) + Math.pow(currY - previousY, 2));
+
+
+    /*double ballDelta = Math.sqrt(Math.pow(currX - previousX, 2) + Math.pow(currY - previousY, 2));
     if (ballDelta < distanceTolerance) {
       previousX = currX;
       previousY = currY;
@@ -112,7 +134,7 @@ public class LimelightBall extends SubsystemBase {
     }
     else {
       frameCount = 0;
-    }
+    }*/
 
     double distance;
     //if the ball has been the same for 3 or more frames, then it's fine to track it

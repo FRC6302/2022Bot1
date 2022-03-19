@@ -289,8 +289,12 @@ public class Shooter extends SubsystemBase {
         + 0.9 * bottomFeedforward.calculate(desiredBottom));
   }*/
 
-  public void stop() {
+  public void stopMotors() {
     setMotors(0);
+  }
+
+  public void setMotorsDefaultVolts() {
+    setMotorVolts(Constants.topShooterDefaultVolts, Constants.bottomShooterDefaultVolts);
   }
 
   //want to give the ball a lot of backspin so that it doesn't go out of the field after it bounces

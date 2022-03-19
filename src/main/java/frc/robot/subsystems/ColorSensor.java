@@ -18,14 +18,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class ColorSensor extends SubsystemBase {
 
   //change the I2C port below to match the connection of your color sensor to the rio
-  private final I2C.Port i2cPort = I2C.Port.kMXP;
-
-  /**
-   * A Rev Color Sensor V3 object is constructed with an I2C port as a 
-   * parameter. The device will be automatically initialized with default 
-   * parameters.
-   */
-  private final ColorSensorV3 colorSensor = new ColorSensorV3(i2cPort);
+  private final ColorSensorV3 colorSensor = new ColorSensorV3(I2C.Port.kMXP);
 
   /**
    * A Rev Color Match object is used to register and detect known colors. This can 
@@ -39,23 +32,23 @@ public class ColorSensor extends SubsystemBase {
   //this line should work but it doesnt - rev library is messed up or something
   //private final Color blue = ColorMatch.makeColor(0.143, 0.427, 0.429);
 
-  private final Color blue = new Color(0.143, 0.427, 0.429);
+  private final Color blue = new Color(0.20, 0.44, 0.38); //Color(0.143, 0.427, 0.429);
   private final Color green = new Color(0.197, 0.561, 0.240);
-  private final Color red = new Color(0.561, 0.232, 0.114);
+  private final Color red = new Color(0.50, 0.35, 0.12); //Color(0.561, 0.232, 0.114);
   private final Color yellow = new Color(0.361, 0.524, 0.113);
 
   private final DriverStation.Alliance alliance;
   private final Color allianceColor;
   
   private static double ballsPickedUp;
-  private static String latestBall = "hey";
+  private static String latestBall = "unknown";
   private static String currentBall = "unknown";
-  private static String allianceColorStr = "girl";
+  private static String allianceColorStr = "unknown";
 
   //tracks the time its been since we last saw the opposing team's ball
-  private static Timer lastOppositeBallTimer;
+  private static Timer lastOppositeBallTimer = new Timer();
   //how long have we been seeing the opposing ball color
-  private static Timer currentOppositeBallTimer;
+  private static Timer currentOppositeBallTimer = new Timer();
 
 
   /** Creates a new ColorSensor. */
@@ -79,9 +72,10 @@ public class ColorSensor extends SubsystemBase {
     }
     else {
       DriverStation.reportWarning("COULD NOT GET ALLIANCE COLOR, DEFAULTING TO YELLOW", false);
-      allianceColor = yellow;
-      allianceColorStr = "yellow";
+      allianceColor = blue;
+      allianceColorStr = "blue";
     }
+    SmartDashboard.putString("alliance", allianceColorStr);
 
     lastOppositeBallTimer.start();
   }
@@ -115,10 +109,12 @@ public class ColorSensor extends SubsystemBase {
     if (match.color == blue) {
       colorString = "blue";
       latestBall = "blue";
+      currentBall = "blue";
       ballsPickedUp++;
     } else if (match.color == red) {
       colorString = "red";
       latestBall = "red";
+      currentBall = "red";
       ballsPickedUp++;
     /*} else if (match.color == green) {
       colorString = "Green";
@@ -130,7 +126,8 @@ public class ColorSensor extends SubsystemBase {
       //i dont update lastestBall here because the whole point of the variable is to have the lastest ball
     }
 
-    if (getLatestBallIsAlliance()) {
+    //if we are seeing our ball or no ball, reset the timer
+    if (!getLatestBallIsAlliance() && !getCurrentBallIsUnknown()) {
       lastOppositeBallTimer.reset();
     }
 
@@ -146,6 +143,9 @@ public class ColorSensor extends SubsystemBase {
     SmartDashboard.putNumber("Blue", detectedColor.blue);
     SmartDashboard.putNumber("Confidence", match.confidence);
     SmartDashboard.putString("Detected Color", colorString);
+
+    SmartDashboard.putNumber("time seeing opposite ball", getTimeSeeingOppositeBall());
+    SmartDashboard.putNumber("time since seen opposite ball", getTimeSinceOppositeBall());
 
     
   }
@@ -165,6 +165,10 @@ public class ColorSensor extends SubsystemBase {
       return true;
     }
     return currentBall == allianceColorStr;
+  }
+
+  public static boolean getCurrentBallIsUnknown() {
+    return currentBall == "unknown";
   }
 
   public static double getTimeSinceOppositeBall() {

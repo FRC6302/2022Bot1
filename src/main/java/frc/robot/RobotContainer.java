@@ -46,6 +46,7 @@ import frc.robot.subsystems.TouchSensor;
 import frc.robot.subsystems.Turret;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
@@ -131,9 +132,9 @@ public class RobotContainer {
     shoot.addRequirements(shooter);
     //shooter.setDefaultCommand(trackTarget);
 
-    /*turret = new Turret();
+    turret = new Turret();
     turnTurret = new TurnTurret(turret);
-    turnTurret.addRequirements(turret);*/
+    turnTurret.addRequirements(turret);
     //turret.setDefaultCommand(turnTurret);
     //trackTargetCenterPose = new TrackTargetCenterPose(mecDriveTrain, turret, shooter);
     //turret.setDefaultCommand(trackTargetCenterPose);
@@ -149,7 +150,7 @@ public class RobotContainer {
 
     feeders = new Feeders();
     feedBoth = new FeedBoth(feeders);
-    //feedColorBased = new FeedColorBased(feeders);
+    feedColorBased = new FeedColorBased(feeders);
     //feeders.setDefaultCommand(feedColorBased);
 
 
@@ -157,7 +158,7 @@ public class RobotContainer {
 
     //navX = new NavX();
 
-    //colorSensor = new ColorSensor();
+    colorSensor = new ColorSensor();
 
     //leds = new LEDs();
 
@@ -200,29 +201,32 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    final JoystickButton shootButton = new JoystickButton(driverController, Constants.shootButton);
+    //final JoystickButton shootButton = new JoystickButton(driverController, Constants.shootButton);
     /*shootButton.whileHeld(() -> {
       shooter.setMotors(.99);
     });
     shootButton.whenReleased(() -> {
       shooter.stop();
     });*/
-    shootButton.whileHeld(new Shoot(shooter, 0.3, 0.3));
+    //shootButton.whileHeld(new Shoot(shooter, 0.3, 0.3));
 
     //final JoystickButton shootButton2 = new JoystickButton(driverController, Constants.shootButton2);
     //shootButton2.whileHeld(new Shoot(shooter, 0.5, 0.5));  
 
-    //final JoystickButton turnTurretButton = new JoystickButton(driverController, Constants.turnTurretButton);
-    /*turnTurretButton.whileHeld(() -> {
-      turret.setMotorPosPID(Limelight.getLastX(), 0, 2, 0);
+    /*final JoystickButton turnTurretButton = new JoystickButton(driverController, Constants.turnTurretButton);
+    turnTurretButton.whileHeld(() -> {
+      //turret.setMotorPosPID(Limelight.getLastX(), 0, 2, 0);
+      turret.setMotor(getDriverRawAxis(Constants.rightStickX) / -4);
     });
     turnTurretButton.whenReleased(() -> {
       turret.stopMotor();
     });*/
-    //turnTurretButton.whileHeld(new TurnTurret(turret));
 
-    //final JoystickButton raiseHoodButton = new JoystickButton(driverController, Constants.raiseHoodButton);
-    //raiseHoodButton.whileHeld(new RaiseHood(hood));
+    //final JoystickButton turnTurret2Button = new JoystickButton(driverController, Constants.turnTurret2Button);
+    //turnTurret2Button.whileHeld(new TurnTurret(turret));*/
+
+    /*final JoystickButton raiseHoodButton = new JoystickButton(driverController, Constants.raiseHoodButton);
+    raiseHoodButton.whileHeld(new RaiseHood(hood));*/
 
     final JoystickButton raiseHood2Button = new JoystickButton(driverController, Constants.raiseHood2Button);
     raiseHood2Button.whileHeld(() -> {
@@ -232,16 +236,53 @@ public class RobotContainer {
       hood.stopMotor();
     });
 
-    final JoystickButton intakeButton = new JoystickButton(driverController, Constants.intakeButton); 
-    intakeButton.whileHeld(new SuckBalls(intake));
+    //final JoystickButton intakeButton = new JoystickButton(driverController, Constants.intakeButton); 
+    //intakeButton.whileHeld(new SuckBalls(intake));
 
-    final JoystickButton feedBothButton = new JoystickButton(driverController, Constants.feedBothButton);
-    feedBothButton.whileHeld(new FeedBoth(feeders));
+    /*final JoystickButton feedBothButton = new JoystickButton(driverController, Constants.feedBothButton);
+    feedBothButton.whileHeld(new FeedColorBased(feeders));
+    feedBothButton.whenReleased(() -> {
+      feeders.stopBothMotors();
+    });*/
+
+    final JoystickButton closeToBallsButton = new JoystickButton(driverController, Constants.closeToBallsButton);
+    closeToBallsButton.whileHeld(new ParallelCommandGroup(
+      new FeedColorBased(feeders),
+      //new SuckBalls(intake),
+      new TrackTargetCenterPose(turret, hood, shooter)
+    ));
+    closeToBallsButton.whenReleased(() -> {
+      feeders.stopBothMotors();
+      intake.stopMotor();
+      turret.stopMotor();
+      hood.stopMotor();
+      shooter.stopMotors();
+    });
+
+    final JoystickButton farAwayButton = new JoystickButton(driverController, Constants.farAwayButton);
+    farAwayButton.whileHeld(new ParallelCommandGroup(
+      new InstantCommand(() -> {
+        feeders.stopBothMotors();
+      }, 
+      feeders)
+    ));
+
+    farAwayButton.and(closeToBallsButton).whileActiveContinuous(new ParallelCommandGroup(
+      new SuckBalls(intake),
+      new InstantCommand(() -> {
+        feeders.stopBothMotors();
+      }, 
+      feeders)
+    ));
 
 
 
     //final JoystickButton zeroTurretButton = new JoystickButton(driverController, Constants.zeroTurretButton);
     //zeroTurretButton.whenPressed(turret::resetEncoder);
+
+    final JoystickButton zeroHoodButton = new JoystickButton(driverController, Constants.zeroHoodButton);
+    zeroHoodButton.whenPressed(hood::resetEncoder);
+
     
     //final JoystickButton LLDistanceButton = new JoystickButton(driverController, Constants.LLDistanceButton);
     //LLDistanceButton.whileHeld(Limelight::getTargetDistance);

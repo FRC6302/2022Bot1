@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.CANifier.LEDChannel;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
@@ -91,8 +93,8 @@ public final class Constants {
   public static final int encTestA = navxDIO8;
   public static final int encTestB = navxDIO9;
   
-  public static final int encTurretA = 4;
-  public static final int encTurretB = 5;
+  public static final int encTurretA = 0;
+  public static final int encTurretB = 1;
   
   public static final int encHoodA = 90;
   public static final int encHoodB = 90;
@@ -140,12 +142,15 @@ public final class Constants {
 
   //limelight
   public static final double limelightLatency = 0.02; //20 ms
-  //limelight goal
-  //the angle the limelight is pointing relative to the ground, 0 = parallel to floor
-  public static final double limelightGoalMountDegreeOffset = 6; 
-  //limelight balls
 
-public static final double limelightBallMountDegreeOffset = 0;
+  //limelight goal
+  public static final double limelightGoalMountDegreeOffset = 6; //the angle the limelight is pointing relative to the ground, 0 = parallel to floor
+
+  //limelight balls
+  
+  public static final double limelightBallMountDegreeOffset = 0;
+
+
   //pneumatics
 
 
@@ -159,11 +164,11 @@ public static final double limelightBallMountDegreeOffset = 0;
   /*public static final double ksTurret = 0.56996;
   public static final double kvTurret = 0.0161;
   public static final double kaTurret = 0.0019;*/
-  public static final double ksTurret = 0.60;//generated with only one shooter axle on, v r^2=0.942
+  public static final double ksTurret = 0.65608;
   public static final double kvTurret = 0.0165;
-  public static final double kaTurret = 0.0031;
-  public static final double kpPosTurret = 3; //sysid guessed 5.67, 3 works perfect
-  public static final double kdPosTurret = 0; //sysid guessed 2.52, 0 is good
+  public static final double kaTurret = 0.0019;
+  public static final double kpPosTurret = 3; //sysid guessed 7.6
+  public static final double kdPosTurret = 0; //sysid guessed 1.4
   public static final double kpVelTurret = 0.05; //sysid said 0.13
 
   public static final double maxTurretV = 180; //deg/s
@@ -172,15 +177,16 @@ public static final double limelightBallMountDegreeOffset = 0;
   
   
   //hood
-  public static final double ksHood = 0.23; //from sysid
-  public static final double kvHood = 28.24;
-  public static final double kaHood = 1.2381;
-  public static final double kgHood = 0.0088; //voltage needed to overcome gravity at horizontal. SYSId calcs it at enc=0?? That's problem
+  public static final double ksHood = 0.33; //from sysid
+  public static final double kvHood = 30.765;
+  public static final double kaHood = 1.2291;
+  public static final double kgHood = 0.1; //voltage needed to overcome gravity at horizontal. SYSId calcs it at enc=0?? That's problem
 
-  public static final double kpHood = 1;
+  public static final double kpHood = 1; //77
+  public static final double kdHood = 0; //47
 
-  public static final double maxHoodV = Units.degreesToRadians(30); // deg/s to rad/s
-  public static final double maxHoodA = Units.degreesToRadians(30); // deg/s/s to rad/s/s
+  public static final double maxHoodV = Units.degreesToRadians(10); // deg/s to rad/s
+  public static final double maxHoodA = Units.degreesToRadians(20); // deg/s/s to rad/s/s
   
   public static final double hoodMinimumAngle = Units.degreesToRadians(15);
   
@@ -188,15 +194,18 @@ public static final double limelightBallMountDegreeOffset = 0;
 
   //shooter
   public static final double defaultShooterSpeed = 0.8;
+  public static final double topShooterDefaultVolts = 2;
+  public static final double bottomShooterDefaultVolts = 2;
+
   public static final double maxShooterV = 15; // m/s
-  public static final double maxShooterA = 5; // m/s/s
-  public static final double kpTopShooter = 0.1;
-  public static final double kpBottomShooter = 0.1;
+  public static final double maxShooterA = 10; // m/s/s
   
+  public static final double kpTopShooter = 0.1;
   public static final double ksTopShooter = 0.1;
   public static final double kVTopShooter = 0.1;
   public static final double kATopShooter = 0.1;
-
+  
+  public static final double kpBottomShooter = 0.1;
   public static final double ksBottomShooter = 0.1;
   public static final double kVBottomShooter = 0.1;
   public static final double kABottomShooter = 0.1;
@@ -208,7 +217,7 @@ public static final double limelightBallMountDegreeOffset = 0;
 
   //feeder
   public static final double frontFeederDefaultVolts = 3;
-  public static final double middleFeederDefaultVolts = 3;
+  public static final double middleFeederDefaultVolts = 4;
 
 
   
@@ -228,6 +237,12 @@ public static final double limelightBallMountDegreeOffset = 0;
   public static final double rightMotorsMoveSpeed = 0.1;
   public static final double MoveTime = 0.5; 
 
+  //ball tracking
+  public static final double timeBetweenTrajectoryGeneration = 0.2; //seconds
+  public static final double ballTrackingDistanceTolerance = 1.5; //meters
+  public static final double ballTrackingDegTolerance = 15; //degrees
+
+
   //miscellaneous
   public static final double turningRate = 0.5;
   public static final double deadzone = 0.3;
@@ -235,16 +250,15 @@ public static final double limelightBallMountDegreeOffset = 0;
   public static final double visionPoseDeltaTolerance = 2; //meters
 
   //missing the goal on purpose
-  public static final double turretOffsetForMissing = 40;
+  public static final double turretOffsetForMissing = 50;
   
-  //make top volts negative? Ultra backspin
-  public static final double topShooterVoltsForMissing = 2;
-  public static final double bottomShooterVoltsForMissing = 8;
+  public static final double topShooterVoltsForMissing = 2; //make top volts negative? Ultra backspin
+  public static final double bottomShooterVoltsForMissing = 2;
 
-  public static final double hoodAngleForMissingTarget = hoodMinimumAngle +  Units.degreesToRadians(10);
+  public static final double hoodAngleForMissingTarget = hoodMinimumAngle +  Units.degreesToRadians(5);
   
   public static final double waitToFeedOppositeBallTime = 2; //seconds
-  public static final double timeToShootOppositeBall = 2;
+  public static final double timeToShootOppositeBall = 1;
 
 
   //field
@@ -269,12 +283,18 @@ public static final double limelightBallMountDegreeOffset = 0;
   public static final int driveNormalButton = aButton;
   public static final int missTargetButton = 0;
   public static final int shootButton2 = bButton;
-  public static final int turnTurretButton = yButton; //
+  public static final int turnTurretButton = leftBumper; //
   public static final int zeroTurretButton = xButton;
-  public static final int raiseHoodButton = yButton;
+  public static final int raiseHoodButton = yButton; //
   public static final int raiseHood2Button = leftBumper; //
   public static final int feedBothButton = aButton;
   public static final int intakeButton = bButton;
+  public static final int closeToBallsButton = aButton;
+  public static final int farAwayButton = 0;
+public static final int turnTurret2Button = yButton;
+public static final int zeroHoodButton = xButton;
+
+
 
 
 

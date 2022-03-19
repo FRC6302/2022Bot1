@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 
@@ -14,6 +15,7 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants;
 import frc.robot.library.Utilities;
 import frc.robot.subsystems.LimelightBall;
@@ -29,37 +31,52 @@ public class TrackBall extends CommandBase {
     // Add kinematics to ensure max speed is actually obeyed
     .setKinematics(mecDriveTrain.getMecKinematics());
 
-  ArrayList<Pose2d> waypoints = new ArrayList<Pose2d>();
+  //ArrayList<Pose2d> waypoints = new ArrayList<Pose2d>();
 
   PathPlannerTrajectory latestTrajectory;
+
+  CommandBase mecCommand = new InstantCommand();
+
+  private int loopCount = 0;
+  private int loopsBetweenGenerations = (int) Math.round(Constants.timeBetweenTrajectoryGeneration / Constants.loopTime);
+
   /** Creates a new TrackBall. */
   public TrackBall(MecDriveTrain mecDriveTrain) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.mecDriveTrain = mecDriveTrain;
+
+    //if I added drivetrain as a requirement here then doing the other command below would stop this one?
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    
-    
+    loopCount = 0;
+
+    currPose = mecDriveTrain.getPoseEstimate();
+    latestBallPose = LimelightBall.getNearestBallPose(currPose);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    currPose = mecDriveTrain.getPoseEstimate();
-    latestBallPose = LimelightBall.getNearestBallPose(currPose);
+    //recalculates the trajectory and command every so often to account for the ball moving. Doing it constantly would be inefficient
+    if (loopCount % loopsBetweenGenerations == 0) {
+      currPose = mecDriveTrain.getPoseEstimate();
+      latestBallPose = LimelightBall.getNearestBallPose(currPose);
 
-    waypoints.add(currPose);
-    waypoints.add(latestBallPose);
+      latestTrajectory = (PathPlannerTrajectory) TrajectoryGenerator.generateTrajectory(List.of(currPose, latestBallPose), config);
+
+      //Find better way?
+      mecCommand = (CommandBase) Utilities.getMecControllerCommand(latestTrajectory, mecDriveTrain);
+      mecCommand.addRequirements(mecDriveTrain);
+      mecCommand.initialize();
+    }
     
-    latestTrajectory = (PathPlannerTrajectory) TrajectoryGenerator.generateTrajectory(waypoints, config);
+    mecCommand.execute();
+    //command.schedule(true);
 
-    //interrupts the previous command with the new trajectory. Find better way?
-    Utilities.getMecControllerCommand(latestTrajectory, mecDriveTrain).schedule(true);
-
-    waypoints.clear();
+    loopCount++;
   }
 
   // Called once the command ends or is interrupted.
@@ -69,6 +86,9 @@ public class TrackBall extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    double distanceError = currPose.getTranslation().getDistance(latestBallPose.getTranslation());
+    double rotationError = Math.abs(currPose.getRotation().getDegrees() - latestBallPose.getRotation().getDegrees());
+
+    return (distanceError < Constants.ballTrackingDistanceTolerance) && (rotationError < Constants.ballTrackingDegTolerance);
   }
 }

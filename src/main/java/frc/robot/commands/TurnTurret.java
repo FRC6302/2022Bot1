@@ -25,8 +25,8 @@ public class TurnTurret extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    turret.setMotor(Robot.robotContainer.getDriverRawAxis(Constants.rightStickX) / -4);
-    //turret.setMotorVelPID(turret.getAngle(), 0, 2, 0);
+    //turret.setMotor(Robot.robotContainer.getDriverRawAxis(Constants.rightStickX) / -4);
+    turret.setMotorPosPID(0, 7, 0, 0);
   }
 
   // Called once the command ends or is interrupted.

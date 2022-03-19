@@ -7,6 +7,7 @@ package frc.robot.commands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -57,9 +58,9 @@ public class TrackTargetCenterPose extends CommandBase {
 
   
   /** Creates a new TrackTargetStationary. */
-  public TrackTargetCenterPose(MecDriveTrain mecDriveTrain, Turret turret, Hood hood, Shooter shooter) {
+  public TrackTargetCenterPose(/*MecDriveTrain mecDriveTrain, */Turret turret, Hood hood, Shooter shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
-    this.mecDriveTrain = mecDriveTrain;
+    //this.mecDriveTrain = mecDriveTrain;
     this.turret = turret;
     this.hood = hood;
     this.shooter = shooter;
@@ -77,64 +78,67 @@ public class TrackTargetCenterPose extends CommandBase {
     gyroYaw = NavX.getGyroYaw();
     turretAngle = turret.getAngle();
 
-    if (LimelightGoal.getTargetFound()) { //runs when the LL can see the target
+    /*if (LimelightGoal.getTargetFound()) { //runs when the LL can see the target
       distance = LimelightGoal.getTargetDistance();
       x = LimelightGoal.getX();
       
       mecDriveTrain.updateOdometryWithVision(distance, gyroYaw, turretAngle, x);
-    }
+    }*/
 
-    robotPose = mecDriveTrain.getPoseEstimate();
+    //robotPose = mecDriveTrain.getPoseEstimate();
     //robotToGoal = new Transform2d(robotPose, goalPose);
     //distance = Math.sqrt(Math.pow(robotToGoal.getX(), 2) + Math.pow(robotToGoal.getY(), 2)); 
-    estimatedDistance = Constants.goalLocation.getDistance(robotPose.getTranslation());
+    //estimatedDistance = Constants.goalLocation.getDistance(robotPose.getTranslation());
     //TODO: get actual tx based on pose estimate?
     //difference between turret pose and 
     //it should be the same though if the rest of this works right?
 
-    angleToTarget = Units.radiansToDegrees(Math.atan2(robotPose.getY() - Constants.goalLocation.getY(),
-      robotPose.getX() - Constants.goalLocation.getX()));
+    //angleToTarget = Units.radiansToDegrees(Math.atan2(robotPose.getY() - Constants.goalLocation.getY(),
+      //robotPose.getX() - Constants.goalLocation.getX()));
 
     //velocities with respect to target
-    paraV = mecDriveTrain.getParaV(angleToTarget - gyroYaw);
-    perpV = mecDriveTrain.getPerpV(angleToTarget - gyroYaw);
+    //paraV = mecDriveTrain.getParaV(angleToTarget - gyroYaw);
+    //perpV = mecDriveTrain.getPerpV(angleToTarget - gyroYaw);
     
-    angV = mecDriveTrain.getAngV();
+    //angV = mecDriveTrain.getAngV();
 
     //offsetAngle = 10 * perpV / distance;
     //effectiveDistance = distance / Math.cos(Math.toRadians(offsetAngle)); //something like this
 
     //isAllianceBall = ColorSensor.getCurrentBallIsAlliance();
     //if we pick up the wrong color ball, we wanna shoot it out in a way that misses the goal on purpose but stays on the field
-    if (ColorSensor.getTimeSinceOppositeBall() < Constants.timeToShootOppositeBall) {
+    if (Timer.getFPGATimestamp() > Constants.timeToShootOppositeBall + 1 && ColorSensor.getTimeSinceOppositeBall() < Constants.timeToShootOppositeBall) {
       shooter.missTarget();
       hood.missTarget();
+      turret.setMotorPosPID(-Constants.turretOffsetForMissing, 0, 7, 0); 
 
       //makes sure the turret doesnt try to offset the ball into arm. Adding plus 10 for leeway
-      if (angleToTarget + Constants.turretOffsetForMissing + 10 < Constants.maxTurretAngle) {
-        turret.setMotorPosPID(angleToTarget + Constants.turretOffsetForMissing, distance, 0, perpV, angV, gyroYaw); 
+      /*if (angleToTarget + Constants.turretOffsetForMissing + 10 < Constants.maxTurretAngle) {
+        turret.setMotorPosPID(angleToTarget + Constants.turretOffsetForMissing - gyroYaw, distance, perpV, angV); 
       }
       else { //if it cant offset to the left, then do it to the right instead
-        turret.setMotorPosPID(angleToTarget - Constants.turretOffsetForMissing, distance, 0, perpV, angV, gyroYaw); 
-      }
+        turret.setMotorPosPID(angleToTarget - Constants.turretOffsetForMissing - gyroYaw, distance, perpV, angV); 
+      }*/
+    }
+    else {
+      hood.setMotorPosPID(7, 0);
+      turret.setMotorPosPID(0, 7, 0, 0); 
+      shooter.setMotorsDefaultVolts();
     }
 
-    //desiredHoodAngle = -3 * distance + 85; //degrees
-    //desiredTurretV = x / 100; //- 3 * perpV;
 
-    //hood.setMotorPosPID(estimatedDistance, paraV);
+    
 
+    //turret.setMotorPosPID(angleToTarget - gyroYaw, perpV, distance, angV); 
     
 
     //shooter.shootWithInitialBallVelocity(paraV, perpV, desiredHoodAngle, desiredTurretAngle, distance);
     //shooter.setMotorsVelPID(distance);
+    
 
     //SmartDashboard.putNumber("vision pose x", robotPose.getX());
     //SmartDashboard.putNumber("vision pose y", robotPose.getY());
 
-
-    //hood.setHoodAngle(hoodAdjust);
-    //turret.setAngle(turretAdjust);
   }
 
   // Called once the command ends or is interrupted.
