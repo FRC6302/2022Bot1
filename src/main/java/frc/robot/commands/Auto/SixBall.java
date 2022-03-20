@@ -29,6 +29,7 @@ public class SixBall extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    //USE SEQUENTIAL COMMAND INSTEAD OF THIS UGLINESS
     Utilities.getMecControllerCommand(sixBallTrajectory, mecDriveTrain).andThen(mecDriveTrain::stopDrive).schedule(true);
 
   }

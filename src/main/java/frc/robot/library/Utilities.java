@@ -5,9 +5,11 @@
 package frc.robot.library;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -40,7 +42,7 @@ public class Utilities {
       new Constraints(Constants.maxMecRotationVelocity, Constants.maxMecRotationAccel));
       
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
-    thetaController.reset(mecDriveTrain.getPoseEstimate().getRotation().getDegrees());
+    thetaController.reset(mecDriveTrain.getPoseEstimate().getRotation().getRadians());
 
     mecDriveTrain.setPose(ppTrajectory.getInitialPose());
 
@@ -70,8 +72,10 @@ public class Utilities {
       mecDriveTrain
     );
 
-    return new InstantCommand(() -> mecDriveTrain.setPose(ppTrajectory.getInitialPose()))
-      .andThen(mecanumControllerCommand);
-      //.andThen(mecDriveTrain::stopDrive);
+    PathPlannerState initialState = ppTrajectory.getInitialState();
+    return new InstantCommand(() -> 
+      mecDriveTrain.setPose(new Pose2d(initialState.poseMeters.getTranslation(), initialState.holonomicRotation)))
+      .andThen(mecanumControllerCommand)
+      .andThen(mecDriveTrain::stopDrive);
   } 
 }

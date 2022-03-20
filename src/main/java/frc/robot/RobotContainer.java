@@ -13,6 +13,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.commands.DriveMec;
 import frc.robot.commands.DriveMecTrackTarget;
@@ -127,9 +128,9 @@ public class RobotContainer {
     //driveMecTrackTarget.addRequirements(mecDriveTrain);
     //mecDriveTrain.setDefaultCommand(driveMec);
     
-    shooter = new Shooter();
-    shoot = new Shoot(shooter);
-    shoot.addRequirements(shooter);
+    //shooter = new Shooter();
+    //shoot = new Shoot(shooter);
+    //shoot.addRequirements(shooter);
     //shooter.setDefaultCommand(trackTarget);
 
     turret = new Turret();
@@ -201,6 +202,8 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    //driverController.setRumble(RumbleType.kLeftRumble, 0.5);
+    
     //final JoystickButton shootButton = new JoystickButton(driverController, Constants.shootButton);
     /*shootButton.whileHeld(() -> {
       shooter.setMotors(.99);
@@ -230,7 +233,7 @@ public class RobotContainer {
 
     final JoystickButton raiseHood2Button = new JoystickButton(driverController, Constants.raiseHood2Button);
     raiseHood2Button.whileHeld(() -> {
-      hood.setMotor(getDriverDeadzoneAxis(Constants.rightStickY) / -4);
+      hood.setMotor(getDriverDeadzoneAxis(Constants.rightStickY) / -3);
     });
     raiseHood2Button.whenReleased(() -> {
       hood.stopMotor();
@@ -245,7 +248,7 @@ public class RobotContainer {
       feeders.stopBothMotors();
     });*/
 
-    final JoystickButton closeToBallsButton = new JoystickButton(driverController, Constants.closeToBallsButton);
+    /*final JoystickButton closeToBallsButton = new JoystickButton(driverController, Constants.closeToBallsButton);
     closeToBallsButton.whileHeld(new ParallelCommandGroup(
       new FeedColorBased(feeders),
       //new SuckBalls(intake),
@@ -258,6 +261,7 @@ public class RobotContainer {
       hood.stopMotor();
       shooter.stopMotors();
     });
+    
 
     final JoystickButton farAwayButton = new JoystickButton(driverController, Constants.farAwayButton);
     farAwayButton.whileHeld(new ParallelCommandGroup(
@@ -273,7 +277,7 @@ public class RobotContainer {
         feeders.stopBothMotors();
       }, 
       feeders)
-    ));
+    ));*/
 
 
 

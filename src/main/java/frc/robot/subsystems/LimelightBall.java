@@ -80,6 +80,7 @@ public class LimelightBall extends SubsystemBase {
     }
   }
 
+  //TODO: DOESNT WORK IF NOT CALLING METHOD EVERY LOOP. MOVE ARRAY STUFF TO PERIODIC
   public static Pose2d getNearestBallPose(Pose2d robotPose) {
     double currX = getX();
     double currY = getY();

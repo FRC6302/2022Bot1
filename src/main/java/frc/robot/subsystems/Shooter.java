@@ -128,7 +128,15 @@ public class Shooter extends SubsystemBase {
   private final LinearSystemLoop<N1, N1, N1> bottomLoop = new LinearSystemLoop<>(
     bottomPlant, bottomController, bottomObserver, 12.0, Constants.loopTime);
 
-  
+  //estimating shooter velocity stuff
+  private double[] topVelocities = new double[Constants.velocityPeriodsToAverage];
+  private double[] bottomVelocities = new double[Constants.velocityPeriodsToAverage];
+  private double[] topPositions = new double[Constants.velocityPeriodsToAverage + 1];
+  private double[] bottomPositions = new double[Constants.velocityPeriodsToAverage + 1];
+
+  private double estimatedTopV = 0, estimatedBottomV = 0;
+  private double prevTime = 0;
+
   /** Creates a new Shooter. */
   public Shooter() {
 
@@ -183,7 +191,22 @@ public class Shooter extends SubsystemBase {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("top shooter encoder", getTopShooterEncVel());
     SmartDashboard.putNumber("bottom shooter encoder", getBottomShooterEncVel());
+
+    
+    //shifts all the array elements over by 1 to make room for the new measurements
+    for (int i = 0; i < Constants.velocityPeriodsToAverage; i++) {
+      topPositions[i] = topPositions[i + 1];
+      bottomPositions[i] = bottomPositions[i + 1];
+
+      topVelocities[i] = topVelocities[i + 1];
+      bottomVelocities[i] = bottomVelocities[i + 1];
+    }
+
+    topPositions[topPositions.length - 1] = getTopEncPos();
+    bottomPositions[bottomPositions.length - 1] = getBottomEncPos();
   }
+
+  
 
   public void setMotorsStateSpace(double distance) {
     double topSetpoint = Data.getTopShooterVoltage(distance);
@@ -272,6 +295,15 @@ public class Shooter extends SubsystemBase {
     return bottomShooterEncoder.getVelocity();
     //return 0;
   }
+  
+  private double getTopEncPos() {
+    return topShooterEncoder.getPosition();
+  }
+
+  private double getBottomEncPos() {
+    return bottomShooterEncoder.getPosition();
+  }
+
 
   /*public void setWithBangBang(double desiredTop, double desiredBottom) {
     // Controls a motor with the output of the BangBang controller

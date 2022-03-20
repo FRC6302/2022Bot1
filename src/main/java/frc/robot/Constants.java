@@ -122,6 +122,7 @@ public final class Constants {
   public static final double kvMecFeedForward = 3.2686;
   public static final double kaMecFeedForward = 0.1794;
 
+  //TODO: tune these by graphing desired position and actual pos on glass
   public static final double kpMecXController = 0.1; //determined through testing
   public static final double kpMecYController = 0.1;
   public static final double kpMecThetaController = 1.0;
@@ -209,6 +210,8 @@ public final class Constants {
   public static final double ksBottomShooter = 0.1;
   public static final double kVBottomShooter = 0.1;
   public static final double kABottomShooter = 0.1;
+  
+  public static final int velocityPeriodsToAverage = 4;
 
   
   
@@ -293,6 +296,7 @@ public final class Constants {
   public static final int farAwayButton = 0;
 public static final int turnTurret2Button = yButton;
 public static final int zeroHoodButton = xButton;
+
 
 
 
