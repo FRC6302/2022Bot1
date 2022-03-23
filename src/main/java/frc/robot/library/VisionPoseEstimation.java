@@ -24,11 +24,13 @@ public class VisionPoseEstimation {
       Rotation2d.fromDegrees(gyroAngle));*/
 
     //wpilib conventions
+    //TODO: you are using the old tx with the new gyro and turret angle, not as accurate as it could be?
     Pose2d poseEstimate = new Pose2d(
       -distance * Math.cos(Units.degreesToRadians(gyroAngle + turretAngle - tx)), 
       -distance * Math.sin(Units.degreesToRadians(gyroAngle + turretAngle - tx)),
       Rotation2d.fromDegrees(gyroAngle));
 
+    
     double poseDelta = poseEstimate.getTranslation().getDistance(oldPose.getTranslation());
     //failsafe in case the calculation is messed up due to bad sensors or whatever
     if (poseDelta > Constants.visionPoseDeltaTolerance) {

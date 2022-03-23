@@ -5,23 +5,36 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Intake extends SubsystemBase {
   private CANSparkMax motorIntake;
+  private RelativeEncoder encIntake;
 
 
   /** Creates a new Intake. */
   public Intake() {
     motorIntake = new CANSparkMax(Constants.motorIntake, MotorType.kBrushless);
+
+    motorIntake.restoreFactoryDefaults();
+    motorIntake.setIdleMode(IdleMode.kBrake);
+    motorIntake.setInverted(false);
+
+    encIntake = motorIntake.getEncoder();
+
+    motorIntake.burnFlash();
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("intake pos", encIntake.getPosition());
   }
 
   public void setMotor(double speed) {

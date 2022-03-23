@@ -151,7 +151,7 @@ public class RobotContainer {
 
     feeders = new Feeders();
     feedBoth = new FeedBoth(feeders);
-    feedColorBased = new FeedColorBased(feeders);
+    //feedColorBased = new FeedColorBased(feeders);
     //feeders.setDefaultCommand(feedColorBased);
 
 
@@ -159,7 +159,7 @@ public class RobotContainer {
 
     //navX = new NavX();
 
-    colorSensor = new ColorSensor();
+    //colorSensor = new ColorSensor();
 
     //leds = new LEDs();
 
@@ -214,7 +214,7 @@ public class RobotContainer {
     //shootButton.whileHeld(new Shoot(shooter, 0.3, 0.3));
 
     //final JoystickButton shootButton2 = new JoystickButton(driverController, Constants.shootButton2);
-    //shootButton2.whileHeld(new Shoot(shooter, 0.5, 0.5));  
+    //shootButton2.whileHeld(new Shoot(shooter, 0.3, 0.3));  
 
     /*final JoystickButton turnTurretButton = new JoystickButton(driverController, Constants.turnTurretButton);
     turnTurretButton.whileHeld(() -> {
@@ -231,22 +231,23 @@ public class RobotContainer {
     /*final JoystickButton raiseHoodButton = new JoystickButton(driverController, Constants.raiseHoodButton);
     raiseHoodButton.whileHeld(new RaiseHood(hood));*/
 
-    final JoystickButton raiseHood2Button = new JoystickButton(driverController, Constants.raiseHood2Button);
+    /*final JoystickButton raiseHood2Button = new JoystickButton(driverController, Constants.raiseHood2Button);
     raiseHood2Button.whileHeld(() -> {
-      hood.setMotor(getDriverDeadzoneAxis(Constants.rightStickY) / -3);
+      hood.setMotor(getDriverDeadzoneAxis(Constants.rightStickY) / -4);
     });
     raiseHood2Button.whenReleased(() -> {
       hood.stopMotor();
-    });
+    });*/
 
-    //final JoystickButton intakeButton = new JoystickButton(driverController, Constants.intakeButton); 
-    //intakeButton.whileHeld(new SuckBalls(intake));
+    final JoystickButton intakeButton = new JoystickButton(driverController, Constants.intakeButton); 
+    intakeButton.whileHeld(new SuckBalls(intake));
 
-    /*final JoystickButton feedBothButton = new JoystickButton(driverController, Constants.feedBothButton);
-    feedBothButton.whileHeld(new FeedColorBased(feeders));
+    final JoystickButton feedBothButton = new JoystickButton(driverController, Constants.feedBothButton);
+    feedBothButton.whileHeld(new FeedBoth(feeders));
+    //feedBothButton.whileHeld(new FeedColorBased(feeders));
     feedBothButton.whenReleased(() -> {
       feeders.stopBothMotors();
-    });*/
+    });
 
     /*final JoystickButton closeToBallsButton = new JoystickButton(driverController, Constants.closeToBallsButton);
     closeToBallsButton.whileHeld(new ParallelCommandGroup(
@@ -284,8 +285,8 @@ public class RobotContainer {
     //final JoystickButton zeroTurretButton = new JoystickButton(driverController, Constants.zeroTurretButton);
     //zeroTurretButton.whenPressed(turret::resetEncoder);
 
-    final JoystickButton zeroHoodButton = new JoystickButton(driverController, Constants.zeroHoodButton);
-    zeroHoodButton.whenPressed(hood::resetEncoder);
+    //final JoystickButton zeroHoodButton = new JoystickButton(driverController, Constants.zeroHoodButton);
+    //zeroHoodButton.whenPressed(hood::resetEncoder);
 
     
     //final JoystickButton LLDistanceButton = new JoystickButton(driverController, Constants.LLDistanceButton);
@@ -430,8 +431,8 @@ public class RobotContainer {
 
   public double getDriverDeadzoneAxis(final int axis){
     try {
-    final double rawValue = driverController.getRawAxis(axis);
-    return (Math.abs(rawValue) <= Constants.deadzone) ? 0.0 : rawValue;
+      final double rawValue = driverController.getRawAxis(axis);
+      return (Math.abs(rawValue) <= Constants.deadzone) ? 0.0 : rawValue;
     }
     catch(final RuntimeException exception) {
       DriverStation.reportError("Error getting raw axis or returning deadzone axis because: " + exception.getMessage(), true);
@@ -444,4 +445,8 @@ public class RobotContainer {
     return Math.abs(rawValue) < Constants.deadzone ? 0.0 : rawValue;
   }
   */
+
+  public void updateShooterVelocities() {
+    //shooter.updateVelocities();
+  }
 }

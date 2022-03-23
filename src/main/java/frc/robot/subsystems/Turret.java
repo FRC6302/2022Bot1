@@ -120,6 +120,7 @@ public class Turret extends SubsystemBase {
     /*the arctan part gives the angle to the target relative to the field but you have to subtract the pose
     heading (aka gyro angle) so you know what angle to send the turret to relative to the front of the robot*/
     //double posSetpoint = offsetAngle + angleToTarget - gyroAngle;
+    posSetpoint = constrainAngle(posSetpoint);
 
     //constraning both the angles so that turret goes to the closest correct angle instead of going all the way around
     //setVoltageBounded(simpleFeedforward.calculate(posPIDController.calculate(constrainAngle(getAngle()),
@@ -165,7 +166,7 @@ public class Turret extends SubsystemBase {
 
   //makes sure that the turret doesn't go past its limits
   private void setVoltageBounded(double volts, double turretAngle) {
-    if (turretAngle <= Constants.minTurretAngle || resettingForward) {
+    /*if (turretAngle <= Constants.minTurretAngle || resettingForward) {
       resettingForward = true;
       motorTurret.setVoltage(Constants.turretResetVoltage);
       if (turretAngle >= Constants.minTurretAngle + 300) {
@@ -183,12 +184,15 @@ public class Turret extends SubsystemBase {
     }
     else {
       motorTurret.setVoltage(volts);
+    }*/
+
+    if (volts < 0) {
+      
     }
   }
 
   private void setVoltageBounded(double volts) {
-    double turretAngle = getAngle();
-    setVoltageBounded(volts, turretAngle);
+    setVoltageBounded(volts, getAngle());
   }
 
   public double getAngle() {

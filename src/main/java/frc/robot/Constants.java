@@ -70,8 +70,8 @@ public final class Constants {
   public static final int motorR2Value = 51;
 
   public static final int motorTurret = 11;
-  public static final int motorShooterTop = 53;
-  public static final int motorShooterBottom = 24; //spark 54 is broke!!!!
+  public static final int motorShooterTop = 24;
+  public static final int motorShooterBottom = 53; //spark 54 is broke!!!!
   public static final int motorHood = 55;
   public static final int motorNeoTest = 24; //new is 24
   public static final int motorRightClimber = 57;
@@ -284,7 +284,7 @@ public final class Constants {
   public static final int shootButton = xButton; //
   public static final int zeroEncButton = yButton;
   public static final int driveNormalButton = aButton;
-  public static final int missTargetButton = 0;
+  //public static final int missTargetButton = 0;
   public static final int shootButton2 = bButton;
   public static final int turnTurretButton = leftBumper; //
   public static final int zeroTurretButton = xButton;
@@ -294,8 +294,8 @@ public final class Constants {
   public static final int intakeButton = bButton;
   public static final int closeToBallsButton = aButton;
   public static final int farAwayButton = 0;
-public static final int turnTurret2Button = yButton;
-public static final int zeroHoodButton = xButton;
+  public static final int turnTurret2Button = yButton;
+  public static final int zeroHoodButton = xButton;
 
 
 

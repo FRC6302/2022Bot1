@@ -26,7 +26,7 @@ public class Shoot extends CommandBase {
   public Shoot(Shooter shooter) {
     this.shooter = shooter;
     topSpeed = 0.1;
-    bottomSpeed = 0;
+    bottomSpeed = 0.1;
 
     addRequirements(shooter); 
   }

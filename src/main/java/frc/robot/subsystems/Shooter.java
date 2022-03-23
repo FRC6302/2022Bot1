@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import javax.sound.sampled.Line;
+
 import com.ctre.phoenix.led.CANdle.LEDStripType;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -26,12 +28,14 @@ import edu.wpi.first.math.controller.LinearQuadraticRegulator;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.KalmanFilter;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.LinearSystemLoop;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -129,13 +133,10 @@ public class Shooter extends SubsystemBase {
     bottomPlant, bottomController, bottomObserver, 12.0, Constants.loopTime);
 
   //estimating shooter velocity stuff
-  private double[] topVelocities = new double[Constants.velocityPeriodsToAverage];
-  private double[] bottomVelocities = new double[Constants.velocityPeriodsToAverage];
-  private double[] topPositions = new double[Constants.velocityPeriodsToAverage + 1];
-  private double[] bottomPositions = new double[Constants.velocityPeriodsToAverage + 1];
-
-  private double estimatedTopV = 0, estimatedBottomV = 0;
-  private double prevTime = 0;
+  LinearFilter topVelocityFilter = LinearFilter.movingAverage(Constants.velocityPeriodsToAverage);
+  LinearFilter bottomVelocityFilter = LinearFilter.movingAverage(Constants.velocityPeriodsToAverage);
+  private double topPrevPos = 0, bottomPrevPos = 0, prevTime = 0;
+  private double averagedTopV = 0, averagedBottomV = 0;
 
   /** Creates a new Shooter. */
   public Shooter() {
@@ -193,17 +194,6 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("bottom shooter encoder", getBottomShooterEncVel());
 
     
-    //shifts all the array elements over by 1 to make room for the new measurements
-    for (int i = 0; i < Constants.velocityPeriodsToAverage; i++) {
-      topPositions[i] = topPositions[i + 1];
-      bottomPositions[i] = bottomPositions[i + 1];
-
-      topVelocities[i] = topVelocities[i + 1];
-      bottomVelocities[i] = bottomVelocities[i + 1];
-    }
-
-    topPositions[topPositions.length - 1] = getTopEncPos();
-    bottomPositions[bottomPositions.length - 1] = getBottomEncPos();
   }
 
   
@@ -279,6 +269,17 @@ public class Shooter extends SubsystemBase {
 
   public void setBottomMotor(double speed) {
     motorShooterBottom.set(speed);
+  }
+
+  public void updateVelocities() {
+    //averages the last few velocities calculated from the encoder position data
+    averagedTopV = topVelocityFilter.calculate((getTopEncPos() - topPrevPos) / 0.010);
+    averagedBottomV = bottomVelocityFilter.calculate((getBottomEncPos() - bottomPrevPos) / 0.010);
+
+
+    topPrevPos = getTopEncPos();
+    bottomPrevPos = getBottomEncPos();
+    prevTime = Timer.getFPGATimestamp();
   }
 
   public double getTopShooterEncVel() {
