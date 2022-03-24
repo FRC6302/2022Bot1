@@ -286,15 +286,17 @@ public class Shooter extends SubsystemBase {
     //multiplying by 10 because to turn 100 ms to 1 sec because it reports with per 100 ms units
     //return 10.0 * motorShooterTop.getSelectedSensorVelocity() * distancePerPulse;
 
-    return topShooterEncoder.getVelocity();
+    //return topShooterEncoder.getVelocity();
     //return 0;
+    return averagedTopV;
   }
 
   public double getBottomShooterEncVel() {
     //return 10.0 * motorShooterBottom.getSelectedSensorVelocity() * distancePerPulse;
 
-    return bottomShooterEncoder.getVelocity();
+    //return bottomShooterEncoder.getVelocity();
     //return 0;
+    return averagedBottomV;
   }
   
   private double getTopEncPos() {
