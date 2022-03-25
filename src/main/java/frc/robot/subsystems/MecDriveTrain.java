@@ -11,16 +11,20 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxAlternateEncoder.Type;
 
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.MecanumDrivePoseEstimator;
+import edu.wpi.first.math.estimator.UnscentedKalmanFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 import edu.wpi.first.math.kinematics.MecanumDriveMotorVoltages;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.CounterBase;
 import edu.wpi.first.wpilibj.Encoder;
@@ -91,6 +95,15 @@ public class MecDriveTrain extends SubsystemBase {
   private ChassisSpeeds curChassisSpeeds = new ChassisSpeeds();
 
   private Field2d field = new Field2d();
+
+  private final UnscentedKalmanFilter<N1, N1, N1> vxFilter = new UnscentedKalmanFilter<>(
+    Nat.N1(), 
+    Nat.N1(), 
+    (x, u) -> u,
+    (x, u) -> x.extractRowVector(2),
+    VecBuilder.fill(5), 
+    VecBuilder.fill(5), 
+    Constants.loopTime);
 
   /** Creates a new MecDriveTrain. */
   public MecDriveTrain() {
@@ -175,10 +188,10 @@ public class MecDriveTrain extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("enc L1", encoderL1.getDistance());
-    SmartDashboard.putNumber("enc L2", encoderL2.getDistance());
-    SmartDashboard.putNumber("enc R1", encoderR1.getDistance());
-    SmartDashboard.putNumber("enc R2", encoderR2.getDistance());
+    /*SmartDashboard.putNumber("enc L1 V", getEncL1Rate());
+    SmartDashboard.putNumber("enc L2 V", getEncL2Rate());
+    SmartDashboard.putNumber("enc R1 V", getEncR1Rate());
+    SmartDashboard.putNumber("enc R2 V", getEncR2Rate());*/
 
     //SmartDashboard.putNumber("test enc pos", encTest.getPosition());
     //SmartDashboard.putNumber("test enc vel", encTest.getVelocity());
@@ -189,10 +202,10 @@ public class MecDriveTrain extends SubsystemBase {
     SmartDashboard.putNumber("pose x", getPoseEstimate().getX());
     SmartDashboard.putNumber("pose y", getPoseEstimate().getY());
     
-    field.setRobotPose(getPoseEstimate());
+    //field.setRobotPose(getPoseEstimate());
 
-    //SmartDashboard.putNumber("mecanum vx", getVx());
-    //SmartDashboard.putNumber("mecanum vy", getVy());
+    SmartDashboard.putNumber("mecanum vx", getVx());
+    SmartDashboard.putNumber("mecanum vy", getVy());
     //SmartDashboard.putNumber("mecanum ang v", getAngV());
 
     //used for converting robot velocity into target-relative velocity
@@ -421,5 +434,12 @@ public class MecDriveTrain extends SubsystemBase {
   public double getVy() {
     //return curChassisSpeeds.vxMetersPerSecond;
     return curChassisSpeeds.vyMetersPerSecond;
+  }
+
+  public double getGlobalVx() {
+    double gyroAngle = NavX.getGyroYaw();
+    double gyroVx = NavX.getGyroGlobalVx();
+    //plug into unscented kalman here
+    return gyroVx;
   }
 }

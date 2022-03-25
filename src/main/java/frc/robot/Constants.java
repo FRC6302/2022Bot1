@@ -74,21 +74,21 @@ public final class Constants {
   public static final int motorShooterBottom = 53; //spark 54 is broke!!!!
   public static final int motorHood = 55;
   public static final int motorNeoTest = 24; //new is 24
-  public static final int motorRightClimber = 57;
-  public static final int motorLeftClimber = 59;
+  public static final int motorFirstClimber = 59;
+  public static final int motorSecondClimber = 57;
   public static final int motorIntake = 56;
   public static final int motorFeederFront = 12;
   public static final int motorFeederMiddle = 13;
 
   //encoders - DIO ports on rio or navx
-  public static final int encL1A = 0;
-  public static final int encL1B = 1;
-  public static final int encL2A = 2;
-  public static final int encL2B = 3;
-  public static final int encR1A = 6;
-  public static final int encR1B = 7;
-  public static final int encR2A = 8;
-  public static final int encR2B = 9;
+  public static final int encL1A = 6;
+  public static final int encL1B = 7;
+  public static final int encL2A = navxDIO7;
+  public static final int encL2B = navxDIO8;
+  public static final int encR1A = navxDIO0;
+  public static final int encR1B = navxDIO1;
+  public static final int encR2A = 3;
+  public static final int encR2B = 4;
 
   public static final int encTestA = navxDIO8;
   public static final int encTestB = navxDIO9;
@@ -140,6 +140,7 @@ public final class Constants {
   
   //gyro
   public static final double jerkXCollisionThreshold = 1;
+  public static final int gyroVelocityFilterSamples = 5;
 
   //limelight
   public static final double limelightLatency = 0.02; //20 ms
@@ -296,6 +297,8 @@ public final class Constants {
   public static final int farAwayButton = 0;
   public static final int turnTurret2Button = yButton;
   public static final int zeroHoodButton = xButton;
+  public static final int moveClimbersButton = rightBumper;
+  
 
 
 

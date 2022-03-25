@@ -20,6 +20,7 @@ import frc.robot.commands.DriveMecTrackTarget;
 import frc.robot.commands.FeedBoth;
 import frc.robot.commands.FeedColorBased;
 import frc.robot.commands.Move;
+import frc.robot.commands.MoveClimbers;
 import frc.robot.commands.PPMecanumControllerCommand;
 import frc.robot.commands.RaiseHood;
 import frc.robot.commands.Shoot;
@@ -30,6 +31,7 @@ import frc.robot.commands.TrackTargetCenterPose;
 import frc.robot.commands.TurnTurret;
 import frc.robot.library.Data;
 import frc.robot.library.LinearInterpolator;
+import frc.robot.subsystems.Climbers;
 import frc.robot.subsystems.ColorSensor;
 import frc.robot.subsystems.FeederFront;
 import frc.robot.subsystems.FeederMiddle;
@@ -87,6 +89,9 @@ public class RobotContainer {
   private Intake intake;
   private SuckBalls suckBalls;
 
+  private Climbers climbers;
+  private MoveClimbers moveClimbers;
+
   //private FeederFront feederFront;
   //private FeederMiddle feederMiddle;
   private Feeders feeders;
@@ -121,21 +126,21 @@ public class RobotContainer {
     driverController = new XboxController(Constants.driverControllerPort);
     //operatorController = new XboxController(Constants.operatorControllerPort);
 
-    //mecDriveTrain = new MecDriveTrain();
-    //driveMec = new DriveMec(mecDriveTrain);
-    //driveMec.addRequirements(mecDriveTrain);
+    mecDriveTrain = new MecDriveTrain();
+    driveMec = new DriveMec(mecDriveTrain);
+    driveMec.addRequirements(mecDriveTrain);
     //driveMecTrackTarget = new DriveMecTrackTarget(mecDriveTrain);
     //driveMecTrackTarget.addRequirements(mecDriveTrain);
-    //mecDriveTrain.setDefaultCommand(driveMec);
+    mecDriveTrain.setDefaultCommand(driveMec);
     
-    //shooter = new Shooter();
+    shooter = new Shooter();
     //shoot = new Shoot(shooter);
     //shoot.addRequirements(shooter);
     //shooter.setDefaultCommand(trackTarget);
 
-    turret = new Turret();
-    turnTurret = new TurnTurret(turret);
-    turnTurret.addRequirements(turret);
+    //turret = new Turret();
+    //turnTurret = new TurnTurret(turret);
+    //turnTurret.addRequirements(turret);
     //turret.setDefaultCommand(turnTurret);
     //trackTargetCenterPose = new TrackTargetCenterPose(mecDriveTrain, turret, shooter);
     //turret.setDefaultCommand(trackTargetCenterPose);
@@ -145,19 +150,22 @@ public class RobotContainer {
     //raiseHood.addRequirements(hood);
     //hood.setDefaultCommand(raiseHood);
 
-    intake = new Intake();
-    suckBalls = new SuckBalls(intake);
-    suckBalls.addRequirements(intake);
+    //intake = new Intake();
+    //suckBalls = new SuckBalls(intake);
+    //suckBalls.addRequirements(intake);
 
     feeders = new Feeders();
     feedBoth = new FeedBoth(feeders);
     //feedColorBased = new FeedColorBased(feeders);
     //feeders.setDefaultCommand(feedColorBased);
 
+    //climbers = new Climbers();
+    //moveClimbers = new MoveClimbers(climbers);
+
 
     //limelight = new Limelight();
 
-    //navX = new NavX();
+    navX = new NavX();
 
     //colorSensor = new ColorSensor();
 
@@ -213,8 +221,8 @@ public class RobotContainer {
     });*/
     //shootButton.whileHeld(new Shoot(shooter, 0.3, 0.3));
 
-    //final JoystickButton shootButton2 = new JoystickButton(driverController, Constants.shootButton2);
-    //shootButton2.whileHeld(new Shoot(shooter, 0.3, 0.3));  
+    final JoystickButton shootButton2 = new JoystickButton(driverController, Constants.shootButton2);
+    shootButton2.whileHeld(new Shoot(shooter, 0.56, 0.56));  
 
     /*final JoystickButton turnTurretButton = new JoystickButton(driverController, Constants.turnTurretButton);
     turnTurretButton.whileHeld(() -> {
@@ -231,23 +239,26 @@ public class RobotContainer {
     /*final JoystickButton raiseHoodButton = new JoystickButton(driverController, Constants.raiseHoodButton);
     raiseHoodButton.whileHeld(new RaiseHood(hood));*/
 
-    /*final JoystickButton raiseHood2Button = new JoystickButton(driverController, Constants.raiseHood2Button);
+    final JoystickButton raiseHood2Button = new JoystickButton(driverController, Constants.raiseHood2Button);
     raiseHood2Button.whileHeld(() -> {
       hood.setMotor(getDriverDeadzoneAxis(Constants.rightStickY) / -4);
     });
     raiseHood2Button.whenReleased(() -> {
       hood.stopMotor();
-    });*/
+    });
 
-    final JoystickButton intakeButton = new JoystickButton(driverController, Constants.intakeButton); 
-    intakeButton.whileHeld(new SuckBalls(intake));
+    //final JoystickButton intakeButton = new JoystickButton(driverController, Constants.intakeButton); 
+    //intakeButton.whileHeld(new SuckBalls(intake));
 
-    final JoystickButton feedBothButton = new JoystickButton(driverController, Constants.feedBothButton);
+    /*final JoystickButton feedBothButton = new JoystickButton(driverController, Constants.feedBothButton);
     feedBothButton.whileHeld(new FeedBoth(feeders));
     //feedBothButton.whileHeld(new FeedColorBased(feeders));
     feedBothButton.whenReleased(() -> {
       feeders.stopBothMotors();
-    });
+    });*/
+
+    //final JoystickButton moveClimbersButton = new JoystickButton(driverController, Constants.moveClimbersButton);
+    //moveClimbersButton.whenHeld(new MoveClimbers(climbers));
 
     /*final JoystickButton closeToBallsButton = new JoystickButton(driverController, Constants.closeToBallsButton);
     closeToBallsButton.whileHeld(new ParallelCommandGroup(

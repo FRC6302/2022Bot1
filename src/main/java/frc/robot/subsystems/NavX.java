@@ -6,6 +6,8 @@ package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -20,12 +22,14 @@ public class NavX extends SubsystemBase{
   //boolean collisionDetected = false;
 
   private  static double offsetAngle = 0;
+
+  private static MedianFilter vxFilter = new MedianFilter(Constants.gyroVelocityFilterSamples);
   
   /**
    * Creates a new NavX.
    */
   public NavX() { 
-    /*new Thread( () -> { 
+    /*new Thread(() -> { 
       try {
         Thread.sleep(1000); 
       }
@@ -54,6 +58,8 @@ public class NavX extends SubsystemBase{
 
     SmartDashboard.putNumber("gyroYaw", getGyroYaw());
     SmartDashboard.putNumber("gyroAngV", getGyroAngV());
+    SmartDashboard.putNumber("gyro vx", getGyroGlobalVx());
+    SmartDashboard.putNumber("gyro vy", getGyroGlobalVy());
     //SmartDashboard.putNumber("gyroAccelX", getGyroAccelX());
     //SmartDashboard.putNumber("gyroAccelY", getGyroAccelY());
     //SmartDashboard.putNumber("gyroJerkX", jerkX);
@@ -64,7 +70,7 @@ public class NavX extends SubsystemBase{
 
   public static double getGyroYaw() { //yaw is rotation (turning) left or right
     //negative because trajectory requires counterclockwise rotation to be positive
-    return gyro.getYaw() - offsetAngle; 
+    return -gyro.getYaw() - offsetAngle; 
   }
 
   //ccw+
@@ -76,6 +82,14 @@ public class NavX extends SubsystemBase{
   public static Rotation2d getGyroRotation2d() {
     //i made yaw negative because it needs to increase as it turns left to work for DiffDrive
     return Rotation2d.fromDegrees(getGyroYaw());
+  }
+
+  public static double getGyroGlobalVx() {
+    return vxFilter.calculate(-gyro.getVelocityX());
+  }
+
+  public static double getGyroGlobalVy() {
+    return gyro.getVelocityY();
   }
 
   public static double getGyroAccelX(){

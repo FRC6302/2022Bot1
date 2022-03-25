@@ -18,6 +18,7 @@ public class LimelightGoal extends SubsystemBase {
   private static double x = 0, y = 0, area = 0, targetFound = 0;
   private static double lastX = 0, lastY = 0;
 
+  private NetworkTableEntry xEntry, yEntry, targetFoundEntry;
   private String tableName = "limelight";
 
   
@@ -35,40 +36,35 @@ public class LimelightGoal extends SubsystemBase {
       
       table.getEntry("ledMode").setNumber(0);
       table.getEntry("stream").setNumber(0);
+
+      xEntry = table.getEntry("tx");
+      yEntry = table.getEntry("ty");
+      targetFoundEntry = table.getEntry("tv");
     }
     catch (RuntimeException ex){
-        DriverStation.reportError("error setting limelight values because: " + ex.getMessage(), true);
+        DriverStation.reportError("error getting limelight table because: " + ex.getMessage(), true);
     }
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    //TODO: do we need to get the table each time in periodic() or just at the start? will it still update
-    NetworkTable table = NetworkTableInstance.getDefault().getTable(tableName);
-    
-    /*NetworkTableEntry tx = table.getEntry("tx"); 
-    NetworkTableEntry ty = table.getEntry("ty"); 
-    NetworkTableEntry ta = table.getEntry("ta");
-    NetworkTableEntry tv = table.getEntry("tv");*/
-    
-    //read values periodically
+
     //maybe change default value to return the last x? Then you dont need lastX variable
-    x = table.getEntry("tx").getDouble(0); //ranges from -29.8 to 29.8 degrees for LL2
-    y = table.getEntry("ty").getDouble(0); //ranges from -24.85 to 24.85 degrees for LL2
-    double area = table.getEntry("ta").getDouble(0); //ranges from 0 to 100% of image
-    targetFound = table.getEntry("tv").getDouble(0);
+    x = xEntry.getDouble(0); //ranges from -29.8 to 29.8 degrees for LL2
+    y = yEntry.getDouble(0); //ranges from -24.85 to 24.85 degrees for LL2
+    targetFound = targetFoundEntry.getDouble(0);
+    //double area = table.getEntry("ta").getDouble(0); //ranges from 0 to 100% of image
 
     if (getTargetFound()) {
       lastX = x;
       lastY = y;
     }
     
-
     //posts to smart dashboard periodically
     SmartDashboard.putNumber("LimelightX", x);
     SmartDashboard.putNumber("LimelightY", y);
-    SmartDashboard.putNumber("LimelightArea", area); 
+    //SmartDashboard.putNumber("LimelightArea", area); 
     SmartDashboard.putNumber("LimelightTargetFound", targetFound);
 
     SmartDashboard.putNumber("distance simple", getTargetDistanceSimple()); 

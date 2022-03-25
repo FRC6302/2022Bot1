@@ -185,6 +185,8 @@ public class Shooter extends SubsystemBase {
     //these might mess things up
     topLoop.reset(VecBuilder.fill(0));
     bottomLoop.reset(VecBuilder.fill(0));
+
+    
   }
 
   @Override
@@ -193,6 +195,7 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("top shooter encoder", getTopShooterEncVel());
     SmartDashboard.putNumber("bottom shooter encoder", getBottomShooterEncVel());
 
+    //output averaged velocity and then encoder delayed v and see the delay in the values. If there is one then you did it right
     
   }
 
@@ -286,17 +289,17 @@ public class Shooter extends SubsystemBase {
     //multiplying by 10 because to turn 100 ms to 1 sec because it reports with per 100 ms units
     //return 10.0 * motorShooterTop.getSelectedSensorVelocity() * distancePerPulse;
 
-    //return topShooterEncoder.getVelocity();
+    return topShooterEncoder.getVelocity();
     //return 0;
-    return averagedTopV;
+    //return averagedTopV;
   }
 
   public double getBottomShooterEncVel() {
     //return 10.0 * motorShooterBottom.getSelectedSensorVelocity() * distancePerPulse;
 
-    //return bottomShooterEncoder.getVelocity();
+    return bottomShooterEncoder.getVelocity();
     //return 0;
-    return averagedBottomV;
+    //return averagedBottomV;
   }
   
   private double getTopEncPos() {
