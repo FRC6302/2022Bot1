@@ -10,31 +10,43 @@ import edu.wpi.first.math.util.Units;
 public class Data {
 
   private static double[][] distanceAngleData = { 
-    {1, Units.degreesToRadians(10)}, //{distance in meters, angle in degrees} format
-    {3, Units.degreesToRadians(15)}, 
-    {5, Units.degreesToRadians(20)},
-    {7, Units.degreesToRadians(25)},
-    {9, Units.degreesToRadians(30)},
-    {11, Units.degreesToRadians(35)},
-    {13, Units.degreesToRadians(40)}
+    {1.981, Units.degreesToRadians(20)}, //{distance in meters, angle in degrees} format
+    {3.048, Units.degreesToRadians(28)}, 
+    {4.572, Units.degreesToRadians(35)},
+    {6.096, Units.degreesToRadians(37)},
+    {7.62, Units.degreesToRadians(40)},
+    {9.144, Units.degreesToRadians(45)},
+    {10.668, Units.degreesToRadians(46)}
   };
 
   private static double[][] distanceTimeData = { 
-    {1.0, 2}, //{distance in meters, time in sec} format
-    {3.0, 3}, 
-    {10, 5} 
+    {1.981, 2}, //{distance in meters, time in sec} format
+    {3.048, 2}, 
+    {4.572, 2},
+    {6.096, 2},
+    {7.62, 3},
+    {9.144, 3},
+    {10.668, 3}
   };
 
   private static double[][] distanceTopShooterData = { 
-    {1.0, 240}, //{distance in meters, motor velocity} format
-    {5.0, 20}, 
-    {10, 5} 
+    {1.981, 170}, //{distance in meters, motor vel rad/s} format
+    {3.048, 200}, 
+    {4.572, 265},
+    {6.096, 390},
+    {7.62, 500},
+    {9.144, 550},
+    {10.668, 550}
   };
 
   private static double[][] distanceBottomShooterData = { 
-    {1.0, 240}, //{distance in meters, motor velocity} format
-    {5.0, 20}, 
-    {10, 5} 
+    {1.981, 95}, //{distance in meters, motor vel rad/s} format
+    {3.048, 90}, 
+    {4.572, 85},
+    {6.096, 140},
+    {7.62, 195},
+    {9.144, 240},
+    {10.668, 315}
   };
 
 

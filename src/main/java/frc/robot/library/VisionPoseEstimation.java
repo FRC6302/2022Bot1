@@ -27,7 +27,7 @@ public class VisionPoseEstimation {
     //TODO: you are using the old tx with the new gyro and turret angle, not as accurate as it could be?
     Pose2d poseEstimate = new Pose2d(
       -distance * Math.cos(Units.degreesToRadians(gyroAngle + turretAngle - tx)), 
-      distance * Math.sin(Units.degreesToRadians(gyroAngle + turretAngle - tx)),
+      -distance * Math.sin(Units.degreesToRadians(gyroAngle + turretAngle - tx)),
       Rotation2d.fromDegrees(gyroAngle));
 
     

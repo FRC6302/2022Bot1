@@ -58,9 +58,9 @@ public class TrackTargetCenterPose extends CommandBase {
 
   
   /** Creates a new TrackTargetStationary. */
-  public TrackTargetCenterPose(/*MecDriveTrain mecDriveTrain, */Turret turret, Hood hood, Shooter shooter) {
+  public TrackTargetCenterPose(MecDriveTrain mecDriveTrain, Turret turret, Hood hood, Shooter shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
-    //this.mecDriveTrain = mecDriveTrain;
+    this.mecDriveTrain = mecDriveTrain;
     this.turret = turret;
     this.hood = hood;
     this.shooter = shooter;
@@ -76,7 +76,7 @@ public class TrackTargetCenterPose extends CommandBase {
   @Override
   public void execute() {
     gyroYaw = NavX.getGyroYaw();
-    turretAngle = turret.getAngle();
+    turretAngle = turret.getRobotRelAngle();
 
     if (LimelightGoal.getTargetFound()) { //runs when the LL can see the target
       distance = LimelightGoal.getTargetDistance();
@@ -93,8 +93,7 @@ public class TrackTargetCenterPose extends CommandBase {
     //difference between turret pose and 
     //it should be the same though if the rest of this works right?
 
-    angleToTarget = Units.radiansToDegrees(Math.atan2(robotPose.getY() - Constants.goalLocation.getY(),
-      robotPose.getX() - Constants.goalLocation.getX()));
+    angleToTarget = Units.radiansToDegrees(Math.atan2(robotPose.getY(), robotPose.getX())) - 180;
 
     //velocities with respect to target
     //paraV = mecDriveTrain.getParaV(angleToTarget - gyroYaw);
@@ -129,9 +128,9 @@ public class TrackTargetCenterPose extends CommandBase {
 
 
     
-    hood.setMotorPosPID(distance, 0);
+    //hood.setMotorPosPID(distance, 0);
     turret.setMotorPosPID(robotPose, angleToTarget - gyroYaw, vx, vy, 0, distance);
-    shooter.setMotorsVelPID(distance);
+    //shooter.setMotorsVelPID(distance);
     
 
     //shooter.shootWithInitialBallVelocity(paraV, perpV, desiredHoodAngle, desiredTurretAngle, distance);
@@ -145,7 +144,11 @@ public class TrackTargetCenterPose extends CommandBase {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    turret.stopMotor();
+    shooter.stopMotors();
+    hood.stopMotor();
+  }
 
   // Returns true when the command should end.
   @Override

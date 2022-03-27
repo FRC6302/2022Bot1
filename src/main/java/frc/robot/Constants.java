@@ -143,10 +143,10 @@ public final class Constants {
   public static final int gyroVelocityFilterSamples = 5;
 
   //limelight
-  public static final double limelightLatency = 0.02; //20 ms
+  public static final double limelightLatency = 0.025; //20 ms
 
   //limelight goal
-  public static final double limelightGoalMountDegreeOffset = 6; //the angle the limelight is pointing relative to the ground, 0 = parallel to floor
+  public static final double limelightGoalMountDegreeOffset = 36.5; //the angle the limelight is pointing relative to the ground, 0 = parallel to floor
 
   //limelight balls
   
@@ -190,7 +190,7 @@ public final class Constants {
   public static final double maxHoodV = Units.degreesToRadians(10); // deg/s to rad/s
   public static final double maxHoodA = Units.degreesToRadians(20); // deg/s/s to rad/s/s
   
-  public static final double hoodMinimumAngle = Units.degreesToRadians(15);
+  public static final double hoodMinimumAngle = Units.degreesToRadians(20);
   
   
 
@@ -268,11 +268,11 @@ public final class Constants {
   //field
   //public static final double targetHeightInches = 104;
   public static final Translation2d goalLocation = new Translation2d(0, 0);
-  public static final double goalOutsideRadius = 0.67786;
+  public static final double goalOutsideRadius = Units.feetToMeters(2); //0.67786;
 
   //robot construction
-  public static final double limelightToRobotCenterRadius = Units.inchesToMeters(6);
-  public static final double limelightToTargetHeight = Units.inchesToMeters(104 - 30);
+  public static final double limelightToRobotCenterRadius = Units.inchesToMeters(9.5);
+  public static final double limelightToTargetHeight = Units.inchesToMeters(103 - 25.0625);
   public static final double limelightToBallCenterHeight = Units.inchesToMeters(40 - 4.25); //find out what ball height to use
   
   //driver contoller buttons
@@ -299,6 +299,7 @@ public final class Constants {
   public static final int zeroHoodButton = xButton;
   public static final int moveClimbersButton = rightBumper;
 public static final int driveButton = leftBumper;
+public static final int trackButton = bButton;
   
 
 

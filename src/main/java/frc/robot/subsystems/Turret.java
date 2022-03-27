@@ -69,7 +69,7 @@ public class Turret extends SubsystemBase {
     turretEncoder = new Encoder(Constants.encTurretA, Constants.encTurretB, false);
     turretEncoder.setDistancePerPulse(distancePerPulse);
 
-    //posPIDController.enableContinuousInput(-180, 180);
+    posPIDController.enableContinuousInput(-180, 180);
     //posPIDController.reset(0, 0);
   }
 
@@ -80,6 +80,7 @@ public class Turret extends SubsystemBase {
 
     SmartDashboard.putNumber("turret enc pos", getAngle());
     SmartDashboard.putNumber("turret constrained angle", constrainAngle(getAngle()));
+    SmartDashboard.putNumber("turret robot rel angle", getRobotRelAngle());
     SmartDashboard.putNumber("turret enc vel", getEncVelocity());
 
 
@@ -115,7 +116,7 @@ public class Turret extends SubsystemBase {
     /*feedforwards based on chassis movement to make turret react better.
     We already know which way it needs to turn if the chassis moving a certain direction, so we can help
     it along and then the pid can do the rest*/
-    //tangentialFeedforward = Units.radiansToDegrees((robotPose.getX() * vy - robotPose.getY() * vx) / (distance * distance));
+    tangentialFeedforward = Units.radiansToDegrees((robotPose.getX() * vy - robotPose.getY() * vx) / (distance * distance));
     //rotationalFeedforward = -angV;
 
     /*the arctan part gives the angle to the target relative to the field but you have to subtract the pose
@@ -127,8 +128,10 @@ public class Turret extends SubsystemBase {
     //setVoltageBounded(simpleFeedforward.calculate(posPIDController.calculate(constrainAngle(getAngle()),
       //constrainAngle(posSetpoint)) + tangentialFeedforward + rotationalFeedforward));
 
-    double volts = simpleFeedforward.calculate(posPIDController.calculate(getAngle(), posSetpoint));
+    double volts = simpleFeedforward.calculate(tangentialFeedforward + posPIDController.calculate(constrainAngle(getAngle()), constrainAngle(posSetpoint + 90)));
     SmartDashboard.putNumber("turret volts", volts);
+    SmartDashboard.putNumber("turret setpoint", constrainAngle(posSetpoint + 90));
+    SmartDashboard.putNumber("tangent ff deg per s", tangentialFeedforward);
     motorTurret.setVoltage(volts);
   }
 
@@ -202,6 +205,10 @@ public class Turret extends SubsystemBase {
     //double currAngle = turretEncoder.getDistance() % 360;
     //if (currAngle >= 0)
     return turretEncoder.getDistance();
+  }
+
+  public double getRobotRelAngle() {
+    return constrainAngle(getAngle() - 90);
   }
 
   //returns the turret angle but between -180 and 180

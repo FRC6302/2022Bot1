@@ -67,8 +67,9 @@ public class LimelightGoal extends SubsystemBase {
     //SmartDashboard.putNumber("LimelightArea", area); 
     SmartDashboard.putNumber("LimelightTargetFound", targetFound);
 
-    SmartDashboard.putNumber("distance simple", getTargetDistanceSimple()); 
-    SmartDashboard.putNumber("distance actual", getTargetDistance()); 
+    //SmartDashboard.putNumber("distance simple", getTargetDistanceSimple()); 
+    //SmartDashboard.putNumber("distance actual", getTargetDistance()); 
+    getTargetDistance();
   }
 
   public static double getX() {
@@ -127,14 +128,15 @@ public class LimelightGoal extends SubsystemBase {
     //law of cosines to still give the same distance when you rotate the turret
     //we care about the distance to the robot center not to the limelight
     double rawDistance = Constants.limelightToTargetHeight / (Math.tan(Math.toRadians(lastY + Constants.limelightGoalMountDegreeOffset))
-      * Math.cos(Math.toRadians(lastX)));
+      * Math.cos(Math.toRadians(lastX))) + Constants.goalOutsideRadius;
     double radius = Constants.limelightToRobotCenterRadius;
 
     double distance = Math.sqrt(
       Math.pow(rawDistance, 2) + Math.pow(radius, 2) 
       - 2 * rawDistance * radius * Math.cos(Units.degreesToRadians(180 - lastX))
     );
+    SmartDashboard.putNumber("raw distance", rawDistance);
     SmartDashboard.putNumber("distance turret corrected", distance);
-    return distance;
+    return rawDistance;
   }
 }
