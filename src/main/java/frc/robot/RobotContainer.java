@@ -138,7 +138,7 @@ public class RobotContainer {
     //shoot.addRequirements(shooter);
     //shooter.setDefaultCommand(trackTarget);
 
-    //turret = new Turret();
+    turret = new Turret();
     //turnTurret = new TurnTurret(turret);
     //turnTurret.addRequirements(turret);
     //turret.setDefaultCommand(turnTurret);
@@ -150,7 +150,7 @@ public class RobotContainer {
     //raiseHood.addRequirements(hood);
     //hood.setDefaultCommand(raiseHood);
 
-    //intake = new Intake();
+    intake = new Intake();
     //suckBalls = new SuckBalls(intake);
     //suckBalls.addRequirements(intake);
 
@@ -211,33 +211,36 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     //driverController.setRumble(RumbleType.kLeftRumble, 0.5);
+
+    //final JoystickButton driveButton = new JoystickButton(driverController, Constants.driveButton);
+    //driveButton.whileHeld(new DriveMec(mecDriveTrain));
     
-    //final JoystickButton shootButton = new JoystickButton(driverController, Constants.shootButton);
+    final JoystickButton shootButton = new JoystickButton(driverController, Constants.shootButton);
     /*shootButton.whileHeld(() -> {
       shooter.setMotors(.99);
     });
     shootButton.whenReleased(() -> {
       shooter.stop();
     });*/
-    //shootButton.whileHeld(new Shoot(shooter, 0.3, 0.3));
+    shootButton.whileHeld(new Shoot(shooter, 0.1, 0.1));
 
-    final JoystickButton shootButton2 = new JoystickButton(driverController, Constants.shootButton2);
-    shootButton2.whileHeld(new Shoot(shooter, 0.56, 0.56));  
+    //final JoystickButton shootButton2 = new JoystickButton(driverController, Constants.shootButton2);
+    //shootButton2.whileHeld(new Shoot(shooter, 0.16, 0.16));  
 
-    /*final JoystickButton turnTurretButton = new JoystickButton(driverController, Constants.turnTurretButton);
+    final JoystickButton turnTurretButton = new JoystickButton(driverController, Constants.turnTurretButton);
     turnTurretButton.whileHeld(() -> {
       //turret.setMotorPosPID(Limelight.getLastX(), 0, 2, 0);
       turret.setMotor(getDriverRawAxis(Constants.rightStickX) / -4);
     });
     turnTurretButton.whenReleased(() -> {
       turret.stopMotor();
-    });*/
+    });
 
     //final JoystickButton turnTurret2Button = new JoystickButton(driverController, Constants.turnTurret2Button);
-    //turnTurret2Button.whileHeld(new TurnTurret(turret));*/
+    //turnTurret2Button.whileHeld(new TurnTurret(turret));
 
-    /*final JoystickButton raiseHoodButton = new JoystickButton(driverController, Constants.raiseHoodButton);
-    raiseHoodButton.whileHeld(new RaiseHood(hood));*/
+    //final JoystickButton raiseHoodButton = new JoystickButton(driverController, Constants.raiseHoodButton);
+    //raiseHoodButton.whileHeld(new RaiseHood(hood));
 
     final JoystickButton raiseHood2Button = new JoystickButton(driverController, Constants.raiseHood2Button);
     raiseHood2Button.whileHeld(() -> {
@@ -247,15 +250,15 @@ public class RobotContainer {
       hood.stopMotor();
     });
 
-    //final JoystickButton intakeButton = new JoystickButton(driverController, Constants.intakeButton); 
-    //intakeButton.whileHeld(new SuckBalls(intake));
+    final JoystickButton intakeButton = new JoystickButton(driverController, Constants.intakeButton); 
+    intakeButton.whileHeld(new SuckBalls(intake));
 
-    /*final JoystickButton feedBothButton = new JoystickButton(driverController, Constants.feedBothButton);
+    final JoystickButton feedBothButton = new JoystickButton(driverController, Constants.feedBothButton);
     feedBothButton.whileHeld(new FeedBoth(feeders));
     //feedBothButton.whileHeld(new FeedColorBased(feeders));
     feedBothButton.whenReleased(() -> {
       feeders.stopBothMotors();
-    });*/
+    });
 
     //final JoystickButton moveClimbersButton = new JoystickButton(driverController, Constants.moveClimbersButton);
     //moveClimbersButton.whenHeld(new MoveClimbers(climbers));
@@ -361,7 +364,8 @@ public class RobotContainer {
         return new InstantCommand();
     }
 
-    return getMecControllerCommand(trajectory);
+    //return getMecControllerCommand(trajectory);
+    return null;
 
     // An ExampleCommand will run in autonomous
     //return getMecControllerCommand();
@@ -458,6 +462,6 @@ public class RobotContainer {
   */
 
   public void updateShooterVelocities() {
-    //shooter.updateVelocities();
+    shooter.updateVelocities();
   }
 }

@@ -25,7 +25,7 @@ public class FeedBoth extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    feeders.setBothMotors(0.3, 0.3);
+    feeders.setBothMotors(0.3, 0.6);
   }
 
   // Called once the command ends or is interrupted.

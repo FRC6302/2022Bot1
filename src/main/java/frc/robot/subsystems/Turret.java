@@ -28,12 +28,12 @@ public class Turret extends SubsystemBase {
   private Encoder turretEncoder;
 
   //private ProfiledPIDController pidController = new ProfiledPIDController(Constants.kpTurret, 0, 0, Constants.turretConstraints);
-  //private PIDController posPIDController = new PIDController(Constants.kpPosTurret, 0, Constants.kdPosTurret);
-  //private PIDController velPIDController = new PIDController(Constants.kpVelTurret, 0, 0);
-  private ProfiledPIDController posPIDController = new ProfiledPIDController(Constants.kpPosTurret, 0, Constants.kdPosTurret, 
-    new Constraints(Constants.maxTurretV, Constants.maxTurretA));
-  private ProfiledPIDController velPIDController = new ProfiledPIDController(Constants.kpVelTurret, 0, 0, 
-    new Constraints(Constants.maxTurretV, Constants.maxTurretA));
+  private PIDController posPIDController = new PIDController(Constants.kpPosTurret, 0, Constants.kdPosTurret);
+  private PIDController velPIDController = new PIDController(Constants.kpVelTurret, 0, 0);
+  //private ProfiledPIDController posPIDController = new ProfiledPIDController(Constants.kpPosTurret, 0, Constants.kdPosTurret, 
+    //new Constraints(Constants.maxTurretV, Constants.maxTurretA));
+  //private ProfiledPIDController velPIDController = new ProfiledPIDController(Constants.kpVelTurret, 0, 0, 
+    //new Constraints(Constants.maxTurretV, Constants.maxTurretA));
 
   private SimpleMotorFeedforward simpleFeedforward = new SimpleMotorFeedforward(
     Constants.ksTurret, Constants.kvTurret, Constants.kaTurret);
@@ -70,6 +70,7 @@ public class Turret extends SubsystemBase {
     turretEncoder.setDistancePerPulse(distancePerPulse);
 
     //posPIDController.enableContinuousInput(-180, 180);
+    //posPIDController.reset(0, 0);
   }
 
   @Override
@@ -109,24 +110,26 @@ public class Turret extends SubsystemBase {
     setVoltageBounded(turretVolts);
   }*/
 
-  public void setMotorPosPID(double posSetpoint, double distance, double perpV, double angV) {
+  public void setMotorPosPID(Pose2d robotPose, double posSetpoint, double vx, double vy, double angV, double distance) {
     //double estimatedDistance = Constants.goalLocation.getDistance(robotPose.getTranslation());
     /*feedforwards based on chassis movement to make turret react better.
     We already know which way it needs to turn if the chassis moving a certain direction, so we can help
     it along and then the pid can do the rest*/
-    //tangentialFeedforward = Units.radiansToDegrees(perpV / distance);
+    //tangentialFeedforward = Units.radiansToDegrees((robotPose.getX() * vy - robotPose.getY() * vx) / (distance * distance));
     //rotationalFeedforward = -angV;
 
     /*the arctan part gives the angle to the target relative to the field but you have to subtract the pose
     heading (aka gyro angle) so you know what angle to send the turret to relative to the front of the robot*/
     //double posSetpoint = offsetAngle + angleToTarget - gyroAngle;
-    posSetpoint = constrainAngle(posSetpoint);
+    //posSetpoint = constrainAngle(posSetpoint);
 
     //constraning both the angles so that turret goes to the closest correct angle instead of going all the way around
     //setVoltageBounded(simpleFeedforward.calculate(posPIDController.calculate(constrainAngle(getAngle()),
       //constrainAngle(posSetpoint)) + tangentialFeedforward + rotationalFeedforward));
 
-    motorTurret.setVoltage(simpleFeedforward.calculate(posPIDController.calculate(getAngle(), posSetpoint)));
+    double volts = simpleFeedforward.calculate(posPIDController.calculate(getAngle(), posSetpoint));
+    SmartDashboard.putNumber("turret volts", volts);
+    motorTurret.setVoltage(volts);
   }
 
   public void setMotorVelPID(double tx, double perpV, double distance, double angV) {

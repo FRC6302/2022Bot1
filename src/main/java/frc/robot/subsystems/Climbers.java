@@ -44,8 +44,8 @@ public class Climbers extends SubsystemBase {
     motorFirstClimber.setInverted(false);
     motorSecondClimber.setInverted(false);
 
-    motorFirstClimber.setIdleMode(IdleMode.kCoast);
-    motorSecondClimber.setIdleMode(IdleMode.kCoast);
+    motorFirstClimber.setIdleMode(IdleMode.kBrake);
+    motorSecondClimber.setIdleMode(IdleMode.kBrake);
 
     encFirstClimber = motorFirstClimber.getEncoder();
     encSecondClimber = motorSecondClimber.getEncoder();

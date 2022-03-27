@@ -166,26 +166,26 @@ public final class Constants {
   /*public static final double ksTurret = 0.56996;
   public static final double kvTurret = 0.0161;
   public static final double kaTurret = 0.0019;*/
-  public static final double ksTurret = 0.65608;
-  public static final double kvTurret = 0.0165;
+  public static final double ksTurret = 0.5; //.64
+  public static final double kvTurret = 0.0167;
   public static final double kaTurret = 0.0019;
-  public static final double kpPosTurret = 3; //sysid guessed 7.6
-  public static final double kdPosTurret = 0; //sysid guessed 1.4
-  public static final double kpVelTurret = 0.05; //sysid said 0.13
+  public static final double kpPosTurret = 4; //sysid guessed 35
+  public static final double kdPosTurret = 0; //sysid guessed 2
+  public static final double kpVelTurret = 0.05; //sysid said 
 
-  public static final double maxTurretV = 180; //deg/s
-  public static final double maxTurretA = 180; //deg/s/s
+  public static final double maxTurretV = .01; //deg/s
+  public static final double maxTurretA = .01; //deg/s/s
   
   
   
   //hood
-  public static final double ksHood = 0.33; //from sysid
-  public static final double kvHood = 30.765;
-  public static final double kaHood = 1.2291;
+  public static final double ksHood = 0.10; //0.17; //from sysid
+  public static final double kvHood = 28.8;
+  public static final double kaHood = 0.782;
   public static final double kgHood = 0.1; //voltage needed to overcome gravity at horizontal. SYSId calcs it at enc=0?? That's problem
 
-  public static final double kpHood = 1; //77
-  public static final double kdHood = 0; //47
+  public static final double kpHood = 3; //4
+  public static final double kdHood = 0; //2
 
   public static final double maxHoodV = Units.degreesToRadians(10); // deg/s to rad/s
   public static final double maxHoodA = Units.degreesToRadians(20); // deg/s/s to rad/s/s
@@ -202,17 +202,17 @@ public final class Constants {
   public static final double maxShooterV = 15; // m/s
   public static final double maxShooterA = 10; // m/s/s
   
-  public static final double kpTopShooter = 0.1;
-  public static final double ksTopShooter = 0.1;
-  public static final double kVTopShooter = 0.1;
-  public static final double kATopShooter = 0.1;
+  public static final double kpTopShooter = 0.005; //sysid 1
+  public static final double ksTopShooter = 0.09;
+  public static final double kVTopShooter = 0.0205; //tested top, copying to bottom for now
+  public static final double kATopShooter = 0.0018;
   
-  public static final double kpBottomShooter = 0.1;
-  public static final double ksBottomShooter = 0.1;
-  public static final double kVBottomShooter = 0.1;
-  public static final double kABottomShooter = 0.1;
+  public static final double kpBottomShooter = 0.005;
+  public static final double ksBottomShooter = 0.09;
+  public static final double kVBottomShooter = 0.0205;
+  public static final double kABottomShooter = 0.0018;
   
-  public static final int velocityPeriodsToAverage = 4;
+  public static final int velocityPeriodsToAverage = 7;
 
   
   
@@ -287,7 +287,7 @@ public final class Constants {
   public static final int driveNormalButton = aButton;
   //public static final int missTargetButton = 0;
   public static final int shootButton2 = bButton;
-  public static final int turnTurretButton = leftBumper; //
+  public static final int turnTurretButton = rightBumper; //
   public static final int zeroTurretButton = xButton;
   public static final int raiseHoodButton = yButton; //
   public static final int raiseHood2Button = leftBumper; //
@@ -298,6 +298,7 @@ public final class Constants {
   public static final int turnTurret2Button = yButton;
   public static final int zeroHoodButton = xButton;
   public static final int moveClimbersButton = rightBumper;
+public static final int driveButton = leftBumper;
   
 
 

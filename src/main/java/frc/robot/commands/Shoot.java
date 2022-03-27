@@ -40,8 +40,10 @@ public class Shoot extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooter.setMotors(topSpeed, bottomSpeed);
+    //shooter.setMotors(topSpeed, bottomSpeed);
     //shooter.setTopMotor(0.2);
+    //shooter.setMotorsStateSpace(1);
+    shooter.setMotorsVelPID(1);
     
   }
 

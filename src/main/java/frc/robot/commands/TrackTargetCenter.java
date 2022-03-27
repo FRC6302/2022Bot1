@@ -82,7 +82,7 @@ public class TrackTargetCenter extends CommandBase {
 
       //hood.setMotorPosPID(distance, paraV);
 
-      turret.setMotorPosPID(x, perpV, distance, 0); 
+      //turret.setMotorPosPID(x, perpV, distance, 0); 
 
       //shooter.shootWithInitialBallVelocity(paraV, perpV, desiredHoodAngle, desiredTurretAngle, distance);
       //shooter.setMotorsVelPID(distance);

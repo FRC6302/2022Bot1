@@ -26,8 +26,8 @@ public class MoveClimbers extends CommandBase {
   @Override
   public void execute() {
     climbers.setMotors(
-      -Robot.robotContainer.getDriverRawAxis(Constants.leftStickY) / 1, 
-      0 //-Robot.robotContainer.getDriverRawAxis(Constants.rightStickY) / 10
+      -Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftStickY) / 1, 
+      -Robot.robotContainer.getDriverDeadzoneAxis(Constants.rightStickY) / 1
     );
   }
 

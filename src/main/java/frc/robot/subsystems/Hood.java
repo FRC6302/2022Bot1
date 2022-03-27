@@ -16,6 +16,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Encoder;
@@ -40,8 +41,8 @@ public class Hood extends SubsystemBase {
     Constants.ksHood, Constants.kvHood, Constants.kaHood);*/
 
   //hood works the same as an arm would in this case. Just corrects for gravity pulling the hood/arm down
-  private ArmFeedforward feedforward = new ArmFeedforward(Constants.ksHood, 
-    Constants.kgHood, Constants.kvHood, Constants.kaHood);
+  private SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(Constants.ksHood, 
+    Constants.kvHood, Constants.kaHood);
 
   private double paraFeedforward = 0;
 
@@ -102,7 +103,7 @@ public class Hood extends SubsystemBase {
     double pidOutput = pidController.calculate(getAngleRad(), desiredAngle);
 
     //double volts = feedforward.calculate(desiredAngle, pidOutput + paraFeedforward);
-    double volts = feedforward.calculate(desiredAngle, pidOutput);
+    double volts = feedforward.calculate(pidOutput);
     SmartDashboard.putNumber("angle rad", getAngleRad());
     SmartDashboard.putNumber("desired ang rad", desiredAngle);
     SmartDashboard.putNumber("hood pid", pidOutput);

@@ -32,7 +32,7 @@ public class TrackTargetCenterPose extends CommandBase {
   double hoodAdjust = 0, desiredHoodAngle = 0;
 
   //from chassis
-  double paraV = 0, perpV = 0, angV = 0;
+  double paraV = 0, perpV = 0, angV = 0, vx = 0, vy = 0;
   
   //from limelight
   double distance = 3, x = 0, y = 0, lastX = 0, lastY = 0;
@@ -78,36 +78,37 @@ public class TrackTargetCenterPose extends CommandBase {
     gyroYaw = NavX.getGyroYaw();
     turretAngle = turret.getAngle();
 
-    /*if (LimelightGoal.getTargetFound()) { //runs when the LL can see the target
+    if (LimelightGoal.getTargetFound()) { //runs when the LL can see the target
       distance = LimelightGoal.getTargetDistance();
       x = LimelightGoal.getX();
       
       mecDriveTrain.updateOdometryWithVision(distance, gyroYaw, turretAngle, x);
-    }*/
+    }
 
-    //robotPose = mecDriveTrain.getPoseEstimate();
+    robotPose = mecDriveTrain.getPoseEstimate();
     //robotToGoal = new Transform2d(robotPose, goalPose);
     //distance = Math.sqrt(Math.pow(robotToGoal.getX(), 2) + Math.pow(robotToGoal.getY(), 2)); 
-    //estimatedDistance = Constants.goalLocation.getDistance(robotPose.getTranslation());
+    distance = Constants.goalLocation.getDistance(robotPose.getTranslation());
     //TODO: get actual tx based on pose estimate?
     //difference between turret pose and 
     //it should be the same though if the rest of this works right?
 
-    //angleToTarget = Units.radiansToDegrees(Math.atan2(robotPose.getY() - Constants.goalLocation.getY(),
-      //robotPose.getX() - Constants.goalLocation.getX()));
+    angleToTarget = Units.radiansToDegrees(Math.atan2(robotPose.getY() - Constants.goalLocation.getY(),
+      robotPose.getX() - Constants.goalLocation.getX()));
 
     //velocities with respect to target
     //paraV = mecDriveTrain.getParaV(angleToTarget - gyroYaw);
     //perpV = mecDriveTrain.getPerpV(angleToTarget - gyroYaw);
+    vx = mecDriveTrain.getGlobalMecVx();
+    vy = mecDriveTrain.getGlobalMecVy();
     
     //angV = mecDriveTrain.getAngV();
 
-    //offsetAngle = 10 * perpV / distance;
     //effectiveDistance = distance / Math.cos(Math.toRadians(offsetAngle)); //something like this
 
     //isAllianceBall = ColorSensor.getCurrentBallIsAlliance();
     //if we pick up the wrong color ball, we wanna shoot it out in a way that misses the goal on purpose but stays on the field
-    if (Timer.getFPGATimestamp() > Constants.timeToShootOppositeBall + 1 && ColorSensor.getTimeSinceOppositeBall() < Constants.timeToShootOppositeBall) {
+    /*if (Timer.getFPGATimestamp() > Constants.timeToShootOppositeBall + 1 && ColorSensor.getTimeSinceOppositeBall() < Constants.timeToShootOppositeBall) {
       shooter.missTarget();
       hood.missTarget();
       turret.setMotorPosPID(-Constants.turretOffsetForMissing, 0, 7, 0); 
@@ -119,17 +120,18 @@ public class TrackTargetCenterPose extends CommandBase {
       else { //if it cant offset to the left, then do it to the right instead
         turret.setMotorPosPID(angleToTarget - Constants.turretOffsetForMissing - gyroYaw, distance, perpV, angV); 
       }*/
-    }
-    else {
-      hood.setMotorPosPID(7, 0);
-      turret.setMotorPosPID(0, 7, 0, 0); 
-      shooter.setMotorsDefaultVolts();
-    }
+    
+    //else {
+      //hood.setMotorPosPID(7, 0);
+      //turret.setMotorPosPID(0, 7, 0, 0); 
+      //shooter.setMotorsDefaultVolts();
+    //}
 
 
     
-
-    //turret.setMotorPosPID(angleToTarget - gyroYaw, perpV, distance, angV); 
+    hood.setMotorPosPID(distance, 0);
+    turret.setMotorPosPID(robotPose, angleToTarget - gyroYaw, vx, vy, 0, distance);
+    shooter.setMotorsVelPID(distance);
     
 
     //shooter.shootWithInitialBallVelocity(paraV, perpV, desiredHoodAngle, desiredTurretAngle, distance);

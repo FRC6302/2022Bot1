@@ -26,14 +26,14 @@ public class Data {
   };
 
   private static double[][] distanceTopShooterData = { 
-    {1.0, 2}, //{distance in meters, motor voltage} format
-    {3.0, 3}, 
+    {1.0, 240}, //{distance in meters, motor velocity} format
+    {5.0, 20}, 
     {10, 5} 
   };
 
   private static double[][] distanceBottomShooterData = { 
-    {1.0, 2}, //{distance in meters, motor voltage} format
-    {3.0, 3}, 
+    {1.0, 240}, //{distance in meters, motor velocity} format
+    {5.0, 20}, 
     {10, 5} 
   };
 

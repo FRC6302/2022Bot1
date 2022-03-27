@@ -25,15 +25,19 @@ import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.controller.LinearQuadraticRegulator;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.KalmanFilter;
 import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.LinearSystemLoop;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
@@ -66,10 +70,12 @@ public class Shooter extends SubsystemBase {
   private SimpleMotorFeedforward bottomFeedforward = new SimpleMotorFeedforward(
     Constants.ksBottomShooter, Constants.kVBottomShooter, Constants.kABottomShooter);
   
-  private ProfiledPIDController topPID = new ProfiledPIDController(Constants.kpTopShooter, 0, 0, 
-    new Constraints(Constants.maxShooterV, Constants.maxShooterA));
-  private ProfiledPIDController bottomPID = new ProfiledPIDController(Constants.kpBottomShooter, 0, 0, 
-    new Constraints(Constants.maxShooterV, Constants.maxShooterA));
+  //private ProfiledPIDController topPID = new ProfiledPIDController(Constants.kpTopShooter, 0, 0, 
+    //new Constraints(Constants.maxShooterV, Constants.maxShooterA));
+  //private ProfiledPIDController bottomPID = new ProfiledPIDController(Constants.kpBottomShooter, 0, 0, 
+    //new Constraints(Constants.maxShooterV, Constants.maxShooterA));
+  private PIDController topPID = new PIDController(Constants.kpTopShooter, 0, 0);
+  private PIDController bottomPID = new PIDController(Constants.kpBottomShooter, 0, 0);
 
   //distance per pulse = pi * (wheel diameter / counts per revolution) / gear reduction between encoder and shaft
   //rev through bore encoder is 8192 counts per rev?
@@ -91,36 +97,36 @@ public class Shooter extends SubsystemBase {
     Nat.N1(),
     Nat.N1(),
     topPlant,
-    VecBuilder.fill(3.0), // How accurate we think our model is, standard deviation in m/s
-    VecBuilder.fill(0.01), // How accurate we think our encoder data is, standard deviation in m/s
+    VecBuilder.fill(3), // How accurate we think our model is, standard deviation in m/s
+    VecBuilder.fill(.01), // How accurate we think our encoder data is, standard deviation in m/s
     Constants.loopTime
   );
   private final KalmanFilter<N1, N1, N1> bottomObserver = new KalmanFilter<>(
     Nat.N1(),
     Nat.N1(),
     topPlant,
-    VecBuilder.fill(3.0), // How accurate we think our model is, standard deviation in m/s
-    VecBuilder.fill(0.01), // How accurate we think our encoder data is, standard deviation in m/s
+    VecBuilder.fill(3), // How accurate we think our model is, standard deviation in m/s
+    VecBuilder.fill(.01), // How accurate we think our encoder data is, standard deviation in m/s
     Constants.loopTime
   );
 
   // A LQR uses feedback to create voltage commands.
   private final LinearQuadraticRegulator<N1, N1, N1> topController = new LinearQuadraticRegulator<>(
     topPlant,
-    VecBuilder.fill(8.0), // qelms. Velocity error tolerance, in meters per second. Decrease
+    VecBuilder.fill(8), // qelms. Velocity error tolerance, in meters per second. Decrease
     // this to more heavily penalize state excursion, or make the controller behave more
     // aggressively.
-    VecBuilder.fill(12.0), // relms. Control effort (voltage) tolerance. Decrease this to more
+    VecBuilder.fill(6.0), // relms. Control effort (voltage) tolerance. Decrease this to more
     // heavily penalize control effort, or make the controller less aggressive. 12 is a good
     // starting point because that is the (approximate) maximum voltage of a battery.
     Constants.loopTime
   ); 
   private final LinearQuadraticRegulator<N1, N1, N1> bottomController = new LinearQuadraticRegulator<>(
     bottomPlant,
-    VecBuilder.fill(8.0), // qelms. Velocity error tolerance, in meters per second. Decrease
+    VecBuilder.fill(8), // qelms. Velocity error tolerance, in meters per second. Decrease
     // this to more heavily penalize state excursion, or make the controller behave more
     // aggressively.
-    VecBuilder.fill(12.0), // relms. Control effort (voltage) tolerance. Decrease this to more
+    VecBuilder.fill(6.0), // relms. Control effort (voltage) tolerance. Decrease this to more
     // heavily penalize control effort, or make the controller less aggressive. 12 is a good
     // starting point because that is the (approximate) maximum voltage of a battery.
     Constants.loopTime
@@ -135,6 +141,8 @@ public class Shooter extends SubsystemBase {
   //estimating shooter velocity stuff
   LinearFilter topVelocityFilter = LinearFilter.movingAverage(Constants.velocityPeriodsToAverage);
   LinearFilter bottomVelocityFilter = LinearFilter.movingAverage(Constants.velocityPeriodsToAverage);
+  //MedianFilter topVelocityFilter = new MedianFilter(Constants.velocityPeriodsToAverage);
+  //MedianFilter bottomVelocityFilter = new MedianFilter(Constants.velocityPeriodsToAverage);
   private double topPrevPos = 0, bottomPrevPos = 0, prevTime = 0;
   private double averagedTopV = 0, averagedBottomV = 0;
 
@@ -186,14 +194,24 @@ public class Shooter extends SubsystemBase {
     topLoop.reset(VecBuilder.fill(0));
     bottomLoop.reset(VecBuilder.fill(0));
 
-    
+    topVelocityFilter.reset();
+    bottomVelocityFilter.reset();
   }
 
   @Override
   public void periodic() {
+    updateVelocities();
+
+
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("top shooter encoder", getTopShooterEncVel());
-    SmartDashboard.putNumber("bottom shooter encoder", getBottomShooterEncVel());
+    SmartDashboard.putNumber("top shooter pos", getTopEncPos());
+    SmartDashboard.putNumber("bottom shooter pos", getBottomEncPos());
+
+    SmartDashboard.putNumber("top shooter vel", averagedTopV);
+    SmartDashboard.putNumber("bottom shooter vel", averagedBottomV);
+
+    SmartDashboard.putNumber("top shooter intern vel", getTopShooterEncVel());
+    SmartDashboard.putNumber("bottom shooter intern vel", getBottomShooterEncVel());
 
     //output averaged velocity and then encoder delayed v and see the delay in the values. If there is one then you did it right
     
@@ -210,20 +228,20 @@ public class Shooter extends SubsystemBase {
     bottomLoop.setNextR(bottomSetpoint);
 
     // Correct our Kalman filter's state vector estimate with encoder data.
-    topLoop.correct(VecBuilder.fill(getTopShooterEncVel()));
-    bottomLoop.correct(VecBuilder.fill(getBottomShooterEncVel()));
+    topLoop.correct(VecBuilder.fill(averagedTopV));
+    bottomLoop.correct(VecBuilder.fill(averagedBottomV));
 
     // Update our LQR to generate new voltage commands and use the voltages to predict the next state with out Kalman filter.
     topLoop.predict(Constants.loopTime);
     bottomLoop.predict(Constants.loopTime);
 
     // Send the new calculated voltage to the motors.
-    motorShooterTop.setVoltage(topLoop.getU(0));
+    //motorShooterTop.setVoltage(topLoop.getU(0));
     motorShooterBottom.setVoltage(bottomLoop.getU(0));
 
     //graph these + enc data on glass in same graph and tune the controller std dev values
-    SmartDashboard.putNumber("top shooter state estimate", topLoop.getXHat(0));
-    SmartDashboard.putNumber("bottom shooter state estimate", bottomLoop.getXHat(0));
+    SmartDashboard.putNumber("top shooter state estimate", topLoop.getU(0));
+    SmartDashboard.putNumber("bottom shooter state estimate", bottomLoop.getU(0));
     SmartDashboard.putNumber("top shooter setpoint", topSetpoint);
     SmartDashboard.putNumber("bottom shooter setpoint", bottomSetpoint);
     
@@ -234,7 +252,7 @@ public class Shooter extends SubsystemBase {
     double setpointV = Data.getTopShooterVoltage(distance);
 
     motorShooterTop.setVoltage(topPID.calculate(getTopShooterEncVel(), setpointV) + topFeedforward.calculate(setpointV));
-    motorShooterBottom.setVoltage(bottomPID.calculate(getBottomShooterEncVel(), setpointV) + bottomFeedforward.calculate(setpointV));
+    motorShooterBottom.setVoltage(bottomPID.calculate(getTopShooterEncVel(), setpointV) + bottomFeedforward.calculate(setpointV));
   }
 
   /*public void setMotorsVelPID(double distance, double perpV, double paraV) {
@@ -276,20 +294,22 @@ public class Shooter extends SubsystemBase {
 
   public void updateVelocities() {
     //averages the last few velocities calculated from the encoder position data
-    averagedTopV = topVelocityFilter.calculate((getTopEncPos() - topPrevPos) / 0.010);
-    averagedBottomV = bottomVelocityFilter.calculate((getBottomEncPos() - bottomPrevPos) / 0.010);
+    averagedTopV = topVelocityFilter.calculate((getTopEncPos() - topPrevPos) / (Timer.getFPGATimestamp() - prevTime));
+    averagedBottomV = bottomVelocityFilter.calculate((getBottomEncPos() - bottomPrevPos) / (Timer.getFPGATimestamp() - prevTime));
 
 
     topPrevPos = getTopEncPos();
     bottomPrevPos = getBottomEncPos();
     prevTime = Timer.getFPGATimestamp();
+
+    //NetworkTableInstance.getDefault().flush();
   }
 
   public double getTopShooterEncVel() {
     //multiplying by 10 because to turn 100 ms to 1 sec because it reports with per 100 ms units
     //return 10.0 * motorShooterTop.getSelectedSensorVelocity() * distancePerPulse;
 
-    return topShooterEncoder.getVelocity();
+    return topShooterEncoder.getVelocity() * 2 * Math.PI / 60;
     //return 0;
     //return averagedTopV;
   }
@@ -297,17 +317,17 @@ public class Shooter extends SubsystemBase {
   public double getBottomShooterEncVel() {
     //return 10.0 * motorShooterBottom.getSelectedSensorVelocity() * distancePerPulse;
 
-    return bottomShooterEncoder.getVelocity();
+    return bottomShooterEncoder.getVelocity() * 2 * Math.PI / 60;
     //return 0;
     //return averagedBottomV;
   }
   
   private double getTopEncPos() {
-    return topShooterEncoder.getPosition();
+    return topShooterEncoder.getPosition() * 2 * Math.PI;
   }
 
   private double getBottomEncPos() {
-    return bottomShooterEncoder.getPosition();
+    return bottomShooterEncoder.getPosition() * 2 * Math.PI;
   }
 
 

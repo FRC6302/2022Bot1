@@ -436,10 +436,16 @@ public class MecDriveTrain extends SubsystemBase {
     return curChassisSpeeds.vyMetersPerSecond;
   }
 
-  public double getGlobalVx() {
-    double gyroAngle = NavX.getGyroYaw();
-    double gyroVx = NavX.getGyroGlobalVx();
+  public double getGlobalMecVx() {
+    //double gyroAngle = NavX.getGyroYaw();
+    //double gyroVx = NavX.getGyroGlobalVx();
+
+    //Translation2d robotRelativeV = new Translation2d(getVx(), getVy());
     //plug into unscented kalman here
-    return gyroVx;
+    return new Translation2d(getVx(), getVy()).rotateBy(NavX.getGyroRotation2d()).getX();
+  }
+
+  public double getGlobalMecVy() {
+    return new Translation2d(getVx(), getVy()).rotateBy(NavX.getGyroRotation2d()).getY();
   }
 }

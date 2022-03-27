@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
@@ -26,7 +27,7 @@ public class TurnTurret extends CommandBase {
   @Override
   public void execute() {
     //turret.setMotor(Robot.robotContainer.getDriverRawAxis(Constants.rightStickX) / -4);
-    turret.setMotorPosPID(0, 7, 0, 0);
+    turret.setMotorPosPID(new Pose2d(), 0, 0, 0, 0, 1);
   }
 
   // Called once the command ends or is interrupted.
