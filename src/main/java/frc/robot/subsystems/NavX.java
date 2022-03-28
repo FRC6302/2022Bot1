@@ -9,6 +9,7 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -101,7 +102,7 @@ public class NavX extends SubsystemBase{
   }
 
   public static double getGyroAngV() {
-    return gyro.getRate();
+    return Units.radiansToDegrees(-gyro.getRate());
   }
 
   public static void zeroGyroYaw() {

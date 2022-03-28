@@ -237,7 +237,7 @@ public class RobotContainer {
     });
 
     final JoystickButton trackButton = new JoystickButton(driverController, Constants.trackButton);
-    trackButton.whileHeld(new TrackTargetCenterPose(mecDriveTrain, turret, hood, shooter));
+    //trackButton.whileHeld(new TrackTargetCenterPose(mecDriveTrain, turret, hood, shooter));
 
     //final JoystickButton turnTurret2Button = new JoystickButton(driverController, Constants.turnTurret2Button);
     //turnTurret2Button.whileHeld(new TurnTurret(turret));
@@ -270,15 +270,15 @@ public class RobotContainer {
     closeToBallsButton.whileHeld(new ParallelCommandGroup(
       new FeedBoth(feeders),
       new SuckBalls(intake),
-      //new TrackTargetCenterPose(turret, hood, shooter)
-      new Shoot(shooter)
+      new TrackTargetCenterPose(mecDriveTrain, turret, hood, shooter)
+      //new Shoot(shooter)
     ));
     closeToBallsButton.whenReleased(() -> {
       feeders.stopBothMotors();
       intake.stopMotor();
-      turret.stopMotor();
-      hood.stopMotor();
-      shooter.stopMotors();
+      //turret.stopMotor();
+      //hood.stopMotor();
+      //shooter.stopMotors();
     });
     
 

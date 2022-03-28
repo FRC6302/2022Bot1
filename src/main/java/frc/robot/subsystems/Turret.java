@@ -117,7 +117,7 @@ public class Turret extends SubsystemBase {
     We already know which way it needs to turn if the chassis moving a certain direction, so we can help
     it along and then the pid can do the rest*/
     tangentialFeedforward = Units.radiansToDegrees((robotPose.getX() * vy - robotPose.getY() * vx) / (distance * distance));
-    //rotationalFeedforward = -angV;
+    rotationalFeedforward = -angV;
 
     /*the arctan part gives the angle to the target relative to the field but you have to subtract the pose
     heading (aka gyro angle) so you know what angle to send the turret to relative to the front of the robot*/
@@ -128,7 +128,8 @@ public class Turret extends SubsystemBase {
     //setVoltageBounded(simpleFeedforward.calculate(posPIDController.calculate(constrainAngle(getAngle()),
       //constrainAngle(posSetpoint)) + tangentialFeedforward + rotationalFeedforward));
 
-    double volts = simpleFeedforward.calculate(tangentialFeedforward + posPIDController.calculate(constrainAngle(getAngle()), constrainAngle(posSetpoint + 90)));
+    double volts = simpleFeedforward.calculate(tangentialFeedforward + rotationalFeedforward 
+      + posPIDController.calculate(constrainAngle(getAngle()), constrainAngle(posSetpoint + 90)));
     SmartDashboard.putNumber("turret volts", volts);
     SmartDashboard.putNumber("turret setpoint", constrainAngle(posSetpoint + 90));
     SmartDashboard.putNumber("tangent ff deg per s", tangentialFeedforward);

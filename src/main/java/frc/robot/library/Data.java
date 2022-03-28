@@ -72,11 +72,11 @@ public class Data {
     return distanceTimeMap.getInterpolatedValue(distance);
   }
 
-  public static double getTopShooterVoltage(double distance) {
+  public static double getTopShooterVel(double distance) {
     return distanceTopShooterMap.getInterpolatedValue(distance);
   }
 
-  public static double getBottomShooterVoltage(double distance) {
+  public static double getBottomShooterVel(double distance) {
     return distanceBottomShooterMap.getInterpolatedValue(distance);
   }
 }

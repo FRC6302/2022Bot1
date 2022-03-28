@@ -101,7 +101,7 @@ public class TrackTargetCenterPose extends CommandBase {
     vx = mecDriveTrain.getGlobalMecVx();
     vy = mecDriveTrain.getGlobalMecVy();
     
-    //angV = mecDriveTrain.getAngV();
+    angV = NavX.getGyroAngV();
 
     //effectiveDistance = distance / Math.cos(Math.toRadians(offsetAngle)); //something like this
 
@@ -128,9 +128,9 @@ public class TrackTargetCenterPose extends CommandBase {
 
 
     
-    //hood.setMotorPosPID(distance, 0);
-    turret.setMotorPosPID(robotPose, angleToTarget - gyroYaw, vx, vy, 0, distance);
-    //shooter.setMotorsVelPID(distance);
+    hood.setMotorPosPID(distance, 0);
+    turret.setMotorPosPID(robotPose, angleToTarget - gyroYaw, vx, vy, angV, distance);
+    shooter.setMotorsVelPID(distance);
     
 
     //shooter.shootWithInitialBallVelocity(paraV, perpV, desiredHoodAngle, desiredTurretAngle, distance);

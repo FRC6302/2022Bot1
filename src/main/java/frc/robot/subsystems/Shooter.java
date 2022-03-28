@@ -220,8 +220,8 @@ public class Shooter extends SubsystemBase {
   
 
   public void setMotorsStateSpace(double distance) {
-    double topSetpoint = Data.getTopShooterVoltage(distance);
-    double bottomSetpoint = Data.getBottomShooterVoltage(distance);
+    double topSetpoint = 0;// Data.getTopShooterVoltage(distance);
+    double bottomSetpoint = 0;// Data.getBottomShooterVoltage(distance);
 
     // Sets the target speed of our flywheel. This is similar to setting the setpoint of a PID controller.
     topLoop.setNextR(topSetpoint);
@@ -250,8 +250,8 @@ public class Shooter extends SubsystemBase {
 
   public void setMotorsVelPID(double distance) {
     //double setpointV = Data.getTopShooterVoltage(distance);
-    double topV = 170;
-    double bottomV = 110; //bottom going 80% of commanded speed
+    double topV = Data.getTopShooterVel(distance);
+    double bottomV = 1.25 * Data.getBottomShooterVel(distance); //bottom going 80% of commanded speed
 
     motorShooterTop.setVoltage(topPID.calculate(getTopShooterEncVel(), topV) + topFeedforward.calculate(topV));
     motorShooterBottom.setVoltage(bottomPID.calculate(getTopShooterEncVel(), bottomV) + bottomFeedforward.calculate(bottomV));
