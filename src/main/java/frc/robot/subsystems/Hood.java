@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
@@ -65,7 +66,16 @@ public class Hood extends SubsystemBase {
     
     hoodEncoder.setDistancePerPulse(distancePerPulse);*/
 
-    motorHood.restoreFactoryDefaults();
+    if (motorHood.restoreFactoryDefaults() == REVLibError.kOk) {
+
+    };
+
+    try {
+      Thread.sleep(50);
+    } catch (InterruptedException ex) {
+      ex.printStackTrace();
+  }
+    motorHood.setCANTimeout(50);
     motorHood.setIdleMode(IdleMode.kBrake);
     motorHood.setInverted(true);
 

@@ -119,11 +119,6 @@ public class Turret extends SubsystemBase {
     tangentialFeedforward = Units.radiansToDegrees((robotPose.getX() * vy - robotPose.getY() * vx) / (distance * distance));
     rotationalFeedforward = -angV;
 
-    /*the arctan part gives the angle to the target relative to the field but you have to subtract the pose
-    heading (aka gyro angle) so you know what angle to send the turret to relative to the front of the robot*/
-    //double posSetpoint = offsetAngle + angleToTarget - gyroAngle;
-    //posSetpoint = constrainAngle(posSetpoint);
-
     //constraning both the angles so that turret goes to the closest correct angle instead of going all the way around
     //setVoltageBounded(simpleFeedforward.calculate(posPIDController.calculate(constrainAngle(getAngle()),
       //constrainAngle(posSetpoint)) + tangentialFeedforward + rotationalFeedforward));

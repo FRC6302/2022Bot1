@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import javax.print.attribute.standard.MediaSize.NA;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 import frc.robot.library.Data;
@@ -48,6 +49,8 @@ public class TrackTargetLeadingPose extends CommandBase {
   double actualDistance;
   double airTime = 3; //seconds
   double temp = 0;
+
+  Translation2d effectiveGoal = new Translation2d();
 
   //approximating derivative stuff
   double prevOffset = offsetAngle, offsetDerivative = 0;
@@ -115,6 +118,9 @@ public class TrackTargetLeadingPose extends CommandBase {
 
     //guess airtime 0.020 sec into future? linear approximation?
     // airtime = airtime + 0.020 * derivative
+
+    //dont wanna use pose for shooting bc if thats wrong then we'll miss. But we will miss anyways?
+    effectiveGoal = new Translation2d(poseX + vx * airTime, poseY + vy * airTime);
 
     //temp value storing a calculation so that it doesnt have recalc it every time i need the value
     temp = airTime * (vy * (poseX - Constants.goalLocation.getX()) 

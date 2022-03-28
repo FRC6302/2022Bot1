@@ -10,6 +10,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -40,8 +41,14 @@ public class Intake extends SubsystemBase {
   public void setMotor(double speed) {
     motorIntake.set(speed);
   }
+  
+  public void setMotor() {
+    motorIntake.setVoltage(Constants.intakeDefaultVolts);
+  }
 
   public void stopMotor() {
     motorIntake.set(0);
   }
+
+
 }

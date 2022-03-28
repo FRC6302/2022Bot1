@@ -35,6 +35,11 @@ public class Feeders extends SubsystemBase {
     motorFeederMiddle.set(ControlMode.PercentOutput, middleSpeed);
   }
 
+  public void setBothMotors() {
+    motorFeederFront.setVoltage(Constants.feederFrontDefaultVolts);
+    motorFeederMiddle.setVoltage(Constants.feederMiddleDefaultVolts);
+  }
+
   public void setBothMotorVolts(double frontVolts, double middleVolts) {
     motorFeederFront.setVoltage(frontVolts);
     motorFeederMiddle.setVoltage(middleVolts);

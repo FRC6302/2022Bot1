@@ -44,7 +44,7 @@ public class Utilities {
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
     thetaController.reset(mecDriveTrain.getPoseEstimate().getRotation().getRadians());
 
-    mecDriveTrain.setPose(ppTrajectory.getInitialPose());
+    //mecDriveTrain.setPose(ppTrajectory.getInitialPose());
 
     PPMecanumControllerCommand mecanumControllerCommand = new PPMecanumControllerCommand(
       ppTrajectory,
@@ -72,10 +72,12 @@ public class Utilities {
       mecDriveTrain
     );
 
-    PathPlannerState initialState = ppTrajectory.getInitialState();
-    return new InstantCommand(() -> 
+    //PathPlannerState initialState = ppTrajectory.getInitialState();
+    /*return new InstantCommand(() -> 
       mecDriveTrain.setPose(new Pose2d(initialState.poseMeters.getTranslation(), initialState.holonomicRotation)))
-      .andThen(mecanumControllerCommand)
-      .andThen(mecDriveTrain::stopDrive);
+      .andThen(mecanumControllerCommand);
+      //.andThen(mecDriveTrain::stopDrive);*/
+
+    return mecanumControllerCommand;
   } 
 }

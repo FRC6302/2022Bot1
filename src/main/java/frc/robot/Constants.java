@@ -217,7 +217,7 @@ public final class Constants {
   
   
   //intake
-
+  public static final double intakeDefaultVolts = 5;
 
   //feeder
   public static final double frontFeederDefaultVolts = 3;
@@ -300,6 +300,9 @@ public final class Constants {
   public static final int moveClimbersButton = rightBumper;
 public static final int driveButton = leftBumper;
 public static final int trackButton = bButton;
+public static final double feederFrontDefaultVolts = 0;
+public static final double feederMiddleDefaultVolts = 0;
+
   
 
 
