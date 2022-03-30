@@ -150,11 +150,17 @@ public class MecDriveTrain extends SubsystemBase {
     motorR2.setIdleMode(IdleMode.kBrake);
 
     //encTest = motorL2.getAlternateEncoder(Type.kQuadrature, 2048);
-    encTest = motorL2.getAlternateEncoder(2048);
+    //encTest = motorL2.getAlternateEncoder(2048);
     //motorL1.getEncoder(encoderType, countsPerRev)
     //encTest.setPositionConversionFactor(1);
     //encTest.setVelocityConversionFactor(1);
     
+    motorL1.setCANTimeout(Constants.sparkCANTimeoutMs);
+    motorL2.setCANTimeout(Constants.sparkCANTimeoutMs);
+    motorR1.setCANTimeout(Constants.sparkCANTimeoutMs);
+    motorR2.setCANTimeout(Constants.sparkCANTimeoutMs);
+
+
     motorL1.burnFlash();
     motorL2.burnFlash();
     motorR1.burnFlash();
@@ -249,24 +255,24 @@ public class MecDriveTrain extends SubsystemBase {
   }
 
   public void setSpeeds(MecanumDriveWheelSpeeds speeds) {
-    /*motorL1.setVoltage(simpleFeedforward.calculate(speeds.frontLeftMetersPerSecond) 
+    motorL1.setVoltage(simpleFeedforward.calculate(speeds.frontLeftMetersPerSecond) 
       + pidController.calculate(getEncL1Rate(), speeds.frontLeftMetersPerSecond));
     motorL2.setVoltage(simpleFeedforward.calculate(speeds.rearLeftMetersPerSecond)
       + pidController.calculate(getEncL2Rate(), speeds.rearLeftMetersPerSecond));
     motorR1.setVoltage(simpleFeedforward.calculate(speeds.frontRightMetersPerSecond)
       + pidController.calculate(getEncR1Rate(), speeds.frontRightMetersPerSecond));
     motorR2.setVoltage(simpleFeedforward.calculate(speeds.rearRightMetersPerSecond)
-      + pidController.calculate(getEncR2Rate(), speeds.rearRightMetersPerSecond));*/
+      + pidController.calculate(getEncR2Rate(), speeds.rearRightMetersPerSecond));
 
     /*motorL1.setVoltage(speeds.frontLeftMetersPerSecond);
     motorL2.setVoltage(speeds.rearLeftMetersPerSecond);
     motorR1.setVoltage(speeds.frontRightMetersPerSecond);
     motorR2.setVoltage(speeds.rearRightMetersPerSecond);*/
 
-    motorL1.setVoltage(simpleFeedforward.calculate(speeds.frontLeftMetersPerSecond));
+    /*motorL1.setVoltage(simpleFeedforward.calculate(speeds.frontLeftMetersPerSecond));
     motorL2.setVoltage(simpleFeedforward.calculate(speeds.rearLeftMetersPerSecond));
     motorR1.setVoltage(simpleFeedforward.calculate(speeds.frontRightMetersPerSecond));
-    motorR2.setVoltage(simpleFeedforward.calculate(speeds.rearRightMetersPerSecond));
+    motorR2.setVoltage(simpleFeedforward.calculate(speeds.rearRightMetersPerSecond));*/
 
     //SmartDashboard.putNumber("motorL1", simpleFeedforward.calculate(speeds.frontLeftMetersPerSecond));
     //SmartDashboard.putNumber("motorR1", speeds.frontRightMetersPerSecond);

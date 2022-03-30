@@ -26,6 +26,7 @@ public class Intake extends SubsystemBase {
     motorIntake.restoreFactoryDefaults();
     motorIntake.setIdleMode(IdleMode.kBrake);
     motorIntake.setInverted(false);
+    motorIntake.setCANTimeout(Constants.sparkCANTimeoutMs);
 
     encIntake = motorIntake.getEncoder();
 

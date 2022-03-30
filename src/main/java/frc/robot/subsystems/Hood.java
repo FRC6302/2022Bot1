@@ -4,9 +4,6 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
@@ -14,18 +11,13 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.library.Data;
-import frc.robot.library.LinearInterpolator;
 
 public class Hood extends SubsystemBase {
   //private WPI_TalonSRX motorHood = new WPI_TalonSRX(Constants.motorHood);
@@ -48,7 +40,7 @@ public class Hood extends SubsystemBase {
   private double paraFeedforward = 0;
 
 
-  private double angleSetpoint = 0;
+  //private double angleSetpoint = 0;
   private double pidOutput = 0;
 
   //gear ratio between encoder and hood. The track is 477 and the part that moves is 24 teeth. neo has 75:1 gearing on it
@@ -74,8 +66,8 @@ public class Hood extends SubsystemBase {
       Thread.sleep(50);
     } catch (InterruptedException ex) {
       ex.printStackTrace();
-  }
-    motorHood.setCANTimeout(50);
+    }
+    motorHood.setCANTimeout(Constants.sparkCANTimeoutMs);
     motorHood.setIdleMode(IdleMode.kBrake);
     motorHood.setInverted(true);
 

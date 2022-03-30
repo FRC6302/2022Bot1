@@ -7,48 +7,27 @@ package frc.robot;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.commands.DriveMec;
-import frc.robot.commands.DriveMecTrackTarget;
 import frc.robot.commands.FeedBoth;
-import frc.robot.commands.FeedColorBased;
-import frc.robot.commands.Move;
-import frc.robot.commands.MoveClimbers;
-import frc.robot.commands.PPMecanumControllerCommand;
-import frc.robot.commands.RaiseHood;
-import frc.robot.commands.Shoot;
 import frc.robot.commands.SuckBalls;
-import frc.robot.commands.TestNeo;
-import frc.robot.commands.TrackTargetCenter;
 import frc.robot.commands.TrackTargetCenterPose;
 import frc.robot.commands.TrackTargetLeadingPose;
 import frc.robot.commands.TurnTurret;
 import frc.robot.commands.Auto.Still5Ball;
 import frc.robot.library.Data;
-import frc.robot.library.LinearInterpolator;
-import frc.robot.subsystems.Climbers;
-import frc.robot.subsystems.ColorSensor;
-import frc.robot.subsystems.FeederFront;
-import frc.robot.subsystems.FeederMiddle;
 import frc.robot.subsystems.Feeders;
 import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.LimelightGoal;
 import frc.robot.subsystems.MecDriveTrain;
 import frc.robot.subsystems.NavX;
-import frc.robot.subsystems.NeoTest;
-import frc.robot.subsystems.PneumaticsTest;
 import frc.robot.subsystems.RobotState;
 import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.TouchSensor;
 import frc.robot.subsystems.Turret;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -68,55 +47,55 @@ public class RobotContainer {
 
 
   private XboxController driverController;
-  //public static XboxController operatorController;
+  private XboxController operatorController;
 
   //private DriveTrain driveTrain;
   //private DriveGTA driveGTA;
 
   private MecDriveTrain mecDriveTrain;
   private DriveMec driveMec;
-  private DriveMecTrackTarget driveMecTrackTarget;
+  //private DriveMecTrackTarget driveMecTrackTarget;
 
 
   private Shooter shooter;
-  private Shoot shoot;
+  //private Shoot shoot;
 
   private Turret turret;
-  private TurnTurret turnTurret;
-  private TrackTargetCenter trackTargetCenter;
-  private TrackTargetCenterPose trackTargetCenterPose;
+  //private TurnTurret turnTurret;
+  //private TrackTargetCenter trackTargetCenter;
+  //private TrackTargetCenterPose trackTargetCenterPose;
 
   private Hood hood;
-  private RaiseHood raiseHood;
+  //private RaiseHood raiseHood;
 
   private Intake intake;
-  private SuckBalls suckBalls;
+  //private SuckBalls suckBalls;
 
-  private Climbers climbers;
-  private MoveClimbers moveClimbers;
+  //private Climbers climbers;
+  //private MoveClimbers moveClimbers;
 
   //private FeederFront feederFront;
   //private FeederMiddle feederMiddle;
   private Feeders feeders;
-  private FeedBoth feedBoth;
-  private FeedColorBased feedColorBased;
+  //private FeedBoth feedBoth;
+  //private FeedColorBased feedColorBased;
 
   private LimelightGoal limelight;
 
   private NavX navX;
 
-  private ColorSensor colorSensor;
+  //private ColorSensor colorSensor;
 
-  private LEDs leds;
+  //private LEDs leds;
 
-  private PneumaticsTest pneumaticsTest;
+  //private PneumaticsTest pneumaticsTest;
 
-  private TouchSensor touchSensor;
+  //private TouchSensor touchSensor;
 
-  private Move move;
+  //private Move move;
 
-  private NeoTest neoTest;
-  private TestNeo testNeo;
+  //private NeoTest neoTest;
+  //private TestNeo testNeo;
 
   private Data data;
   private RobotState robotState;
@@ -130,7 +109,7 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     driverController = new XboxController(Constants.driverControllerPort);
-    //operatorController = new XboxController(Constants.operatorControllerPort);
+    operatorController = new XboxController(Constants.operatorControllerPort);
 
     mecDriveTrain = new MecDriveTrain();
     driveMec = new DriveMec(mecDriveTrain);
@@ -161,7 +140,7 @@ public class RobotContainer {
     //suckBalls.addRequirements(intake);
 
     feeders = new Feeders();
-    feedBoth = new FeedBoth(feeders);
+    //feedBoth = new FeedBoth(feeders);
     //feedColorBased = new FeedColorBased(feeders);
     //feeders.setDefaultCommand(feedColorBased);
 
@@ -468,12 +447,20 @@ public class RobotContainer {
     }
     return 0;
   }
-  /*
+  
   public double getOperatorDeadzoneAxis(int axis){
     double rawValue = operatorController.getRawAxis(axis);
     return Math.abs(rawValue) < Constants.deadzone ? 0.0 : rawValue;
   }
-  */
+
+  public JoystickButton getDriverButton(int buttonNumber) {
+    return new JoystickButton(driverController, buttonNumber);
+  }
+
+  public JoystickButton getOperatorButton(int buttonNumber) {
+    return new JoystickButton(operatorController, buttonNumber);
+  }
+
 
   public void updateShooterVelocities() {
     shooter.updateVelocities();

@@ -9,12 +9,9 @@ import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants;
-import frc.robot.Robot;
 import frc.robot.commands.PPMecanumControllerCommand;
 import frc.robot.subsystems.MecDriveTrain;
 import frc.robot.subsystems.RobotState;
@@ -56,8 +53,8 @@ public class Utilities {
       RobotState.getMecKinematics(),
 
       // Position contollers
-      new PIDController(Constants.kpMecXController, 0, 0),
-      new PIDController(Constants.kpMecYController, 0, 0),
+      new PIDController(Constants.kpMecPosXController, 0, 0),
+      new PIDController(Constants.kpMecPosYController, 0, 0),
       thetaController,
 
       // Needed for normalizing wheel speeds

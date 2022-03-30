@@ -6,14 +6,12 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-import javax.print.attribute.standard.MediaSize.NA;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
-import frc.robot.library.Data;
 import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.LimelightGoal;
 import frc.robot.subsystems.MecDriveTrain;
@@ -60,7 +58,7 @@ public class TrackTargetLeadingPose extends CommandBase {
   double effectiveDistanceDerivative = 0, effectiveDistancePrediction = effectiveDistance;
 
   //pose stuff
-  private Pose2d robotPose = new Pose2d(Constants.goalLocation, new Rotation2d());
+  private Pose2d robotPose;
   double poseX = 0, poseY = 0;
   //private Transform2d robotToGoal = new Transform2d();
   //private Translation2d robotLocation = new Translation2d();
@@ -84,7 +82,7 @@ public class TrackTargetLeadingPose extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-
+    robotPose = RobotState.getPoseEstimate();
   }
 
   // Called every time the scheduler runs while the command is scheduled.

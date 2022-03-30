@@ -7,12 +7,9 @@ package frc.robot.commands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.subsystems.ColorSensor;
+import frc.robot.Robot;
 import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.LimelightGoal;
 import frc.robot.subsystems.MecDriveTrain;
@@ -47,11 +44,12 @@ public class TrackTargetCenterPose extends CommandBase {
   boolean isAllianceBall = true;
 
   //needed for leading the shot
-  //double offsetAngle = 0;
+  //double offsetAngle = 0; 
   //double effectiveDistance = 3;
 
   //private final Pose2d goalPose = new Pose2d(0, 0, new Rotation2d());
-  private Pose2d robotPose = new Pose2d(Constants.goalLocation, new Rotation2d());
+  //private Pose2d robotPose = new Pose2d(Constants.goalLocation, new Rotation2d());
+  private Pose2d robotPose;
   //private Transform2d robotToGoal = new Transform2d();
 
   
@@ -59,7 +57,7 @@ public class TrackTargetCenterPose extends CommandBase {
   double estimatedDistance = 3;
 
   
-  /** Creates a new TrackTargetStationary. */
+  /** Creates a new TrackTargetCenterPose. */
   public TrackTargetCenterPose(MecDriveTrain mecDriveTrain, Turret turret, Hood hood, Shooter shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.mecDriveTrain = mecDriveTrain;
@@ -72,7 +70,9 @@ public class TrackTargetCenterPose extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    robotPose = RobotState.getPoseEstimate();
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -129,6 +129,10 @@ public class TrackTargetCenterPose extends CommandBase {
       //turret.setMotorPosPID(0, 7, 0, 0); 
       //shooter.setMotorsDefaultVolts();
     //}
+
+    if (Robot.robotContainer.getOperatorButton(Constants.missTargetButton).getAsBoolean()) {
+      
+    }
 
 
     

@@ -112,7 +112,9 @@ public final class Constants {
   public static final double maxDriveSpeed = 1.0;
 
   //mecanum
-  public static final double maxMecAttainableWheelSpeed = 5;
+  public static final double maxMecAttainableWheelSpeed = 5; //a guess
+  public static final int vxFilterSize = 10;
+  public static final int vyFilterSize = 10;
 
   //mecanum trajectory
   public static final double maxMecSpeed = 5; //meters per second
@@ -123,17 +125,17 @@ public final class Constants {
   public static final double kaMecFeedForward = 0.41056;
 
   //TODO: tune these by graphing desired position and actual pos on glass
-  public static final double kpMecXController = 0.1; //determined through testing
-  public static final double kpMecYController = 0.1;
-  public static final double kpMecThetaController = 1.0;
+  public static final double kpMecPosXController = 2; //determined through testing
+  public static final double kpMecPosYController = 2;
+  public static final double kpMecThetaController = 2;
 
-  public static final double maxMecRotationVelocity = 5; // rad/s
-  public static final double maxMecRotationAccel = 5; // rad/s/s
+  public static final double maxMecRotationVelocity = 7; // rad/s
+  public static final double maxMecRotationAccel = 10; // rad/s/s
   
-  public static final double kpMecL1Velocity = 0.1; //i think these should all be similar
-  public static final double kpMecL2Velocity = 0.1;
-  public static final double kpMecR1Velocity = 0.1;
-  public static final double kpMecR2Velocity = 0.1;
+  public static final double kpMecL1Velocity = 1; //i think these should all be similar
+  public static final double kpMecL2Velocity = 1;
+  public static final double kpMecR1Velocity = 1;
+  public static final double kpMecR2Velocity = 1;
   
   public static final Constraints mecVConstraints = null;
   public static final double kpMecV = 0;
@@ -220,8 +222,8 @@ public final class Constants {
   public static final double intakeDefaultVolts = 5;
 
   //feeder
-  public static final double frontFeederDefaultVolts = 3;
-  public static final double middleFeederDefaultVolts = 4;
+  public static final double feederFrontDefaultVolts = 3;
+  public static final double feederMiddleDefaultVolts = 4;
 
 
   
@@ -287,7 +289,7 @@ public final class Constants {
   public static final int shootButton = xButton; //
   public static final int zeroEncButton = yButton;
   public static final int driveNormalButton = aButton;
-  //public static final int missTargetButton = 0;
+  public static final int missTargetButton = 0;
   public static final int shootButton2 = bButton;
   public static final int turnTurretButton = rightBumper; //
   public static final int zeroTurretButton = xButton;
@@ -302,10 +304,9 @@ public final class Constants {
   public static final int moveClimbersButton = rightBumper;
 public static final int driveButton = leftBumper;
 public static final int trackButton = bButton;
-public static final double feederFrontDefaultVolts = 0;
-public static final double feederMiddleDefaultVolts = 0;
-public static final int vxFilterSize = 10;
-public static final int vyFilterSize = 10;
+
+
+public static final int sparkCANTimeoutMs = 50;
 
 
   

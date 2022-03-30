@@ -29,6 +29,7 @@ public class NeoTest extends SubsystemBase {
     motorNeoTest.setInverted(false);
     motorNeoTest.setIdleMode(IdleMode.kCoast);
     //motorNeoTest.setSoftLimit(SoftLimitDirection.kForward, 720);*/
+    motorNeoTest.setCANTimeout(Constants.sparkCANTimeoutMs);
 
     encNeoTest = motorNeoTest.getEncoder();
     //encNeoTest.setInverted(false);

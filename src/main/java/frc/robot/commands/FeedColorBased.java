@@ -4,7 +4,6 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.ColorSensor;
@@ -39,14 +38,14 @@ public class FeedColorBased extends CommandBase {
     //if the ball is our alliance then send it to the shooter to score
     if (ColorSensor.getCurrentBallIsAlliance()) {
       //timer.reset();
-      feeders.setBothMotorVolts(Constants.frontFeederDefaultVolts, Constants.middleFeederDefaultVolts);
+      feeders.setBothMotorVolts(Constants.feederFrontDefaultVolts, Constants.feederMiddleDefaultVolts);
     }
     else { 
       //timer.start(); //doesnt effect the timer if its already running
 
       //if the ball is the wrong color then we have to give everything time to get into position to miss
       if (ColorSensor.getTimeSeeingOppositeBall() > Constants.waitToFeedOppositeBallTime) {
-        feeders.setBothMotorVolts(Constants.frontFeederDefaultVolts, Constants.middleFeederDefaultVolts);
+        feeders.setBothMotorVolts(Constants.feederFrontDefaultVolts, Constants.feederMiddleDefaultVolts);
       }
       else {
         feeders.stopBothMotors();

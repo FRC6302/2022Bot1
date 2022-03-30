@@ -11,9 +11,7 @@ import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.Constants;
 import frc.robot.commands.FeedTimed;
 import frc.robot.commands.SuckBalls;
 import frc.robot.commands.TrackTargetCenterPose;
@@ -58,6 +56,7 @@ public class Still5Ball extends ParallelCommandGroup {
 
     //CHANGE TO PARALLEL SO THAT INTAKE IS RUNNNING THE WHOLE TIME
     
+    //TODO dont have vision kick in for a few seconds
     addCommands(
       sequence(
         new InstantCommand(() -> {

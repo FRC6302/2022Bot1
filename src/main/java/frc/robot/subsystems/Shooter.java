@@ -183,6 +183,9 @@ public class Shooter extends SubsystemBase {
     motorShooterTop.setIdleMode(IdleMode.kCoast);
     motorShooterBottom.setIdleMode(IdleMode.kCoast);
 
+    motorShooterTop.setCANTimeout(Constants.sparkCANTimeoutMs);
+    motorShooterBottom.setCANTimeout(Constants.sparkCANTimeoutMs);
+
     topShooterEncoder = motorShooterTop.getEncoder();
     bottomShooterEncoder = motorShooterBottom.getEncoder();
 
