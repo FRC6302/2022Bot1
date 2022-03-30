@@ -66,10 +66,10 @@ public class MecDriveTrain extends SubsystemBase {
   //robot width wheel-to-wheel is 0.584 m, length wheel-to-wheel is 0.521 m
   //0.584/2 = 0.292, 0.521/2 = 0.2605
   //use (y, -x) if using normal math graphs, the origin is center of robot
-  private final Translation2d frontLeftLocation = new Translation2d(0.2605, 0.292);
-  private final Translation2d frontRightLocation = new Translation2d(0.2605, -0.292);
-  private final Translation2d backLeftLocation = new Translation2d(-0.2605, 0.292);
-  private final Translation2d backRightLocation = new Translation2d(-0.2605, -0.292);
+  /*private final Translation2d frontLeftLocation = new Translation2d(Constants.robotWheelToWheelLength/2, Constants.robotWheelToWheelWidth/2);
+  private final Translation2d frontRightLocation = new Translation2d(Constants.robotWheelToWheelLength/2, -Constants.robotWheelToWheelWidth/2);
+  private final Translation2d backLeftLocation = new Translation2d(-Constants.robotWheelToWheelLength/2, Constants.robotWheelToWheelWidth/2);
+  private final Translation2d backRightLocation = new Translation2d(-Constants.robotWheelToWheelLength/2, -Constants.robotWheelToWheelWidth/2);
 
   private final MecanumDriveKinematics kinematics =
       new MecanumDriveKinematics(
@@ -90,11 +90,11 @@ public class MecDriveTrain extends SubsystemBase {
   //distance per pulse = pi * (wheel diameter / counts per revolution) / gear reduction
   //rev through bore encoder is 8192 counts per rev? or use 2048 cycles per rev?
   //ctre mag encoder is 4096
-  private final double distancePerPulse = (Math.PI * 0.1524 / 2048) / 1; //mec wheel diam is 6 in or 0.1524 m
+  
 
   private ChassisSpeeds curChassisSpeeds = new ChassisSpeeds();
 
-  private Field2d field = new Field2d();
+  private Field2d field = new Field2d();*/
 
   private final UnscentedKalmanFilter<N1, N1, N1> vxFilter = new UnscentedKalmanFilter<>(
     Nat.N1(), 
@@ -104,6 +104,8 @@ public class MecDriveTrain extends SubsystemBase {
     VecBuilder.fill(5), 
     VecBuilder.fill(5), 
     Constants.loopTime);
+    
+  private final double distancePerPulse = (Math.PI * 0.1524 / 2048) / 1; //mec wheel diam is 6 in or 0.1524 m
 
   /** Creates a new MecDriveTrain. */
   public MecDriveTrain() {
@@ -172,7 +174,7 @@ public class MecDriveTrain extends SubsystemBase {
     encoderR2.setDistancePerPulse(distancePerPulse);
 
     //how accurate the vision pose estimation is. The error comes from gyro and turret encoder drift and limelight targeting the wrong thing
-    poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.1, 0.1, 0.001));
+    //poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.1, 0.1, 0.001));
     
     //mecDrive = new MecanumDrive(motorL1, motorL2, motorR1, motorR2);
 
@@ -180,7 +182,7 @@ public class MecDriveTrain extends SubsystemBase {
     //field.getObject("red balls").setPose(new Pose2d());
     
 
-    SmartDashboard.putData("field", field);
+    //SmartDashboard.putData("field", field);
 
 
   }
@@ -197,19 +199,19 @@ public class MecDriveTrain extends SubsystemBase {
     //SmartDashboard.putNumber("test enc vel", encTest.getVelocity());
 
     //updates the drive odometry every loop. Not updating using vision here because we prob wont be able to see the goal the whole match
-    updateOdometry();
+    //updateOdometry();
 
-    SmartDashboard.putNumber("pose x", getPoseEstimate().getX());
-    SmartDashboard.putNumber("pose y", getPoseEstimate().getY());
+    //SmartDashboard.putNumber("pose x", getPoseEstimate().getX());
+    //SmartDashboard.putNumber("pose y", getPoseEstimate().getY());
     
     //field.setRobotPose(getPoseEstimate());
 
-    SmartDashboard.putNumber("mecanum vx", getVx());
-    SmartDashboard.putNumber("mecanum vy", getVy());
+    //SmartDashboard.putNumber("mecanum vx", getVx());
+    //SmartDashboard.putNumber("mecanum vy", getVy());
     //SmartDashboard.putNumber("mecanum ang v", getAngV());
 
     //used for converting robot velocity into target-relative velocity
-    curChassisSpeeds = kinematics.toChassisSpeeds(getCurrentWheelSpeeds());
+    //curChassisSpeeds = kinematics.toChassisSpeeds(getCurrentWheelSpeeds());
     
   }
   
@@ -222,11 +224,27 @@ public class MecDriveTrain extends SubsystemBase {
 
   public void setMotors(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
     MecanumDriveWheelSpeeds mecanumDriveWheelSpeeds =
-      kinematics.toWheelSpeeds(
+      RobotState.getMecKinematics().toWheelSpeeds(
         fieldRelative
           ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, NavX.getGyroRotation2d())
           : new ChassisSpeeds(xSpeed, ySpeed, rot));
-    //mecanumDriveWheelSpeeds.desaturate(Constants.maxMecSpeed);
+    mecanumDriveWheelSpeeds.desaturate(Constants.maxMecAttainableWheelSpeed);
+    setSpeeds(mecanumDriveWheelSpeeds); 
+  }
+
+  public void setMotorsFieldRel(double xSpeed, double ySpeed, double rot) {
+    MecanumDriveWheelSpeeds mecanumDriveWheelSpeeds =
+      RobotState.getMecKinematics().toWheelSpeeds(
+        ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, NavX.getGyroRotation2d()));
+    mecanumDriveWheelSpeeds.desaturate(Constants.maxMecAttainableWheelSpeed);
+    setSpeeds(mecanumDriveWheelSpeeds); 
+  }
+
+  public void setMotorsRobotRel(double xSpeed, double ySpeed, double rot) {
+    MecanumDriveWheelSpeeds mecanumDriveWheelSpeeds =
+      RobotState.getMecKinematics().toWheelSpeeds(
+        new ChassisSpeeds(xSpeed, ySpeed, rot));
+    mecanumDriveWheelSpeeds.desaturate(Constants.maxMecAttainableWheelSpeed);
     setSpeeds(mecanumDriveWheelSpeeds); 
   }
 
@@ -302,19 +320,7 @@ public class MecDriveTrain extends SubsystemBase {
       encoderR2.getRate());
   }
 
-  public void updateOdometry() {
-    poseEstimator.update(NavX.getGyroRotation2d(), getCurrentWheelSpeeds());
-  }
-
-   /** Updates the field relative position of the robot. */
-  public void updateOdometryWithVision(double distance, double gyroAngle, double turretAngle, double tx) {
-    //odometry.update(NavX.getGyroRotation2d(), getCurrentWheelSpeeds());
-    poseEstimator.update(NavX.getGyroRotation2d(), getCurrentWheelSpeeds());
-
-    poseEstimator.addVisionMeasurement(
-      VisionPoseEstimation.getGlobalPoseEstimation(getPoseEstimate(), distance, gyroAngle, turretAngle, tx), 
-      Timer.getFPGATimestamp() - Constants.limelightLatency);
-  }
+  
 
   public void resetEncoders() {
     encoderL1.reset();
@@ -323,10 +329,6 @@ public class MecDriveTrain extends SubsystemBase {
     encoderR2.reset();
   }
 
-  public void setPose(Pose2d pose) {
-    resetEncoders();
-    poseEstimator.resetPosition(pose, NavX.getGyroRotation2d());
-  }
 
   public Encoder getEncoderL1() {
     return encoderL1;
@@ -360,16 +362,8 @@ public class MecDriveTrain extends SubsystemBase {
     return encoderR2.getRate();
   }
 
-  public MecanumDriveKinematics getMecKinematics() {
-    return kinematics;
-  }
-
   public SimpleMotorFeedforward getSimpleFeedforward() {
     return simpleFeedforward;
-  }
-
-  public Pose2d getPoseEstimate() {
-    return poseEstimator.getEstimatedPosition();
   }
 
   /*public double getParaVFromFieldRelative(double gyroAngleDeg, double turretAngleDeg) {
@@ -394,58 +388,5 @@ public class MecDriveTrain extends SubsystemBase {
     return -vx * Math.sin(theta) + vz * Math.cos(theta);
   }*/
 
-  public double getParaV(double turretAngleDeg) {
-    //converts from robot-relative velocities directly to target relative velocities
-    //double vz = curChassisSpeeds.vxMetersPerSecond; //velocity in the foward direction, relative to robot
-    //double vx = -curChassisSpeeds.vyMetersPerSecond; //velocity towards the right, relative to robot
-    double theta = Math.toRadians(90 - turretAngleDeg);
-    //double output = vx * Math.cos(theta) + vz * Math.sin(theta);
-
-    double output = -curChassisSpeeds.vyMetersPerSecond * Math.cos(theta) + curChassisSpeeds.vxMetersPerSecond * Math.sin(theta);
-
-    SmartDashboard.putNumber("paraV", output);
-    return output;
-  }
-
-  public double getPerpV(double turretAngleDeg) {
-    //converts from robot-relative velocities directly to target relative velocities
-    //double vz = curChassisSpeeds.vxMetersPerSecond; //velocity in the foward direction, relative to robot
-    //double vx = -curChassisSpeeds.vyMetersPerSecond; //velocity towards the right, relative to robot
-    double theta = Math.toRadians(90 - turretAngleDeg);
-
-    //double output = -vx * Math.sin(theta) + vz * Math.cos(theta);
-    double output = curChassisSpeeds.vyMetersPerSecond * Math.sin(theta) + curChassisSpeeds.vxMetersPerSecond * Math.cos(theta);
-
-    SmartDashboard.putNumber("perpV", output);
-    return output;
-  }
-
-  public double getAngV() {
-    double output = Math.toDegrees(curChassisSpeeds.omegaRadiansPerSecond);
-    //SmartDashboard.putNumber("angv", output);
-    return output;
-  }
-
-  public double getVx() {
-    //return -curChassisSpeeds.vyMetersPerSecond;
-    return curChassisSpeeds.vxMetersPerSecond;
-  }
-
-  public double getVy() {
-    //return curChassisSpeeds.vxMetersPerSecond;
-    return curChassisSpeeds.vyMetersPerSecond;
-  }
-
-  public double getGlobalMecVx() {
-    //double gyroAngle = NavX.getGyroYaw();
-    //double gyroVx = NavX.getGyroGlobalVx();
-
-    //Translation2d robotRelativeV = new Translation2d(getVx(), getVy());
-    //plug into unscented kalman here
-    return new Translation2d(getVx(), getVy()).rotateBy(NavX.getGyroRotation2d()).getX();
-  }
-
-  public double getGlobalMecVy() {
-    return new Translation2d(getVx(), getVy()).rotateBy(NavX.getGyroRotation2d()).getY();
-  }
+  
 }

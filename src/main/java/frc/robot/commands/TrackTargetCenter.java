@@ -10,6 +10,7 @@ import frc.robot.Constants;
 import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.LimelightGoal;
 import frc.robot.subsystems.MecDriveTrain;
+import frc.robot.subsystems.RobotState;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Turret;
 
@@ -67,10 +68,10 @@ public class TrackTargetCenter extends CommandBase {
       turretAngle = turret.getAngle();
 
       //velocities with respect to target
-      paraV = mecDriveTrain.getParaV(turretAngle - x);
-      perpV = mecDriveTrain.getPerpV(turretAngle - x);
+      paraV = RobotState.getParaV(turretAngle - x);
+      perpV = RobotState.getPerpV(turretAngle - x);
       
-      angV = mecDriveTrain.getAngV();
+      angV = RobotState.getAngV();
 
       //offsetAngle = 10 * perpV / distance;
       //effectiveDistance = distance / Math.cos(Math.toRadians(offsetAngle)); //something like this
@@ -89,7 +90,7 @@ public class TrackTargetCenter extends CommandBase {
     }
     else //this runs when the target is not in view of camera
     {
-      paraV = mecDriveTrain.getParaV(turretAngle);
+      paraV = RobotState.getParaV(turretAngle);
       distance = LimelightGoal.getTargetDistance();
       /*the distance value here is calculated internally from lastX and lastY, so it doesnt matter that
       the target isnt in view*/

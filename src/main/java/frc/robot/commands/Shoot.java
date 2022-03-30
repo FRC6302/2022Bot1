@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.LimelightGoal;
 import frc.robot.subsystems.Shooter;
 
 public class Shoot extends CommandBase {
@@ -43,7 +44,7 @@ public class Shoot extends CommandBase {
     //shooter.setMotors(topSpeed, bottomSpeed);
     //shooter.setTopMotor(0.2);
     //shooter.setMotorsStateSpace(1);
-    shooter.setMotorsVelPID(1);
+    shooter.setMotorsVelPID(LimelightGoal.getTargetDistance());
     
   }
 

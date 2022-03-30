@@ -112,15 +112,15 @@ public final class Constants {
   public static final double maxDriveSpeed = 1.0;
 
   //mecanum
-  
+  public static final double maxMecAttainableWheelSpeed = 5;
 
   //mecanum trajectory
   public static final double maxMecSpeed = 5; //meters per second
   public static final double maxMecAcceleration = 5; //meters per second squared
 
-  public static final double ksMecFeedForward = 0.5695; //determined from drive characterization
-  public static final double kvMecFeedForward = 3.2686;
-  public static final double kaMecFeedForward = 0.1794;
+  public static final double ksMecFeedForward = 0.128; //gym floor
+  public static final double kvMecFeedForward = 2.7664;
+  public static final double kaMecFeedForward = 0.41056;
 
   //TODO: tune these by graphing desired position and actual pos on glass
   public static final double kpMecXController = 0.1; //determined through testing
@@ -159,9 +159,9 @@ public final class Constants {
   //turret
   public static final double turretSeekSpeed = 0.5;
   //public static final double turretCircumference = 0;
-  public static final double minTurretAngle = -180;
-  public static final double maxTurretAngle = 180;
-  public static final double turretResetVoltage = 2;
+  public static final double minTurretAngle = -90; //-230
+  public static final double maxTurretAngle = 260; //200
+  public static final double turretResetVoltage = 8;
 
   /*public static final double ksTurret = 0.56996;
   public static final double kvTurret = 0.0161;
@@ -203,14 +203,14 @@ public final class Constants {
   public static final double maxShooterA = 10; // m/s/s
   
   public static final double kpTopShooter = 0.005; //sysid 1
-  public static final double ksTopShooter = 0.09;
-  public static final double kVTopShooter = 0.0205; //tested top, copying to bottom for now
-  public static final double kATopShooter = 0.0018;
+  public static final double ksTopShooter = 0.012;
+  public static final double kVTopShooter = 0.020957; //tested top, copying to bottom for now
+  public static final double kATopShooter = 0.001948;
   
-  public static final double kpBottomShooter = 0.005;
-  public static final double ksBottomShooter = 0.09;
-  public static final double kVBottomShooter = 0.0205;
-  public static final double kABottomShooter = 0.0018;
+  public static final double kpBottomShooter = 0.0001;
+  public static final double ksBottomShooter = 0.001;
+  public static final double kVBottomShooter = 0.02148;
+  public static final double kABottomShooter = 0.00273;
   
   public static final int velocityPeriodsToAverage = 7;
 
@@ -267,13 +267,15 @@ public final class Constants {
 
   //field
   //public static final double targetHeightInches = 104;
-  public static final Translation2d goalLocation = new Translation2d(0, 0);
+  public static final Translation2d goalLocation = new Translation2d(Units.feetToMeters(27), Units.feetToMeters(13.5));
   public static final double goalOutsideRadius = Units.feetToMeters(2); //0.67786;
 
   //robot construction
   public static final double limelightToRobotCenterRadius = Units.inchesToMeters(9.5);
   public static final double limelightToTargetHeight = Units.inchesToMeters(103 - 25.0625);
   public static final double limelightToBallCenterHeight = Units.inchesToMeters(40 - 4.25); //find out what ball height to use
+  public static final double robotWheelToWheelWidth = Units.inchesToMeters(22.5);
+  public static final double robotWheelToWheelLength = Units.inchesToMeters(20 + 5./16.);
   
   //driver contoller buttons
   public static final int limelightTargetButton = rightBumper;
@@ -292,7 +294,7 @@ public final class Constants {
   public static final int raiseHoodButton = yButton; //
   public static final int raiseHood2Button = leftBumper; //
   public static final int feedBothButton = aButton;
-  public static final int intakeButton = bButton;
+  public static final int intakeButton = aButton;
   public static final int closeToBallsButton = aButton;
   public static final int farAwayButton = 0;
   public static final int turnTurret2Button = yButton;
@@ -302,6 +304,9 @@ public static final int driveButton = leftBumper;
 public static final int trackButton = bButton;
 public static final double feederFrontDefaultVolts = 0;
 public static final double feederMiddleDefaultVolts = 0;
+public static final int vxFilterSize = 10;
+public static final int vyFilterSize = 10;
+
 
   
 

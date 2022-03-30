@@ -28,10 +28,10 @@ public class DriveMec extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    z = -1 * (Robot.robotContainer.getDriverDeadzoneAxis(Constants.rightTrigger)
+    z = -1.5 * (Robot.robotContainer.getDriverDeadzoneAxis(Constants.rightTrigger)
     - Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftTrigger));
-    x = -1 * Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftStickY);
-    y = -1 * Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftStickX);
+    x = -1.5 * Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftStickY);
+    y = -1.5 * Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftStickX);
 
     SmartDashboard.putNumber("forward input joystick", x);
     SmartDashboard.putNumber("sideways input joystick", y);
@@ -40,7 +40,8 @@ public class DriveMec extends CommandBase {
 
     //mecDriveTrain.setMotorsSimple(x, y, z);
 
-    mecDriveTrain.setMotors(x, y, z, true); 
+    //mecDriveTrain.setMotors(x, y, z, true); 
+    mecDriveTrain.setMotorsFieldRel(x, y, z);
   }
 
   // Called once the command ends or is interrupted.

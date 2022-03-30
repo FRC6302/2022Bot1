@@ -28,7 +28,9 @@ import frc.robot.commands.SuckBalls;
 import frc.robot.commands.TestNeo;
 import frc.robot.commands.TrackTargetCenter;
 import frc.robot.commands.TrackTargetCenterPose;
+import frc.robot.commands.TrackTargetLeadingPose;
 import frc.robot.commands.TurnTurret;
+import frc.robot.commands.Auto.Still5Ball;
 import frc.robot.library.Data;
 import frc.robot.library.LinearInterpolator;
 import frc.robot.subsystems.Climbers;
@@ -44,6 +46,7 @@ import frc.robot.subsystems.MecDriveTrain;
 import frc.robot.subsystems.NavX;
 import frc.robot.subsystems.NeoTest;
 import frc.robot.subsystems.PneumaticsTest;
+import frc.robot.subsystems.RobotState;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.TouchSensor;
 import frc.robot.subsystems.Turret;
@@ -115,11 +118,14 @@ public class RobotContainer {
   private NeoTest neoTest;
   private TestNeo testNeo;
 
+  private Data data;
+  private RobotState robotState;
+
+  Still5Ball still5Ball;
+  
   private SendableChooser<String> autonChooser;
   private final String moveForward = "move forward";
   private final String sixBall = "6 ball";
-
-  Data data;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -185,11 +191,14 @@ public class RobotContainer {
 
 
     data = new Data();
+    robotState = new RobotState(mecDriveTrain);
 
     //when distance is 10 m, velocity should be 16 m/s ??
     //TODO give more values and test output with smart dashboard
     //distanceVelocityMap.put(new InterpolatingDouble(10.), new InterpolatingDouble(16.)); 
     //distanceVelocityMap.put(new InterpolatingDouble(11.), new InterpolatingDouble(16.5)); 
+
+    still5Ball = new Still5Ball(mecDriveTrain, intake, feeders, shooter, turret, hood);
 
     autonChooser = new SendableChooser<>();
     autonChooser.setDefaultOption(moveForward, moveForward);
@@ -236,7 +245,7 @@ public class RobotContainer {
       turret.stopMotor();
     });
 
-    final JoystickButton trackButton = new JoystickButton(driverController, Constants.trackButton);
+    //final JoystickButton trackButton = new JoystickButton(driverController, Constants.trackButton);
     //trackButton.whileHeld(new TrackTargetCenterPose(mecDriveTrain, turret, hood, shooter));
 
     //final JoystickButton turnTurret2Button = new JoystickButton(driverController, Constants.turnTurret2Button);
@@ -253,10 +262,10 @@ public class RobotContainer {
       hood.stopMotor();
     });
 
-    /*final JoystickButton intakeButton = new JoystickButton(driverController, Constants.intakeButton); 
-    intakeButton.whileHeld(new SuckBalls(intake));
+    //final JoystickButton intakeButton = new JoystickButton(driverController, Constants.intakeButton); 
+    //intakeButton.whileHeld(new SuckBalls(intake));
 
-    final JoystickButton feedBothButton = new JoystickButton(driverController, Constants.feedBothButton);
+    /*final JoystickButton feedBothButton = new JoystickButton(driverController, Constants.feedBothButton);
     feedBothButton.whileHeld(new FeedBoth(feeders));
     //feedBothButton.whileHeld(new FeedColorBased(feeders));
     feedBothButton.whenReleased(() -> {
@@ -270,15 +279,16 @@ public class RobotContainer {
     closeToBallsButton.whileHeld(new ParallelCommandGroup(
       new FeedBoth(feeders),
       new SuckBalls(intake),
-      new TrackTargetCenterPose(mecDriveTrain, turret, hood, shooter)
+      //new TrackTargetCenterPose(mecDriveTrain, turret, hood, shooter)
+      new TrackTargetLeadingPose(mecDriveTrain, turret, hood, shooter)
       //new Shoot(shooter)
     ));
     closeToBallsButton.whenReleased(() -> {
       feeders.stopBothMotors();
       intake.stopMotor();
-      //turret.stopMotor();
-      //hood.stopMotor();
-      //shooter.stopMotors();
+      turret.stopMotor();
+      hood.stopMotor();
+      shooter.stopMotors();
     });
     
 
@@ -369,13 +379,13 @@ public class RobotContainer {
     }
 
     //return getMecControllerCommand(trajectory);
-    return null;
+    return still5Ball;
 
     // An ExampleCommand will run in autonomous
     //return getMecControllerCommand();
   }
 
-  public Command getMecControllerCommand(PathPlannerTrajectory trajectory) {
+  /*public Command getMecControllerCommand(PathPlannerTrajectory trajectory) {
     // Create config for trajectory
     /*TrajectoryConfig config =
         new TrajectoryConfig(Constants.maxMecSpeed,Constants.maxMecAcceleration)
@@ -393,7 +403,7 @@ public class RobotContainer {
             new Pose2d(3, 0, new Rotation2d(0)),
             config);*/
     
-    ProfiledPIDController thetaController = new ProfiledPIDController(Constants.kpMecThetaController, 0., 0., 
+    /*ProfiledPIDController thetaController = new ProfiledPIDController(Constants.kpMecThetaController, 0., 0., 
       new Constraints(Constants.maxMecRotationVelocity, Constants.maxMecRotationAccel));
       
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
@@ -421,10 +431,10 @@ public class RobotContainer {
         /*new PIDController(Constants.kpMecL1Velocity, 0, 0),
         new PIDController(Constants.kpMecL2Velocity, 0, 0),
         new PIDController(Constants.kpMecR1Velocity, 0, 0),
-        new PIDController(Constants.kpMecR2Velocity, 0, 0),*/
+        new PIDController(Constants.kpMecR2Velocity, 0, 0),
         //mecDriveTrain::getCurrentWheelSpeeds,
-        mecDriveTrain::setSpeeds, // Consumer for the output motor voltages
-        mecDriveTrain);
+        //mecDriveTrain::setSpeeds, // Consumer for the output motor voltages
+        //mecDriveTrain);
 
     return new InstantCommand(() -> mecDriveTrain.setPose(Robot.testPath.getInitialPose()))
     .andThen(mecanumControllerCommand)
@@ -433,7 +443,7 @@ public class RobotContainer {
 
   public void updateOdometry() {
     mecDriveTrain.updateOdometry();
-  }
+  }*/
   
   
   public double getDriverRawAxis(final int axis){

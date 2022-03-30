@@ -2,6 +2,8 @@ package frc.robot.library;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants;
@@ -29,16 +31,20 @@ public class VisionPoseEstimation {
       -distance * Math.cos(Units.degreesToRadians(gyroAngle + turretAngle - tx)), 
       -distance * Math.sin(Units.degreesToRadians(gyroAngle + turretAngle - tx)),
       Rotation2d.fromDegrees(gyroAngle));
+    //).transformBy(new Transform2d(new Translation2d(Constants.goalLocation.getX(), Constants.goalLocation.getY()), new Rotation2d()));
 
+    Pose2d transformedPose = new Pose2d(poseEstimate.getX() + Constants.goalLocation.getX(), 
+      poseEstimate.getY() + Constants.goalLocation.getY(), 
+      poseEstimate.getRotation());
     
-    double poseDelta = poseEstimate.getTranslation().getDistance(oldPose.getTranslation());
+    //double poseDelta = poseEstimate.getTranslation().getDistance(oldPose.getTranslation());
     //failsafe in case the calculation is messed up due to bad sensors or whatever
     /*if (poseDelta > Constants.visionPoseDeltaTolerance) {
       DriverStation.reportWarning("VISION POSE ESTIMATION IS REALLY OFF, CHECK INDIVIDUAL SENSOR DATA", false);
       return oldPose;
     }*/
 
-    return poseEstimate;
+    return transformedPose;
   }
 
 /*public static double getCurrDistance(double distance, double gyroAngle, double turretAngle, double tx) {

@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
@@ -16,6 +17,7 @@ import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.LimelightGoal;
 import frc.robot.subsystems.MecDriveTrain;
 import frc.robot.subsystems.NavX;
+import frc.robot.subsystems.RobotState;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Turret;
 
@@ -49,7 +51,7 @@ public class TrackTargetCenterPose extends CommandBase {
   //double effectiveDistance = 3;
 
   //private final Pose2d goalPose = new Pose2d(0, 0, new Rotation2d());
-  private Pose2d robotPose = new Pose2d();
+  private Pose2d robotPose = new Pose2d(Constants.goalLocation, new Rotation2d());
   //private Transform2d robotToGoal = new Transform2d();
 
   
@@ -82,10 +84,10 @@ public class TrackTargetCenterPose extends CommandBase {
       distance = LimelightGoal.getTargetDistance();
       x = LimelightGoal.getX();
       
-      mecDriveTrain.updateOdometryWithVision(distance, gyroYaw, turretAngle, x);
+      RobotState.updateOdometryWithVision(distance, gyroYaw, turretAngle, x);
     }
 
-    robotPose = mecDriveTrain.getPoseEstimate();
+    robotPose = RobotState.getPoseEstimate();
     //robotToGoal = new Transform2d(robotPose, goalPose);
     //distance = Math.sqrt(Math.pow(robotToGoal.getX(), 2) + Math.pow(robotToGoal.getY(), 2)); 
     distance = Constants.goalLocation.getDistance(robotPose.getTranslation());
@@ -93,13 +95,15 @@ public class TrackTargetCenterPose extends CommandBase {
     //difference between turret pose and 
     //it should be the same though if the rest of this works right?
 
-    angleToTarget = Units.radiansToDegrees(Math.atan2(robotPose.getY(), robotPose.getX())) - 180;
+    angleToTarget = Units.radiansToDegrees(Math.atan2(
+      robotPose.getY() - Constants.goalLocation.getY(), 
+      robotPose.getX() - Constants.goalLocation.getX())) - 180;
 
     //velocities with respect to target
     //paraV = mecDriveTrain.getParaV(angleToTarget - gyroYaw);
     //perpV = mecDriveTrain.getPerpV(angleToTarget - gyroYaw);
-    vx = mecDriveTrain.getGlobalMecVx();
-    vy = mecDriveTrain.getGlobalMecVy();
+    vx = RobotState.getGlobalMecVx();
+    vy = RobotState.getGlobalMecVy();
     
     angV = NavX.getGyroAngV();
 

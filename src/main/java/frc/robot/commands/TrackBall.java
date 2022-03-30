@@ -17,9 +17,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.library.Utilities;
 import frc.robot.subsystems.LimelightBall;
 import frc.robot.subsystems.MecDriveTrain;
+import frc.robot.subsystems.RobotState;
 
 public class TrackBall extends CommandBase {
   MecDriveTrain mecDriveTrain;
@@ -29,7 +31,7 @@ public class TrackBall extends CommandBase {
   // Create config for trajectory
   TrajectoryConfig config = new TrajectoryConfig(Constants.maxMecSpeed, Constants.maxMecAcceleration)
     // Add kinematics to ensure max speed is actually obeyed
-    .setKinematics(mecDriveTrain.getMecKinematics());
+    .setKinematics(RobotState.getMecKinematics());
 
   //ArrayList<Pose2d> waypoints = new ArrayList<Pose2d>();
 
@@ -53,7 +55,7 @@ public class TrackBall extends CommandBase {
   public void initialize() {
     loopCount = 0;
 
-    currPose = mecDriveTrain.getPoseEstimate();
+    currPose = RobotState.getPoseEstimate();
     latestBallPose = LimelightBall.getNearestBallPose(currPose);
   }
 
@@ -62,7 +64,7 @@ public class TrackBall extends CommandBase {
   public void execute() {
     //recalculates the trajectory and command every so often to account for the ball moving. Doing it constantly would be inefficient
     if (loopCount % loopsBetweenGenerations == 0) {
-      currPose = mecDriveTrain.getPoseEstimate();
+      currPose = RobotState.getPoseEstimate();
       latestBallPose = LimelightBall.getNearestBallPose(currPose);
 
       latestTrajectory = (PathPlannerTrajectory) TrajectoryGenerator.generateTrajectory(List.of(currPose, latestBallPose), config);

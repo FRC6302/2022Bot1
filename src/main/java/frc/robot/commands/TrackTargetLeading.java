@@ -10,6 +10,7 @@ import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.LimelightGoal;
 import frc.robot.subsystems.MecDriveTrain;
 import frc.robot.subsystems.NavX;
+import frc.robot.subsystems.RobotState;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Turret;
 
@@ -69,13 +70,13 @@ public class TrackTargetLeading extends CommandBase {
       turretAngle = turret.getAngle();
 
       //velocities with respect to target
-      paraV = mecDriveTrain.getParaV(turretAngle);
-      perpV = mecDriveTrain.getPerpV(turretAngle);
+      paraV = RobotState.getParaV(turretAngle);
+      perpV = RobotState.getPerpV(turretAngle);
 
-      vx = mecDriveTrain.getVx();
-      vy = mecDriveTrain.getVy();
+      vx = RobotState.getGlobalMecVx();
+      vy = RobotState.getGlobalMecVy();
       
-      angV = mecDriveTrain.getAngV();
+      angV = NavX.getGyroAngV();
 
       temp = airTime * (vy * Math.sin(gyroYaw + turretAngle - x) + vx * Math.cos(gyroYaw + turretAngle - x));
 

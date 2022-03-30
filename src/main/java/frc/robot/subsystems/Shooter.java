@@ -250,11 +250,14 @@ public class Shooter extends SubsystemBase {
 
   public void setMotorsVelPID(double distance) {
     //double setpointV = Data.getTopShooterVoltage(distance);
-    double topV = Data.getTopShooterVel(distance);
-    double bottomV = 1.25 * Data.getBottomShooterVel(distance); //bottom going 80% of commanded speed
-
+    
+    double bottomV = Data.getBottomShooterVel(distance); //bottom going 80% of commanded speed
+    double topV = 3.0 * bottomV;
     motorShooterTop.setVoltage(topPID.calculate(getTopShooterEncVel(), topV) + topFeedforward.calculate(topV));
     motorShooterBottom.setVoltage(bottomPID.calculate(getTopShooterEncVel(), bottomV) + bottomFeedforward.calculate(bottomV));
+
+    SmartDashboard.putNumber("top shooter setpoint", topV);
+    SmartDashboard.putNumber("bottom shooter setpoint", bottomV);
   }
 
   /*public void setMotorsVelPID(double distance, double perpV, double paraV) {

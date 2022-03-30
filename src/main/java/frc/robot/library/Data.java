@@ -11,43 +11,54 @@ public class Data {
 
   private static double[][] distanceAngleData = { 
     {1.981, Units.degreesToRadians(20)}, //{distance in meters, angle in degrees} format
-    {3.048, Units.degreesToRadians(28)}, 
-    {4.572, Units.degreesToRadians(35)},
-    {6.096, Units.degreesToRadians(37)},
-    {7.62, Units.degreesToRadians(40)},
-    {9.144, Units.degreesToRadians(45)},
-    {10.668, Units.degreesToRadians(46)}
+    {3.048, Units.degreesToRadians(26)}, 
+    {4.572, Units.degreesToRadians(32)},
+    {6.096, Units.degreesToRadians(38)},
+    {7.62, Units.degreesToRadians(44)},
+    {9.144, Units.degreesToRadians(46)},
+    {10.668, Units.degreesToRadians(48)}
   };
 
   private static double[][] distanceTimeData = { 
-    {1.981, 2}, //{distance in meters, time in sec} format
-    {3.048, 2}, 
-    {4.572, 2},
-    {6.096, 2},
-    {7.62, 3},
-    {9.144, 3},
-    {10.668, 3}
+    {1.981, 0.8}, //{distance in meters, time in sec} format
+    {3.048, 0.85}, 
+    {4.572, 0.93},
+    {6.096, 1.03},
+    {7.62, 1.15},
+    {9.144, 1.36},
+    {10.668, 1.6}
   };
 
   private static double[][] distanceTopShooterData = { 
-    {1.981, 170}, //{distance in meters, motor vel rad/s} format
-    {3.048, 200}, 
-    {4.572, 265},
-    {6.096, 390},
-    {7.62, 500},
+    {1.981, 225}, //{distance in meters, motor vel rad/s} format
+    {3.048, 287.5}, 
+    {4.572, 325},
+    {6.096, 400},
+    {7.62, 490},
     {9.144, 550},
     {10.668, 550}
   };
 
   private static double[][] distanceBottomShooterData = { 
-    {1.981, 95}, //{distance in meters, motor vel rad/s} format
-    {3.048, 90}, 
-    {4.572, 85},
-    {6.096, 140},
-    {7.62, 195},
-    {9.144, 240},
-    {10.668, 315}
+    {1.981, 65}, //good //{distance in meters, motor vel rad/s} format
+    {3.048, 71}, 
+    {4.572, 84},
+    {6.096, 99},
+    {7.62, 125},
+    {9.144, 185},
+    {10.668, 230}
   };
+
+  //data from when color guard was in gym
+  /*private static double[][] distanceBottomShooterData = { 
+    {1.981, 80}, //good //{distance in meters, motor vel rad/s} format
+    {3.048, 100}, 
+    {4.572, 160},
+    {6.096, 210},
+    {7.62, 245},
+    {9.144, 270},
+    {10.668, 315}
+  };*/
 
 
   public static LinearInterpolator distanceAngleMap;

@@ -92,6 +92,10 @@ public class Turret extends SubsystemBase {
     //motorTurret.set(ControlMode.PercentOutput, speed);
     double volts = speed * 12.5;
     SmartDashboard.putNumber("turret drive volts", volts);
+    setVoltageBounded(volts);
+  }
+
+  public void setMotorVolts(double volts) {
     motorTurret.setVoltage(volts);
   }
 
@@ -116,7 +120,7 @@ public class Turret extends SubsystemBase {
     /*feedforwards based on chassis movement to make turret react better.
     We already know which way it needs to turn if the chassis moving a certain direction, so we can help
     it along and then the pid can do the rest*/
-    tangentialFeedforward = Units.radiansToDegrees((robotPose.getX() * vy - robotPose.getY() * vx) / (distance * distance));
+    tangentialFeedforward = Units.radiansToDegrees(((robotPose.getX() - Constants.goalLocation.getX()) * vy - (robotPose.getY() - Constants.goalLocation.getY()) * vx) / (distance * distance));
     rotationalFeedforward = -angV;
 
     //constraning both the angles so that turret goes to the closest correct angle instead of going all the way around
@@ -124,17 +128,17 @@ public class Turret extends SubsystemBase {
       //constrainAngle(posSetpoint)) + tangentialFeedforward + rotationalFeedforward));
 
     double volts = simpleFeedforward.calculate(tangentialFeedforward + rotationalFeedforward 
-      + posPIDController.calculate(constrainAngle(getAngle()), constrainAngle(posSetpoint + 90)));
+      + posPIDController.calculate(constrainAngle(getAngle()), constrainAngle(posSetpoint + 180)));
     SmartDashboard.putNumber("turret volts", volts);
-    SmartDashboard.putNumber("turret setpoint", constrainAngle(posSetpoint + 90));
+    SmartDashboard.putNumber("turret setpoint", constrainAngle(posSetpoint + 180));
     SmartDashboard.putNumber("tangent ff deg per s", tangentialFeedforward);
-    motorTurret.setVoltage(volts);
+    setVoltageBounded(volts);
   }
 
-  public void setMotorVelPID(double tx, double perpV, double distance, double angV) {
+  /*public void setMotorVelPID(double tx, double perpV, double distance, double angV) {
     tangentialFeedforward = Units.radiansToDegrees(perpV / distance);
     rotationalFeedforward = -angV;
-    double setpointVel = -tx / 1 /*+ tangentialFeedforward + rotationalFeedforward*/;
+    double setpointVel = -tx / 1 /*+ tangentialFeedforward + rotationalFeedforward;
     double vel = getEncVelocity();
     double pid = velPIDController.calculate(vel, setpointVel);
     double ff = simpleFeedforward.calculate(setpointVel);
@@ -156,7 +160,7 @@ public class Turret extends SubsystemBase {
 
     motorTurret.setVoltage(velPIDController.calculate(getEncVelocity(), setpointVel) 
       + simpleFeedforward.calculate(setpointVel));
-  }
+  }*/
 
   public void turnToAngle(double angleDeg) {
     angleSetpoint = angleDeg;
@@ -167,11 +171,12 @@ public class Turret extends SubsystemBase {
   
 
   //makes sure that the turret doesn't go past its limits
-  private void setVoltageBounded(double volts, double turretAngle) {
-    /*if (turretAngle <= Constants.minTurretAngle || resettingForward) {
+  private void setVoltageBounded(double volts) {
+    double turretAngle = getAngle();
+    if (turretAngle <= Constants.minTurretAngle || resettingForward) {
       resettingForward = true;
       motorTurret.setVoltage(Constants.turretResetVoltage);
-      if (turretAngle >= Constants.minTurretAngle + 300) {
+      if (turretAngle >= Constants.minTurretAngle + 230) {
         resettingForward = false;
       }
       return;
@@ -179,22 +184,18 @@ public class Turret extends SubsystemBase {
     else if (turretAngle >= Constants.maxTurretAngle || resettingBackward) {
       resettingBackward = true;
       motorTurret.setVoltage(-Constants.turretResetVoltage);
-      if (turretAngle <= Constants.maxTurretAngle - 300) {
+      if (turretAngle <= Constants.maxTurretAngle - 230) {
         resettingBackward = false;
       }
       return;
     }
     else {
       motorTurret.setVoltage(volts);
-    }*/
-
-    if (volts < 0) {
-      
     }
-  }
 
-  private void setVoltageBounded(double volts) {
-    setVoltageBounded(volts, getAngle());
+    /*if (volts < 0) {
+      
+    }*/
   }
 
   public double getAngle() {
@@ -204,7 +205,7 @@ public class Turret extends SubsystemBase {
   }
 
   public double getRobotRelAngle() {
-    return constrainAngle(getAngle() - 90);
+    return constrainAngle(getAngle() - 180);
   }
 
   //returns the turret angle but between -180 and 180

@@ -9,6 +9,7 @@ import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.subsystems.LimelightGoal;
 import frc.robot.subsystems.MecDriveTrain;
+import frc.robot.subsystems.RobotState;
 
 public class DriveMecTrackTarget extends CommandBase {
   private MecDriveTrain mecDriveTrain;
@@ -30,7 +31,7 @@ public class DriveMecTrackTarget extends CommandBase {
   public void execute() {
     x = -1 * Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftStickY);
     y = -1 * Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftStickX);
-    z = -1/2 * mecDriveTrain.getPerpV(LimelightGoal.getLastX()) / LimelightGoal.getTargetDistance();
+    z = -1/2 * RobotState.getPerpV(LimelightGoal.getLastX()) / LimelightGoal.getTargetDistance();
 
     mecDriveTrain.setMotors(x, y, z, true);
   }

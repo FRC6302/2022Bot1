@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.Util;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.filter.LinearFilter;
@@ -14,6 +15,7 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.library.Utilities;
 
 //subsystem for the gyro on our robot
 public class NavX extends SubsystemBase{
@@ -61,6 +63,7 @@ public class NavX extends SubsystemBase{
     SmartDashboard.putNumber("gyroAngV", getGyroAngV());
     SmartDashboard.putNumber("gyro vx", getGyroGlobalVx());
     SmartDashboard.putNumber("gyro vy", getGyroGlobalVy());
+    SmartDashboard.putNumber("gyro accum ang", getAccumulatedAngle());
     //SmartDashboard.putNumber("gyroAccelX", getGyroAccelX());
     //SmartDashboard.putNumber("gyroAccelY", getGyroAccelY());
     //SmartDashboard.putNumber("gyroJerkX", jerkX);
@@ -71,7 +74,11 @@ public class NavX extends SubsystemBase{
 
   public static double getGyroYaw() { //yaw is rotation (turning) left or right
     //negative because trajectory requires counterclockwise rotation to be positive
-    return -gyro.getYaw() - offsetAngle; 
+    return Utilities.constrainAngle(getAccumulatedAngle()); 
+  }
+
+  public static double getAccumulatedAngle() {
+    return (-1.034818 * gyro.getAngle()) - offsetAngle;
   }
 
   //ccw+
@@ -102,7 +109,8 @@ public class NavX extends SubsystemBase{
   }
 
   public static double getGyroAngV() {
-    return Units.radiansToDegrees(-gyro.getRate());
+    //return Units.radiansToDegrees(-gyro.getRate());
+    return -gyro.getRate() * gyro.getActualUpdateRate();
   }
 
   public static void zeroGyroYaw() {

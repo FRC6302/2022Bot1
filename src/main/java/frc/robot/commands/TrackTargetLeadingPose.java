@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import javax.print.attribute.standard.MediaSize.NA;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
@@ -17,6 +18,7 @@ import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.LimelightGoal;
 import frc.robot.subsystems.MecDriveTrain;
 import frc.robot.subsystems.NavX;
+import frc.robot.subsystems.RobotState;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Turret;
 
@@ -46,7 +48,7 @@ public class TrackTargetLeadingPose extends CommandBase {
   //leading stuff
   double offsetAngle = 0; //radians
   double effectiveDistance = 3; //meters
-  double actualDistance;
+  double actualDistance = effectiveDistance;
   double airTime = 3; //seconds
   double temp = 0;
 
@@ -58,11 +60,13 @@ public class TrackTargetLeadingPose extends CommandBase {
   double effectiveDistanceDerivative = 0, effectiveDistancePrediction = effectiveDistance;
 
   //pose stuff
-  private Pose2d robotPose = new Pose2d();
+  private Pose2d robotPose = new Pose2d(Constants.goalLocation, new Rotation2d());
   double poseX = 0, poseY = 0;
   //private Transform2d robotToGoal = new Transform2d();
   //private Translation2d robotLocation = new Translation2d();
   //double estimatedActualDistance = 0;
+
+  double angleToTarget = 0;
 
 
   /** Creates a new TrackTargetLeading. */
@@ -86,17 +90,17 @@ public class TrackTargetLeadingPose extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    gyroYaw = NavX.getGyroYaw();
+    /*gyroYaw = NavX.getGyroYaw();
     turretAngle = turret.getAngle();
 
     if (LimelightGoal.getTargetFound()) { //runs when the LL can see the target
       rawDistance = LimelightGoal.getTargetDistance();
       x = LimelightGoal.getX();
       
-      mecDriveTrain.updateOdometryWithVision(rawDistance, gyroYaw, turretAngle, x);
+      RobotState.updateOdometryWithVision(rawDistance, gyroYaw, turretAngle, x);
     }
 
-    robotPose = mecDriveTrain.getPoseEstimate();
+    /*robotPose = RobotState.getPoseEstimate();
     poseX = robotPose.getX();
     poseY = robotPose.getY();
 
@@ -105,13 +109,13 @@ public class TrackTargetLeadingPose extends CommandBase {
     //distance = Math.sqrt(Math.pow(robotToGoal.getX(), 2) + Math.pow(robotToGoal.getY(), 2)); 
 
     //velocities with respect to target
-    paraV = mecDriveTrain.getParaV(turretAngle);
-    perpV = mecDriveTrain.getPerpV(turretAngle);
+    paraV = RobotState.getParaV(turretAngle);
+    perpV = RobotState.getPerpV(turretAngle);
 
-    vx = mecDriveTrain.getVx();
-    vy = mecDriveTrain.getVy();
+    vx = RobotState.getVx();
+    vy = RobotState.getVy();
     
-    angV = mecDriveTrain.getAngV();
+    angV = NavX.getGyroAngV();
 
     ax = NavX.getGyroAccelX();
     ay = NavX.getGyroAccelY();
@@ -130,7 +134,8 @@ public class TrackTargetLeadingPose extends CommandBase {
     //TODO: compare these temp values and make sure they are close
 
     //this effectiveDistance calculation uses the offset angle prediction from previous loop
-    effectiveDistance = temp / (actualDistance * Math.sin(offsetAngle));
+    //effectiveDistance = temp / (actualDistance * Math.sin(offsetAngle));
+    //effectiveDistance = 
     //once we know the effective distance, then we can determine what the actual offset angle should be
     offsetAngle = Math.asin(temp / effectiveDistance);
 
@@ -147,7 +152,7 @@ public class TrackTargetLeadingPose extends CommandBase {
     //shooter.shootWithInitialBallVelocity(paraV, perpV, desiredHoodAngle, desiredTurretAngle, distance);
     //shooter.setMotorsVelPID(predictedDistance);
 
-    prevOffset = offsetAngle;
+    /*prevOffset = offsetAngle;
     prevAirtime = airTime;
 
     //effectiveDistance += 0.020 * derivative gives the effective distance in 0.020 seconds.
@@ -170,14 +175,55 @@ public class TrackTargetLeadingPose extends CommandBase {
     //predicts airtime for the next loop based on the effective distance prediction
     airTime = Data.getAirtime(effectiveDistancePrediction);
     //predicts the next offset angle 
-    offsetAngle = Math.asin((airTime * temp / prevAirtime) / effectiveDistancePrediction);
+    offsetAngle = Math.asin((airTime * temp / prevAirtime) / effectiveDistancePrediction);*/
 
+    gyroYaw = NavX.getGyroYaw();
+    turretAngle = turret.getRobotRelAngle();
+
+    //TODO: add debouncer here
+    if (LimelightGoal.getTargetFound()) { //runs when the LL can see the target
+      actualDistance = LimelightGoal.getTargetDistance();
+      x = LimelightGoal.getX();
+      
+      RobotState.updateOdometryWithVision(actualDistance, gyroYaw, turretAngle, x);
+    }
+
+    robotPose = RobotState.getPoseEstimate();
+    //robotToGoal = new Transform2d(robotPose, goalPose);
+    //distance = Math.sqrt(Math.pow(robotToGoal.getX(), 2) + Math.pow(robotToGoal.getY(), 2)); 
+    actualDistance = Constants.goalLocation.getDistance(robotPose.getTranslation());
+    //TODO: get actual tx based on pose estimate?
+    //difference between turret pose and 
+    //it should be the same though if the rest of this works right?
+
+    angleToTarget = Units.radiansToDegrees(Math.atan2(
+      robotPose.getY() - Constants.goalLocation.getY(), 
+      robotPose.getX() - Constants.goalLocation.getX())) - 180;
+
+    //velocities with respect to target
+    //paraV = mecDriveTrain.getParaV(angleToTarget - gyroYaw);
+    //perpV = mecDriveTrain.getPerpV(angleToTarget - gyroYaw);
+    vx = RobotState.getGlobalMecVx();
+    vy = RobotState.getGlobalMecVy();
+    angV = NavX.getGyroAngV();
+
+
+    effectiveDistance = RobotState.getEffectiveDistance();
+    offsetAngle = RobotState.getOffsetAngleDeg(effectiveDistance);
+
+    turret.setMotorPosPID(robotPose, angleToTarget + offsetAngle - robotPose.getRotation().getDegrees(), vx, vy, angV, effectiveDistance);
+    hood.setMotorPosPID(effectiveDistance, 0);
+    shooter.setMotorsVelPID(effectiveDistance);
 
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    turret.stopMotor();
+    shooter.stopMotors();
+    hood.stopMotor();
+  }
 
   // Returns true when the command should end.
   @Override

@@ -17,6 +17,7 @@ import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.commands.PPMecanumControllerCommand;
 import frc.robot.subsystems.MecDriveTrain;
+import frc.robot.subsystems.RobotState;
 
 /** Add your docs here. */
 public class Utilities {
@@ -42,17 +43,17 @@ public class Utilities {
       new Constraints(Constants.maxMecRotationVelocity, Constants.maxMecRotationAccel));
       
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
-    thetaController.reset(mecDriveTrain.getPoseEstimate().getRotation().getRadians());
+    thetaController.reset(RobotState.getPoseEstimate().getRotation().getRadians());
 
     //mecDriveTrain.setPose(ppTrajectory.getInitialPose());
 
     PPMecanumControllerCommand mecanumControllerCommand = new PPMecanumControllerCommand(
       ppTrajectory,
-      mecDriveTrain::getPoseEstimate,
+      RobotState::getPoseEstimate,
       //TODO go to WPILIB source code for mecControlCommand and see how they use this feedforward
       //and then use that in the mecDriveTrain.setSpeeds() method
       //mecDriveTrain.getMecFeedforward(),
-      mecDriveTrain.getMecKinematics(),
+      RobotState.getMecKinematics(),
 
       // Position contollers
       new PIDController(Constants.kpMecXController, 0, 0),
@@ -80,4 +81,15 @@ public class Utilities {
 
     return mecanumControllerCommand;
   } 
+
+
+  //returns the angle but between -180 and 180
+  public static double constrainAngle(double rawAngle) {
+    double angle = (rawAngle + 180.0) % 360.0;
+    if (angle < 0) {
+      angle += 360;
+    }
+    return angle - 180;
+    
+  }
 }

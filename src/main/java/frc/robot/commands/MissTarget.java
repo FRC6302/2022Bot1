@@ -10,6 +10,7 @@ import frc.robot.Constants;
 import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.LimelightGoal;
 import frc.robot.subsystems.MecDriveTrain;
+import frc.robot.subsystems.RobotState;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Turret;
 
@@ -62,8 +63,8 @@ public class MissTarget extends CommandBase {
       //gyroYaw = NavX.getGyroYaw();
       turretAngle = turret.getAngle();
 
-      paraV = mecDriveTrain.getParaV(turretAngle);
-      perpV = mecDriveTrain.getPerpV(turretAngle);
+      paraV = RobotState.getParaV(turretAngle);
+      perpV = RobotState.getPerpV(turretAngle);
 
       //isAllianceBall = ColorSensor.getLastestBallIsAlliance();
 

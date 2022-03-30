@@ -9,11 +9,19 @@ import frc.robot.subsystems.Intake;
 
 public class SuckBalls extends CommandBase {
   Intake intake;
+  double speed = 0;
 
   /** Creates a new SuckBalls. */
   public SuckBalls(Intake intake) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.intake = intake;
+
+    addRequirements(intake);
+  }
+
+  public SuckBalls(Intake intake, double speed) {
+    this.intake = intake;
+    this.speed = speed;
 
     addRequirements(intake);
   }
@@ -25,7 +33,13 @@ public class SuckBalls extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    intake.setMotor();
+    if (speed != 0) {
+      intake.setMotor(speed);
+    }
+    else {
+      intake.setMotor();
+    }
+    
   }
 
   // Called once the command ends or is interrupted.
