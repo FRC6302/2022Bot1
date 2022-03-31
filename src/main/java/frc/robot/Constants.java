@@ -83,10 +83,10 @@ public final class Constants {
   //encoders - DIO ports on rio or navx
   public static final int encL1A = 6;
   public static final int encL1B = 7;
-  public static final int encL2A = navxDIO7;
-  public static final int encL2B = navxDIO8;
-  public static final int encR1A = navxDIO0;
-  public static final int encR1B = navxDIO1;
+  public static final int encL2A = navxDIO1;
+  public static final int encL2B = navxDIO2;
+  public static final int encR1A = navxDIO7;
+  public static final int encR1B = navxDIO8;
   public static final int encR2A = 3;
   public static final int encR2B = 4;
 
@@ -285,24 +285,24 @@ public final class Constants {
   public static final int trackButton = bButton;
 
 //operator buttons
-  public static final int zeroYawButton = yButton;
-  public static final int shootButton = xButton; //
+  public static final int zeroYawButton = yButton; //
+  public static final int shootButton = xButton; 
   public static final int zeroEncButton = yButton;
   public static final int driveNormalButton = aButton;
   public static final int missTargetButton = 0;
   public static final int shootButton2 = bButton;
   public static final int turnTurretButton = rightBumper; //
   public static final int zeroTurretButton = xButton;
-  public static final int raiseHoodButton = yButton; //
+  public static final int raiseHoodButton = yButton; 
   public static final int raiseHood2Button = leftBumper; //
   public static final int feedBothButton = aButton;
   public static final int intakeButton = aButton;
-  public static final int closeToBallsButton = aButton;
+  public static final int closeToBallsButton = aButton; //
   public static final int farAwayButton = 0;
   public static final int turnTurret2Button = yButton;
   public static final int zeroHoodButton = xButton;
   public static final int moveClimbersButton = rightBumper;
-  public static final int reverseButton = bButton;
+  public static final int reverseButton = bButton; //
 
 
 

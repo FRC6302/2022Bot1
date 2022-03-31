@@ -256,24 +256,24 @@ public class MecDriveTrain extends SubsystemBase {
   }
 
   public void setSpeeds(MecanumDriveWheelSpeeds speeds) {
-    motorL1.setVoltage(simpleFeedforward.calculate(speeds.frontLeftMetersPerSecond) 
+    /*motorL1.setVoltage(simpleFeedforward.calculate(speeds.frontLeftMetersPerSecond) 
       + pidController.calculate(getEncL1Rate(), speeds.frontLeftMetersPerSecond));
     motorL2.setVoltage(simpleFeedforward.calculate(speeds.rearLeftMetersPerSecond)
       + pidController.calculate(getEncL2Rate(), speeds.rearLeftMetersPerSecond));
     motorR1.setVoltage(simpleFeedforward.calculate(speeds.frontRightMetersPerSecond)
       + pidController.calculate(getEncR1Rate(), speeds.frontRightMetersPerSecond));
     motorR2.setVoltage(simpleFeedforward.calculate(speeds.rearRightMetersPerSecond)
-      + pidController.calculate(getEncR2Rate(), speeds.rearRightMetersPerSecond));
+      + pidController.calculate(getEncR2Rate(), speeds.rearRightMetersPerSecond));*/
 
     /*motorL1.setVoltage(speeds.frontLeftMetersPerSecond);
     motorL2.setVoltage(speeds.rearLeftMetersPerSecond);
     motorR1.setVoltage(speeds.frontRightMetersPerSecond);
     motorR2.setVoltage(speeds.rearRightMetersPerSecond);*/
 
-    /*motorL1.setVoltage(simpleFeedforward.calculate(speeds.frontLeftMetersPerSecond));
+    motorL1.setVoltage(simpleFeedforward.calculate(speeds.frontLeftMetersPerSecond));
     motorL2.setVoltage(simpleFeedforward.calculate(speeds.rearLeftMetersPerSecond));
     motorR1.setVoltage(simpleFeedforward.calculate(speeds.frontRightMetersPerSecond));
-    motorR2.setVoltage(simpleFeedforward.calculate(speeds.rearRightMetersPerSecond));*/
+    motorR2.setVoltage(simpleFeedforward.calculate(speeds.rearRightMetersPerSecond));
 
     //SmartDashboard.putNumber("motorL1", simpleFeedforward.calculate(speeds.frontLeftMetersPerSecond));
     //SmartDashboard.putNumber("motorR1", speeds.frontRightMetersPerSecond);

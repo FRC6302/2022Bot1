@@ -106,6 +106,7 @@ public class RobotState extends SubsystemBase {
     //SmartDashboard.putNumber("mecanum ang v", getAngV());
 
     SmartDashboard.putNumber("effective distance", getEffectiveDistance());
+    SmartDashboard.putNumber("actual distance", actualDistance);
     SmartDashboard.putNumber("offset angle deg", getOffsetAngleDeg(getEffectiveDistance()));
   }
 

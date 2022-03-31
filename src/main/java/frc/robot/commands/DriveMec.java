@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -12,6 +13,10 @@ import frc.robot.subsystems.MecDriveTrain;
 
 public class DriveMec extends CommandBase {
   private MecDriveTrain mecDriveTrain;
+
+  private SlewRateLimiter xLimiter = new SlewRateLimiter(10);
+  private SlewRateLimiter yLimiter = new SlewRateLimiter(10);
+  private SlewRateLimiter zLimiter = new SlewRateLimiter(20);
 
   double x = 0, y = 0, z = 0;
 
@@ -28,21 +33,25 @@ public class DriveMec extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    z = -1.5 * (Robot.robotContainer.getDriverDeadzoneAxis(Constants.rightTrigger)
+    z = -3 * (Robot.robotContainer.getDriverDeadzoneAxis(Constants.rightTrigger)
     - Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftTrigger));
-    x = -1.5 * Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftStickY);
-    y = -1.5 * Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftStickX);
+    x = -3 * Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftStickY);
+    y = -3 * Robot.robotContainer.getDriverDeadzoneAxis(Constants.leftStickX);
 
     SmartDashboard.putNumber("forward input joystick", x);
     SmartDashboard.putNumber("sideways input joystick", y);
     //SmartDashboard.putNumber("perpV", mecDriveTrain.getPerpV(Limelight.getX()));
     //SmartDashboard.putNumber("paraV", mecDriveTrain.getParaV(Limelight.getLastX()));
 
+    x = xLimiter.calculate(x);
+    y = yLimiter.calculate(y);
+    z = zLimiter.calculate(z);
+
     //mecDriveTrain.setMotorsSimple(x, y, z);
 
     //mecDriveTrain.setMotors(x, y, z, true); 
-    mecDriveTrain.setMotorsFieldRel(x, y, z);
-    //mecDriveTrain.setMotorsRobotRel(x, y, z);
+    //mecDriveTrain.setMotorsFieldRel(x, y, z);
+    mecDriveTrain.setMotorsRobotRel(x, y, z);
   }
 
   // Called once the command ends or is interrupted.
