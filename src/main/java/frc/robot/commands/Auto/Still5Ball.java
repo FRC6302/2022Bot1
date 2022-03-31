@@ -54,6 +54,8 @@ public class Still5Ball extends ParallelCommandGroup {
     this.turret = turret;
     this.hood = hood;
 
+    //addRequirements(mecDriveTrain, intake, feeders, shooter, turret, hood);
+
     //CHANGE TO PARALLEL SO THAT INTAKE IS RUNNNING THE WHOLE TIME
     
     //TODO dont have vision kick in for a few seconds
@@ -79,7 +81,7 @@ public class Still5Ball extends ParallelCommandGroup {
         new FeedTimed(feeders, 1)
       ),
       new SuckBalls(intake),
-      new TrackTargetCenterPose(mecDriveTrain, turret, hood, shooter)
+      new TrackTargetCenterPose(false, mecDriveTrain, turret, hood, shooter)
     );
   }
 }

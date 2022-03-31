@@ -43,6 +43,7 @@ public class NavX extends SubsystemBase{
       
       zeroGyroYaw(); 
     });*/
+    offsetAngle = 0;
     
   }
 
@@ -78,7 +79,8 @@ public class NavX extends SubsystemBase{
   }
 
   public static double getAccumulatedAngle() {
-    return (-1.034818 * gyro.getAngle()) - offsetAngle;
+    return (-1.034818 * gyro.getAngle()) + offsetAngle; //pretty sure it is plus
+    //gyro.setAngleAdjustment(adjustment);
   }
 
   //ccw+

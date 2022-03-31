@@ -9,6 +9,16 @@ import frc.robot.subsystems.Feeders;
 
 public class FeedBoth extends CommandBase {
   Feeders feeders;
+  double speed = 0;
+
+  /** Creates a new FeedBoth. */
+  public FeedBoth(Feeders feeders, double speed) {
+    // Use addRequirements() here to declare subsystem dependencies.
+    this.feeders = feeders;
+    this.speed = speed;
+
+    addRequirements(feeders);
+  }
 
   /** Creates a new FeedBoth. */
   public FeedBoth(Feeders feeders) {
@@ -25,7 +35,13 @@ public class FeedBoth extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    feeders.setBothMotors(0.5, 0.8);
+    if (speed == 0) {
+      feeders.setBothMotors(0.5, 0.8);
+    }
+    else {
+      feeders.setBothMotors(speed, speed);
+    }
+    
   }
 
   // Called once the command ends or is interrupted.

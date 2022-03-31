@@ -253,7 +253,8 @@ public final class Constants {
   public static final double turningRate = 0.5;
   public static final double deadzone = 0.3;
   public static final double loopTime = 0.020;
-  public static final double visionPoseDeltaTolerance = 2; //meters
+  public static final double visionPoseDeltaTolerance = 5; //meters
+  public static final int sparkCANTimeoutMs = 50;
 
   //missing the goal on purpose
   public static final double turretOffsetForMissing = 50;
@@ -280,12 +281,11 @@ public final class Constants {
   public static final double robotWheelToWheelLength = Units.inchesToMeters(20 + 5./16.);
   
   //driver contoller buttons
-  public static final int limelightTargetButton = rightBumper;
-  public static final int LLDistanceButton = bButton;
-  public static final int PneumForwardButton = xButton;
-  public static final int PneumReverseButton = yButton;
-  public static final int PneumToggleButton = rightBumper;
-  public static final int zeroYawButton = leftBumper;
+  public static final int driveButton = leftBumper;
+  public static final int trackButton = bButton;
+
+//operator buttons
+  public static final int zeroYawButton = yButton;
   public static final int shootButton = xButton; //
   public static final int zeroEncButton = yButton;
   public static final int driveNormalButton = aButton;
@@ -302,11 +302,10 @@ public final class Constants {
   public static final int turnTurret2Button = yButton;
   public static final int zeroHoodButton = xButton;
   public static final int moveClimbersButton = rightBumper;
-public static final int driveButton = leftBumper;
-public static final int trackButton = bButton;
+  public static final int reverseButton = bButton;
 
 
-public static final int sparkCANTimeoutMs = 50;
+
 
 
   

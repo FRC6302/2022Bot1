@@ -13,6 +13,7 @@ import com.revrobotics.SparkMaxAlternateEncoder.Type;
 
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.UnscentedKalmanFilter;
@@ -61,7 +62,7 @@ public class MecDriveTrain extends SubsystemBase {
     Constants.kvMecFeedForward,
     Constants.kaMecFeedForward);
 
-  ProfiledPIDController pidController = new ProfiledPIDController(Constants.kpMecV, 0, 0, Constants.mecVConstraints);
+  PIDController pidController = new PIDController(Constants.kpMecV, 0, 0);
 
   //robot width wheel-to-wheel is 0.584 m, length wheel-to-wheel is 0.521 m
   //0.584/2 = 0.292, 0.521/2 = 0.2605
@@ -196,10 +197,10 @@ public class MecDriveTrain extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    /*SmartDashboard.putNumber("enc L1 V", getEncL1Rate());
+    SmartDashboard.putNumber("enc L1 V", getEncL1Rate());
     SmartDashboard.putNumber("enc L2 V", getEncL2Rate());
     SmartDashboard.putNumber("enc R1 V", getEncR1Rate());
-    SmartDashboard.putNumber("enc R2 V", getEncR2Rate());*/
+    SmartDashboard.putNumber("enc R2 V", getEncR2Rate());
 
     //SmartDashboard.putNumber("test enc pos", encTest.getPosition());
     //SmartDashboard.putNumber("test enc vel", encTest.getVelocity());

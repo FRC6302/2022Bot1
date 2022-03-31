@@ -3,6 +3,7 @@ package frc.robot.library;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants;
 
 public class VisionPoseEstimation {
@@ -33,13 +34,18 @@ public class VisionPoseEstimation {
     Pose2d transformedPose = new Pose2d(poseEstimate.getX() + Constants.goalLocation.getX(), 
       poseEstimate.getY() + Constants.goalLocation.getY(), 
       poseEstimate.getRotation());
+
+    //if our vision pose is not on the field then dont return it
+    if (Math.abs(poseEstimate.getX()) > 9 || Math.abs(poseEstimate.getY()) > 5) {
+      return oldPose;
+    }
     
-    //double poseDelta = poseEstimate.getTranslation().getDistance(oldPose.getTranslation());
+    double poseDelta = transformedPose.getTranslation().getDistance(oldPose.getTranslation());
     //failsafe in case the calculation is messed up due to bad sensors or whatever
-    /*if (poseDelta > Constants.visionPoseDeltaTolerance) {
+    if (poseDelta > Constants.visionPoseDeltaTolerance) {
       DriverStation.reportWarning("VISION POSE ESTIMATION IS REALLY OFF, CHECK INDIVIDUAL SENSOR DATA", false);
       return oldPose;
-    }*/
+    }
 
     return transformedPose;
   }

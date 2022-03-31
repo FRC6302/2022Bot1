@@ -70,7 +70,7 @@ public class Turret extends SubsystemBase {
     turretEncoder.setDistancePerPulse(distancePerPulse);
 
     //TODO: change if needed
-    posPIDController.enableContinuousInput(-270, 90);
+    posPIDController.enableContinuousInput(-180, 180);
     //posPIDController.reset(0, 0);
   }
 

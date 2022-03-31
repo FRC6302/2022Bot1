@@ -42,6 +42,7 @@ public class DriveMec extends CommandBase {
 
     //mecDriveTrain.setMotors(x, y, z, true); 
     mecDriveTrain.setMotorsFieldRel(x, y, z);
+    //mecDriveTrain.setMotorsRobotRel(x, y, z);
   }
 
   // Called once the command ends or is interrupted.

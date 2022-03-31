@@ -56,14 +56,17 @@ public class TrackTargetCenterPose extends CommandBase {
   //private Translation2d robotLocation = new Translation2d();
   double estimatedDistance = 3;
 
+  boolean updateVisionOdom = true;
+
   
   /** Creates a new TrackTargetCenterPose. */
-  public TrackTargetCenterPose(MecDriveTrain mecDriveTrain, Turret turret, Hood hood, Shooter shooter) {
+  public TrackTargetCenterPose(boolean updateVisionOdom, MecDriveTrain mecDriveTrain, Turret turret, Hood hood, Shooter shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.mecDriveTrain = mecDriveTrain;
     this.turret = turret;
     this.hood = hood;
     this.shooter = shooter;
+    this.updateVisionOdom = updateVisionOdom;
 
     addRequirements(turret, hood, shooter);
   }
@@ -84,7 +87,10 @@ public class TrackTargetCenterPose extends CommandBase {
       distance = LimelightGoal.getTargetDistance();
       x = LimelightGoal.getX();
       
-      RobotState.updateOdometryWithVision(distance, gyroYaw, turretAngle, x);
+      if (updateVisionOdom) {
+        RobotState.updateOdometryWithVision(distance, gyroYaw, turretAngle, x);
+      }
+      
     }
 
     robotPose = RobotState.getPoseEstimate();
@@ -137,7 +143,7 @@ public class TrackTargetCenterPose extends CommandBase {
 
     
     hood.setMotorPosPID(distance, 0);
-    turret.setMotorPosPID(robotPose, angleToTarget - gyroYaw, vx, vy, angV, distance);
+    turret.setMotorPosPID(robotPose, angleToTarget - robotPose.getRotation().getDegrees(), vx, vy, angV, distance);
     shooter.setMotorsVelPID(distance);
     
 

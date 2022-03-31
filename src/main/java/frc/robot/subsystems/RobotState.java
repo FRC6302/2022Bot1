@@ -53,7 +53,7 @@ public class RobotState extends SubsystemBase {
     kinematics,
     VecBuilder.fill(0.9, 0.9, Units.degreesToRadians(3)),
     VecBuilder.fill(Units.degreesToRadians(5)), //wheels slip a lot so their readings are less accurate
-    VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(1))
+    VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(.1))
   );
 
   private static MedianFilter vxFilter = new MedianFilter(Constants.vxFilterSize);
@@ -87,8 +87,14 @@ public class RobotState extends SubsystemBase {
     curChassisSpeeds = kinematics.toChassisSpeeds(mecDriveTrain.getCurrentWheelSpeeds());
     
     robotPose = getPoseEstimate();
-    actualDistance = robotPose.getTranslation().getDistance(Constants.goalLocation);
+    actualDistance = getActualDistance();
     airTime = Data.getAirtime(actualDistance);
+
+    poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(
+      actualDistance * 0.1, 
+      actualDistance * 0.1, 
+      Units.degreesToRadians(.1))
+    );
 
     SmartDashboard.putNumber("pose x", robotPose.getX());
     SmartDashboard.putNumber("pose y", robotPose.getY());
@@ -134,9 +140,13 @@ public class RobotState extends SubsystemBase {
     return Units.radiansToDegrees( 
       Math.asin(airTime * 
         (getGlobalMecVy() * pose.getX() + getGlobalMecVx() * pose.getY())
-        / (LimelightGoal.getTargetDistance() * effectiveDistance)
+        / (getActualDistance() * effectiveDistance)
       )
     );
+  }
+
+  public static double getActualDistance() {
+    return getPoseEstimate().getTranslation().getDistance(Constants.goalLocation);
   }
 
   public static void updateOdometry() {
