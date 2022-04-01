@@ -15,6 +15,9 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.FeedTimed;
 import frc.robot.commands.SuckBalls;
 import frc.robot.commands.TrackTargetCenterPose;
+import frc.robot.commands.TrackTargetHood;
+import frc.robot.commands.TrackTargetShooter;
+import frc.robot.commands.TrackTargetTurret;
 import frc.robot.library.Utilities;
 import frc.robot.subsystems.Feeders;
 import frc.robot.subsystems.Hood;
@@ -81,7 +84,10 @@ public class Still5Ball extends ParallelCommandGroup {
         new FeedTimed(feeders, 1)
       ),
       new SuckBalls(intake),
-      new TrackTargetCenterPose(false, mecDriveTrain, turret, hood, shooter)
+      //new TrackTargetCenterPose(false, mecDriveTrain, turret, hood, shooter)
+      new TrackTargetHood(hood),
+      new TrackTargetShooter(shooter),
+      new TrackTargetTurret(turret)
     );
   }
 }

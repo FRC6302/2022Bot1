@@ -289,7 +289,7 @@ public final class Constants {
   public static final int shootButton = xButton; 
   public static final int zeroEncButton = yButton;
   public static final int driveNormalButton = aButton;
-  public static final int missTargetButton = 0;
+  public static final int missTargetButton = xButton;
   public static final int shootButton2 = bButton;
   public static final int turnTurretButton = rightBumper; //
   public static final int zeroTurretButton = xButton;

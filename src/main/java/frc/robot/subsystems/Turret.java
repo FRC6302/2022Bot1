@@ -232,6 +232,10 @@ public class Turret extends SubsystemBase {
     return turretEncoder.getRate();
   }
 
+  public boolean getIsResetting() {
+    return resettingBackward || resettingForward;
+  }
+
   /*public boolean getNeedsReset() {
     return needsReset;
   }*/

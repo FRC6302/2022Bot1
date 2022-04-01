@@ -15,9 +15,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.DriveMec;
 import frc.robot.commands.FeedBoth;
+import frc.robot.commands.MissTarget;
 import frc.robot.commands.SuckBalls;
 import frc.robot.commands.TrackTargetCenterPose;
+import frc.robot.commands.TrackTargetFeed;
+import frc.robot.commands.TrackTargetHood;
 import frc.robot.commands.TrackTargetLeadingPose;
+import frc.robot.commands.TrackTargetShooter;
+import frc.robot.commands.TrackTargetTurret;
 import frc.robot.commands.TurnTurret;
 import frc.robot.commands.Auto.Still2BallLeft;
 import frc.robot.commands.Auto.Still2BallRight;
@@ -263,19 +268,26 @@ public class RobotContainer {
       feeders.stopBothMotors();
     });*/
 
-    final JoystickButton reverseButton = new JoystickButton(operatorController, Constants.reverseButton);
-    reverseButton.whileHeld(new ParallelCommandGroup(new SuckBalls(intake, -0.5), new FeedBoth(feeders, -0.5)));
+    //final JoystickButton reverseButton = new JoystickButton(operatorController, Constants.reverseButton);
+    //reverseButton.whileHeld(new ParallelCommandGroup(new SuckBalls(intake, -0.5), new FeedBoth(feeders, -0.5)));
 
     //final JoystickButton moveClimbersButton = new JoystickButton(driverController, Constants.moveClimbersButton);
     //moveClimbersButton.whenHeld(new MoveClimbers(climbers));
 
+    final JoystickButton missButton = new JoystickButton(operatorController, Constants.missTargetButton);
+    missButton.whileHeld(new MissTarget(mecDriveTrain, turret, hood, shooter));
+
     final JoystickButton closeToBallsButton = new JoystickButton(operatorController, Constants.closeToBallsButton);
     closeToBallsButton.whileHeld(new ParallelCommandGroup(
-      new FeedBoth(feeders),
+      //new FeedBoth(feeders),
       new SuckBalls(intake),
       //new TrackTargetCenterPose(mecDriveTrain, turret, hood, shooter)
-      new TrackTargetCenterPose(true, mecDriveTrain, turret, hood, shooter)
+      //new TrackTargetCenterPose(true, mecDriveTrain, turret, hood, shooter)
       //new Shoot(shooter)
+      new TrackTargetFeed(feeders, turret),
+      new TrackTargetHood(hood),
+      new TrackTargetShooter(shooter),
+      new TrackTargetTurret(turret)
     ));
     closeToBallsButton.whenReleased(() -> {
       feeders.stopBothMotors();
@@ -304,8 +316,8 @@ public class RobotContainer {
 
 
 
-    final JoystickButton zeroTurretButton = new JoystickButton(operatorController, Constants.zeroTurretButton);
-    zeroTurretButton.whenPressed(turret::resetEncoder);
+    //final JoystickButton zeroTurretButton = new JoystickButton(operatorController, Constants.zeroTurretButton);
+    //zeroTurretButton.whenPressed(turret::resetEncoder);
     //final JoystickButton zero
     //zeroTurretButton.whenPressed(NavX::zeroGyroYaw);
 

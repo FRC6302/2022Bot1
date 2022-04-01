@@ -10,6 +10,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.subsystems.Feeders;
 import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.LimelightGoal;
 import frc.robot.subsystems.MecDriveTrain;
@@ -25,6 +26,7 @@ public class TrackTargetCenterPose extends CommandBase {
   Turret turret;
   Hood hood;
   Shooter shooter;
+  Feeders feeders;
 
   //outputs of command
   double desiredTurretV = 0, desiredTurretAngle = 0;
@@ -57,18 +59,30 @@ public class TrackTargetCenterPose extends CommandBase {
   double estimatedDistance = 3;
 
   boolean updateVisionOdom = true;
+  boolean isAuton = false;
+
+  boolean missTarget = false;
 
   
   /** Creates a new TrackTargetCenterPose. */
-  public TrackTargetCenterPose(boolean updateVisionOdom, MecDriveTrain mecDriveTrain, Turret turret, Hood hood, Shooter shooter) {
+  public TrackTargetCenterPose(boolean updateVisionOdom, boolean isAuton, MecDriveTrain mecDriveTrain, 
+    Turret turret, Hood hood, Shooter shooter, Feeders feeders) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.mecDriveTrain = mecDriveTrain;
     this.turret = turret;
     this.hood = hood;
     this.shooter = shooter;
+    this.feeders = feeders;
     this.updateVisionOdom = updateVisionOdom;
+    this.isAuton = isAuton;
 
-    addRequirements(turret, hood, shooter);
+    if (isAuton) {
+      addRequirements(turret, hood, shooter);
+    }
+    else {
+      addRequirements(turret, hood, shooter, feeders);
+    }
+    
   }
 
   // Called when the command is initially scheduled.
@@ -145,6 +159,15 @@ public class TrackTargetCenterPose extends CommandBase {
     hood.setMotorPosPID(distance, 0);
     turret.setMotorPosPID(robotPose, angleToTarget - robotPose.getRotation().getDegrees(), vx, vy, angV, distance);
     shooter.setMotorsVelPID(distance);
+
+    if (!isAuton) {
+      if (turret.getIsResetting()) {
+        feeders.stopBothMotors();
+      }
+      else {
+        feeders.setBothMotors(0.5, 0.8);
+      }
+    }
     
 
     //shooter.shootWithInitialBallVelocity(paraV, perpV, desiredHoodAngle, desiredTurretAngle, distance);
@@ -162,11 +185,17 @@ public class TrackTargetCenterPose extends CommandBase {
     turret.stopMotor();
     shooter.stopMotors();
     hood.stopMotor();
+
+    feeders.stopBothMotors();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     return false;
+  }
+
+  public void setMissTarget(boolean miss) {
+    missTarget = true;
   }
 }
