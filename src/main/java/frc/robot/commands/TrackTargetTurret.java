@@ -30,7 +30,7 @@ public class TrackTargetTurret extends CommandBase {
   double turretSetpoint = 0;
 
   boolean updateVisionOdom = true;
-  
+
   /** Creates a new TrackTargetTurret. */
   public TrackTargetTurret(boolean updateVisionOdom, Turret turret) {
     this.turret = turret;
@@ -51,11 +51,13 @@ public class TrackTargetTurret extends CommandBase {
     gyroYaw = NavX.getGyroYaw();
     turretAngle = turret.getRobotRelAngle();
 
+
     if (LimelightGoal.getTargetFound()) { //runs when the LL can see the target
       distance = LimelightGoal.getTargetDistance();
       x = LimelightGoal.getX();
       
       if (updateVisionOdom) {
+        //it would make more sense to do this in RobotState and have a static method for turning vision odom off and on
         RobotState.updateOdometryWithVision(distance, gyroYaw, turretAngle, x);
       }
       

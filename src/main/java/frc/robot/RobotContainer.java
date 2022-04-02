@@ -27,6 +27,7 @@ import frc.robot.commands.TurnTurret;
 import frc.robot.commands.Auto.MoveStraightMiddle;
 import frc.robot.commands.Auto.Still2BallLeft;
 import frc.robot.commands.Auto.Still2BallRight;
+import frc.robot.commands.Auto.Still3Ball;
 import frc.robot.commands.Auto.Still5Ball;
 import frc.robot.library.Data;
 import frc.robot.subsystems.Feeders;
@@ -114,6 +115,7 @@ public class RobotContainer {
   Still2BallLeft still2BallLeft;
   Still2BallRight still2BallRight;
   MoveStraightMiddle moveStraightMiddle;
+  Still3Ball still3Ball;
   
   private SendableChooser<Command> autonChooser;
   private final String moveForward = "move forward";
@@ -195,6 +197,8 @@ public class RobotContainer {
     still2BallLeft = new Still2BallLeft(mecDriveTrain, intake, feeders, shooter, turret, hood);
     still2BallRight = new Still2BallRight(mecDriveTrain, intake, feeders, shooter, turret, hood);
     moveStraightMiddle = new MoveStraightMiddle(mecDriveTrain, intake, feeders, shooter, turret, hood);
+    still3Ball = new Still3Ball(mecDriveTrain, intake, feeders, shooter, turret, hood);
+
 
     autonChooser = new SendableChooser<>();
     
@@ -202,6 +206,7 @@ public class RobotContainer {
     autonChooser.addOption("2 ball left", still2BallLeft);
     autonChooser.addOption("2 ball right", still2BallRight);
     autonChooser.addOption("move straight middle", moveStraightMiddle);
+    autonChooser.addOption("3 ball right", still3Ball);
     autonChooser.addOption("null", null);
     SmartDashboard.putData(autonChooser);
 
