@@ -63,22 +63,30 @@ public class Still3Ball extends ParallelCommandGroup {
           RobotState.setPose(new Pose2d(initialState.poseMeters.getTranslation(), initialState.holonomicRotation));
           //SmartDashboard.putNumber("HERE", 1);
         }),
-
         new WaitCommand(0.1), //why not
+        
+        parallel(
+          sequence(
+            Utilities.getMecControllerCommand(path1, mecDriveTrain).andThen(mecDriveTrain::stopDrive),
+            new WaitCommand(1), //gives time for shooter to get the right speed
+            new FeedTimed(feeders, 2)
+          ),
+          new TrackTargetTurret(false, turret) //LL doesnt work if too close
+        ),
 
-        Utilities.getMecControllerCommand(path1, mecDriveTrain).andThen(mecDriveTrain::stopDrive),
-        new WaitCommand(1), //gives time for shooter to get the right speed
-        new FeedTimed(feeders, 2),
-
-        Utilities.getMecControllerCommand(path2, mecDriveTrain).andThen(mecDriveTrain::stopDrive),
-        new WaitCommand(1), //gives time for shooter to get the right speed
-        new FeedTimed(feeders, 2)
-
+        parallel(
+          sequence(
+            Utilities.getMecControllerCommand(path2, mecDriveTrain).andThen(mecDriveTrain::stopDrive),
+            new WaitCommand(1), //gives time for shooter to get the right speed
+            new FeedTimed(feeders, 2)
+          ),
+          new TrackTargetTurret(true, turret) 
+        )
       ),
       new SuckBalls(intake),
       new TrackTargetHood(hood),
-      new TrackTargetShooter(shooter),
-      new TrackTargetTurret(false, turret)    
+      new TrackTargetShooter(shooter)
+      //new TrackTargetTurret(false, turret)    
     );
   }
 
