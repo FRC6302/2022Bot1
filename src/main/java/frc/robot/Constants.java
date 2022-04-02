@@ -161,17 +161,17 @@ public final class Constants {
   //turret
   public static final double turretSeekSpeed = 0.5;
   //public static final double turretCircumference = 0;
-  public static final double minTurretAngle = -90; //-230
-  public static final double maxTurretAngle = 260; //200
+  public static final double minTurretAngle = -110; //-230
+  public static final double maxTurretAngle = 280; //200
   public static final double turretResetVoltage = 8;
 
   /*public static final double ksTurret = 0.56996;
   public static final double kvTurret = 0.0161;
   public static final double kaTurret = 0.0019;*/
-  public static final double ksTurret = 0.5; //.64
+  public static final double ksTurret = 0.4;//.5 //.64
   public static final double kvTurret = 0.0167;
   public static final double kaTurret = 0.0019;
-  public static final double kpPosTurret = 4; //sysid guessed 35
+  public static final double kpPosTurret = 7; //5 //sysid guessed 35
   public static final double kdPosTurret = 0; //sysid guessed 2
   public static final double kpVelTurret = 0.05; //sysid said 
 
@@ -186,7 +186,7 @@ public final class Constants {
   public static final double kaHood = 0.782;
   public static final double kgHood = 0.1; //voltage needed to overcome gravity at horizontal. SYSId calcs it at enc=0?? That's problem
 
-  public static final double kpHood = 3; //4
+  public static final double kpHood = 3.5; //4
   public static final double kdHood = 0; //2
 
   public static final double maxHoodV = Units.degreesToRadians(10); // deg/s to rad/s
@@ -282,14 +282,15 @@ public final class Constants {
   
   //driver contoller buttons
   public static final int driveButton = leftBumper;
-  public static final int trackButton = bButton;
+  public static final int trackButton = bButton; 
+  public static final int zeroYawButton = yButton; //
 
 //operator buttons
-  public static final int zeroYawButton = yButton; //
+ 
   public static final int shootButton = xButton; 
   public static final int zeroEncButton = yButton;
   public static final int driveNormalButton = aButton;
-  public static final int missTargetButton = xButton;
+  public static final int missTargetButton = yButton;
   public static final int shootButton2 = bButton;
   public static final int turnTurretButton = rightBumper; //
   public static final int zeroTurretButton = xButton;
@@ -298,7 +299,7 @@ public final class Constants {
   public static final int feedBothButton = aButton;
   public static final int intakeButton = aButton;
   public static final int closeToBallsButton = aButton; //
-  public static final int farAwayButton = 0;
+  public static final int farAwayButton = bButton;
   public static final int turnTurret2Button = yButton;
   public static final int zeroHoodButton = xButton;
   public static final int moveClimbersButton = rightBumper;

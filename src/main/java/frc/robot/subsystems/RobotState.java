@@ -91,8 +91,8 @@ public class RobotState extends SubsystemBase {
     airTime = Data.getAirtime(actualDistance);
 
     poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(
-      actualDistance * 0.1, 
-      actualDistance * 0.1, 
+      actualDistance * 0.05, 
+      actualDistance * 0.05, 
       Units.degreesToRadians(.1))
     );
 

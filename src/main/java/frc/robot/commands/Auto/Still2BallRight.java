@@ -31,7 +31,7 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Turret;
 
 public class Still2BallRight extends ParallelCommandGroup {
-  PathPlannerTrajectory path = PathPlanner.loadPath("Still2BallRight1", 1, 1);
+  PathPlannerTrajectory path = PathPlanner.loadPath("Still2BallRight1", 1, 2);
 
   MecDriveTrain mecDriveTrain;
   Intake intake;
@@ -65,14 +65,14 @@ public class Still2BallRight extends ParallelCommandGroup {
         }),
         new WaitCommand(0.1),
         Utilities.getMecControllerCommand(path, mecDriveTrain).andThen(mecDriveTrain::stopDrive),
-        new WaitCommand(0.2), //gives time for shooter to get the right speed
+        new WaitCommand(2), //gives time for shooter to get the right speed
         new FeedTimed(feeders, 2)
 
       ),
       new SuckBalls(intake),
       new TrackTargetHood(hood),
       new TrackTargetShooter(shooter),
-      new TrackTargetTurret(turret)    
+      new TrackTargetTurret(false, turret)    
     );
   }
 

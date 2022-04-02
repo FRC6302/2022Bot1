@@ -36,7 +36,7 @@ public class VisionPoseEstimation {
       poseEstimate.getRotation());
 
     //if our vision pose is not on the field then dont return it
-    if (Math.abs(poseEstimate.getX()) > 9 || Math.abs(poseEstimate.getY()) > 5) {
+    /*if (Math.abs(poseEstimate.getX()) > 9 || Math.abs(poseEstimate.getY()) > 5) {
       return oldPose;
     }
     
@@ -45,7 +45,7 @@ public class VisionPoseEstimation {
     if (poseDelta > Constants.visionPoseDeltaTolerance) {
       DriverStation.reportWarning("VISION POSE ESTIMATION IS REALLY OFF, CHECK INDIVIDUAL SENSOR DATA", false);
       return oldPose;
-    }
+    }*/
 
     return transformedPose;
   }

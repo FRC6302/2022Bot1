@@ -87,7 +87,7 @@ public class Still5Ball extends ParallelCommandGroup {
       //new TrackTargetCenterPose(false, mecDriveTrain, turret, hood, shooter)
       new TrackTargetHood(hood),
       new TrackTargetShooter(shooter),
-      new TrackTargetTurret(turret)
+      new TrackTargetTurret(false, turret)
     );
   }
 }

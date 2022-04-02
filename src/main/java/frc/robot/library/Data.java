@@ -41,13 +41,35 @@ public class Data {
 
   private static double[][] distanceBottomShooterData = { 
     {1.981, 65}, //good //{distance in meters, motor vel rad/s} format
+    {3.048, 75}, 
+    {4.572, 104},
+    {6.096, 140},
+    {7.62, 190},
+    {9.144, 245},
+    {10.668, 300}
+  };
+
+  /* from practice field, not good
+  private static double[][] distanceBottomShooterData = { 
+    {1.981, 65}, //good //{distance in meters, motor vel rad/s} format
+    {3.048, 75}, 
+    {4.572, 115},
+    {6.096, 139},
+    {7.62, 180},
+    {9.144, 255},
+    {10.668, 320}
+  };*/
+
+  //worked before comp
+  /*private static double[][] distanceBottomShooterData = { 
+    {1.981, 65}, //good //{distance in meters, motor vel rad/s} format
     {3.048, 71}, 
     {4.572, 84},
     {6.096, 99},
     {7.62, 125},
     {9.144, 185},
     {10.668, 230}
-  };
+  };*/
 
   //data from when color guard was in gym
   /*private static double[][] distanceBottomShooterData = { 

@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
+import frc.robot.subsystems.LimelightGoal;
 import frc.robot.subsystems.NavX;
 import frc.robot.subsystems.RobotState;
 import frc.robot.subsystems.Turret;
@@ -24,10 +25,17 @@ public class TrackTargetTurret extends CommandBase {
 
   double gyroYaw = 0;
 
+  double x = 0,turretAngle = 0;
+
   double turretSetpoint = 0;
+
+  boolean updateVisionOdom = true;
+  
   /** Creates a new TrackTargetTurret. */
-  public TrackTargetTurret(Turret turret) {
+  public TrackTargetTurret(boolean updateVisionOdom, Turret turret) {
     this.turret = turret;
+    this.updateVisionOdom = updateVisionOdom;
+
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -40,6 +48,19 @@ public class TrackTargetTurret extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    gyroYaw = NavX.getGyroYaw();
+    turretAngle = turret.getRobotRelAngle();
+
+    if (LimelightGoal.getTargetFound()) { //runs when the LL can see the target
+      distance = LimelightGoal.getTargetDistance();
+      x = LimelightGoal.getX();
+      
+      if (updateVisionOdom) {
+        RobotState.updateOdometryWithVision(distance, gyroYaw, turretAngle, x);
+      }
+      
+      
+    }
     robotPose = RobotState.getPoseEstimate();
     gyroYaw = robotPose.getRotation().getDegrees();
  

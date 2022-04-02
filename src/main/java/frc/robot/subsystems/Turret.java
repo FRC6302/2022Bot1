@@ -177,7 +177,7 @@ public class Turret extends SubsystemBase {
     if (turretAngle <= Constants.minTurretAngle || resettingForward) {
       resettingForward = true;
       motorTurret.setVoltage(Constants.turretResetVoltage);
-      if (turretAngle >= Constants.minTurretAngle + 230) {
+      if (turretAngle >= Constants.minTurretAngle + 210) {
         resettingForward = false;
       }
       return;
@@ -185,7 +185,7 @@ public class Turret extends SubsystemBase {
     else if (turretAngle >= Constants.maxTurretAngle || resettingBackward) {
       resettingBackward = true;
       motorTurret.setVoltage(-Constants.turretResetVoltage);
-      if (turretAngle <= Constants.maxTurretAngle - 230) {
+      if (turretAngle <= Constants.maxTurretAngle - 210) {
         resettingBackward = false;
       }
       return;

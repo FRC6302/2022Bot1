@@ -24,6 +24,7 @@ import frc.robot.commands.TrackTargetLeadingPose;
 import frc.robot.commands.TrackTargetShooter;
 import frc.robot.commands.TrackTargetTurret;
 import frc.robot.commands.TurnTurret;
+import frc.robot.commands.Auto.MoveStraightMiddle;
 import frc.robot.commands.Auto.Still2BallLeft;
 import frc.robot.commands.Auto.Still2BallRight;
 import frc.robot.commands.Auto.Still5Ball;
@@ -112,6 +113,7 @@ public class RobotContainer {
   Still5Ball still5Ball;
   Still2BallLeft still2BallLeft;
   Still2BallRight still2BallRight;
+  MoveStraightMiddle moveStraightMiddle;
   
   private SendableChooser<Command> autonChooser;
   private final String moveForward = "move forward";
@@ -192,12 +194,15 @@ public class RobotContainer {
     still5Ball = new Still5Ball(mecDriveTrain, intake, feeders, shooter, turret, hood);
     still2BallLeft = new Still2BallLeft(mecDriveTrain, intake, feeders, shooter, turret, hood);
     still2BallRight = new Still2BallRight(mecDriveTrain, intake, feeders, shooter, turret, hood);
+    moveStraightMiddle = new MoveStraightMiddle(mecDriveTrain, intake, feeders, shooter, turret, hood);
 
     autonChooser = new SendableChooser<>();
     
     autonChooser.setDefaultOption("default 2 ball left", still2BallLeft);
     autonChooser.addOption("2 ball left", still2BallLeft);
     autonChooser.addOption("2 ball right", still2BallRight);
+    autonChooser.addOption("move straight middle", moveStraightMiddle);
+    autonChooser.addOption("null", null);
     SmartDashboard.putData(autonChooser);
 
     // Configure the button bindings
@@ -274,8 +279,8 @@ public class RobotContainer {
     //final JoystickButton moveClimbersButton = new JoystickButton(driverController, Constants.moveClimbersButton);
     //moveClimbersButton.whenHeld(new MoveClimbers(climbers));
 
-    final JoystickButton missButton = new JoystickButton(operatorController, Constants.missTargetButton);
-    missButton.whileHeld(new MissTarget(mecDriveTrain, turret, hood, shooter));
+    //final JoystickButton missButton = new JoystickButton(operatorController, Constants.missTargetButton);
+    //missButton.whileHeld(new MissTarget(mecDriveTrain, turret, hood, shooter));
 
     final JoystickButton closeToBallsButton = new JoystickButton(operatorController, Constants.closeToBallsButton);
     closeToBallsButton.whileHeld(new ParallelCommandGroup(
@@ -287,7 +292,7 @@ public class RobotContainer {
       new TrackTargetFeed(feeders, turret),
       new TrackTargetHood(hood),
       new TrackTargetShooter(shooter),
-      new TrackTargetTurret(turret)
+      new TrackTargetTurret(true, turret)
     ));
     closeToBallsButton.whenReleased(() -> {
       feeders.stopBothMotors();
@@ -298,15 +303,27 @@ public class RobotContainer {
     });
     
 
-    /*final JoystickButton farAwayButton = new JoystickButton(driverController, Constants.farAwayButton);
+    final JoystickButton farAwayButton = new JoystickButton(operatorController, Constants.farAwayButton);
     farAwayButton.whileHeld(new ParallelCommandGroup(
-      new InstantCommand(() -> {
-        feeders.stopBothMotors();
-      }, 
-      feeders)
+      //new FeedBoth(feeders),
+      new SuckBalls(intake),
+      //new TrackTargetCenterPose(mecDriveTrain, turret, hood, shooter)
+      //new TrackTargetCenterPose(true, mecDriveTrain, turret, hood, shooter)
+      //new Shoot(shooter)
+      //new TrackTargetFeed(feeders, turret),
+      new TrackTargetHood(hood),
+      new TrackTargetShooter(shooter),
+      new TrackTargetTurret(true, turret)
     ));
+    closeToBallsButton.whenReleased(() -> {
+      //feeders.stopBothMotors();
+      intake.stopMotor();
+      turret.stopMotor();
+      hood.stopMotor();
+      shooter.stopMotors();
+    });
 
-    farAwayButton.and(closeToBallsButton).whileActiveContinuous(new ParallelCommandGroup(
+    /*farAwayButton.and(closeToBallsButton).whileActiveContinuous(new ParallelCommandGroup(
       new SuckBalls(intake),
       new InstantCommand(() -> {
         feeders.stopBothMotors();
@@ -316,19 +333,19 @@ public class RobotContainer {
 
 
 
-    //final JoystickButton zeroTurretButton = new JoystickButton(operatorController, Constants.zeroTurretButton);
-    //zeroTurretButton.whenPressed(turret::resetEncoder);
+    final JoystickButton zeroTurretButton = new JoystickButton(driverController, Constants.zeroTurretButton);
+    zeroTurretButton.whenPressed(turret::resetEncoder);
     //final JoystickButton zero
     //zeroTurretButton.whenPressed(NavX::zeroGyroYaw);
 
-    //final JoystickButton zeroHoodButton = new JoystickButton(operatorController, Constants.zeroHoodButton);
+    //final JoystickButton zeroHoodButton = new JoystickButton(driverController, Constants.zeroHoodButton);
     //zeroHoodButton.whenPressed(hood::resetEncoder);
 
     
     //final JoystickButton LLDistanceButton = new JoystickButton(driverController, Constants.LLDistanceButton);
     //LLDistanceButton.whileHeld(Limelight::getTargetDistance);
 
-    final JoystickButton zeroYawButton = new JoystickButton(operatorController, Constants.zeroYawButton);
+    final JoystickButton zeroYawButton = new JoystickButton(driverController, Constants.zeroYawButton);
     zeroYawButton.whenPressed(NavX::zeroGyroYaw); //this is a method reference 
 
     //final JoystickButton zeroEncButton = new JoystickButton(driverController, Constants.zeroEncButton);
