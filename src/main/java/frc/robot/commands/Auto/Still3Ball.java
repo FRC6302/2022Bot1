@@ -31,7 +31,7 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Turret;
 
 public class Still3Ball extends ParallelCommandGroup {
-  PathPlannerTrajectory path1 = PathPlanner.loadPath("Still2BallRight1", 1, 2);
+  PathPlannerTrajectory path1 = PathPlanner.loadPath("Still2BallRight1", 1, 2.5);
   PathPlannerTrajectory path2 = PathPlanner.loadPath("Still3Ball2", 1, 2);
 
   MecDriveTrain mecDriveTrain;
@@ -65,11 +65,11 @@ public class Still3Ball extends ParallelCommandGroup {
         }),
         new WaitCommand(0.1), //why not
         
-        parallel(
+        race(
           sequence(
             Utilities.getMecControllerCommand(path1, mecDriveTrain).andThen(mecDriveTrain::stopDrive),
             new WaitCommand(1), //gives time for shooter to get the right speed
-            new FeedTimed(feeders, 2)
+            new FeedTimed(feeders, 3)
           ),
           new TrackTargetTurret(false, turret) //LL doesnt work if too close
         ),
@@ -78,7 +78,7 @@ public class Still3Ball extends ParallelCommandGroup {
           sequence(
             Utilities.getMecControllerCommand(path2, mecDriveTrain).andThen(mecDriveTrain::stopDrive),
             new WaitCommand(1), //gives time for shooter to get the right speed
-            new FeedTimed(feeders, 2)
+            new FeedTimed(feeders, 4)
           ),
           new TrackTargetTurret(true, turret) 
         )

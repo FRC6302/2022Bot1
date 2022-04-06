@@ -66,7 +66,7 @@ public class MoveStraightMiddle extends ParallelCommandGroup {
         new WaitCommand(0.1),
         Utilities.getMecControllerCommand(path, mecDriveTrain).andThen(mecDriveTrain::stopDrive),
         new WaitCommand(2), //gives time for shooter to get the right speed
-        new FeedTimed(feeders, 2)
+        new FeedTimed(feeders, 7)
 
       ),
       new SuckBalls(intake),

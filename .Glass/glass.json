@@ -16,6 +16,7 @@
       "/LiveWindow/LimelightGoal": "Subsystem",
       "/LiveWindow/MecDriveTrain": "Subsystem",
       "/LiveWindow/NavX": "Subsystem",
+      "/LiveWindow/Shooter": "Subsystem",
       "/LiveWindow/Ungrouped/PIDController[10]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[11]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[12]": "PIDController",
