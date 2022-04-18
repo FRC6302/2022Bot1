@@ -301,7 +301,7 @@ public final class Constants {
   public static final int closeToBallsButton = aButton; //
   public static final int farAwayButton = bButton;
   public static final int turnTurret2Button = yButton;
-  public static final int zeroHoodButton = xButton;
+  public static final int zeroHoodButton = yButton;
   public static final int moveClimbersButton = rightBumper;
   public static final int reverseButton = bButton; //
 

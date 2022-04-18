@@ -242,10 +242,10 @@ public class RobotContainer {
     //final JoystickButton shootButton2 = new JoystickButton(driverController, Constants.shootButton2);
     //shootButton2.whileHeld(new Shoot(shooter, 0.16, 0.16));  
 
-    final JoystickButton turnTurretButton = new JoystickButton(operatorController, Constants.turnTurretButton);
+    final JoystickButton turnTurretButton = new JoystickButton(driverController, Constants.turnTurretButton);
     turnTurretButton.whileHeld(() -> {
       //turret.setMotorPosPID(Limelight.getLastX(), 0, 2, 0);
-      turret.setMotor(getOperatorDeadzoneAxis(Constants.rightStickX) / -4);
+      turret.setMotor(getDriverDeadzoneAxis(Constants.rightStickX) / -4);
     });
     turnTurretButton.whenReleased(() -> {
       turret.stopMotor();
@@ -260,9 +260,9 @@ public class RobotContainer {
     //final JoystickButton raiseHoodButton = new JoystickButton(driverController, Constants.raiseHoodButton);
     //raiseHoodButton.whileHeld(new RaiseHood(hood));
 
-    final JoystickButton raiseHood2Button = new JoystickButton(operatorController, Constants.raiseHood2Button);
+    final JoystickButton raiseHood2Button = new JoystickButton(driverController, Constants.raiseHood2Button);
     raiseHood2Button.whileHeld(() -> {
-      hood.setMotor(getOperatorDeadzoneAxis(Constants.rightStickY) / -4);
+      hood.setMotor(getDriverDeadzoneAxis(Constants.rightStickY) / -4);
     });
     raiseHood2Button.whenReleased(() -> {
       hood.stopMotor();
@@ -287,7 +287,7 @@ public class RobotContainer {
     //final JoystickButton missButton = new JoystickButton(operatorController, Constants.missTargetButton);
     //missButton.whileHeld(new MissTarget(mecDriveTrain, turret, hood, shooter));
 
-    final JoystickButton closeToBallsButton = new JoystickButton(operatorController, Constants.closeToBallsButton);
+    final JoystickButton closeToBallsButton = new JoystickButton(driverController, Constants.closeToBallsButton);
     closeToBallsButton.whileHeld(new ParallelCommandGroup(
       //new FeedBoth(feeders),
       new SuckBalls(intake),
@@ -308,7 +308,7 @@ public class RobotContainer {
     });
     
 
-    final JoystickButton farAwayButton = new JoystickButton(operatorController, Constants.farAwayButton);
+    final JoystickButton farAwayButton = new JoystickButton(driverController, Constants.farAwayButton);
     farAwayButton.whileHeld(new ParallelCommandGroup(
       //new FeedBoth(feeders),
       new SuckBalls(intake),
@@ -338,20 +338,20 @@ public class RobotContainer {
 
 
 
-    final JoystickButton zeroTurretButton = new JoystickButton(driverController, Constants.zeroTurretButton);
-    zeroTurretButton.whenPressed(turret::resetEncoder);
+    //final JoystickButton zeroTurretButton = new JoystickButton(driverController, Constants.zeroTurretButton);
+    //zeroTurretButton.whenPressed(turret::resetEncoder);
     //final JoystickButton zero
     //zeroTurretButton.whenPressed(NavX::zeroGyroYaw);
 
-    //final JoystickButton zeroHoodButton = new JoystickButton(driverController, Constants.zeroHoodButton);
-    //zeroHoodButton.whenPressed(hood::resetEncoder);
+    final JoystickButton zeroHoodButton = new JoystickButton(driverController, Constants.zeroHoodButton);
+    zeroHoodButton.whenPressed(hood::resetEncoder);
 
     
     //final JoystickButton LLDistanceButton = new JoystickButton(driverController, Constants.LLDistanceButton);
     //LLDistanceButton.whileHeld(Limelight::getTargetDistance);
 
-    final JoystickButton zeroYawButton = new JoystickButton(driverController, Constants.zeroYawButton);
-    zeroYawButton.whenPressed(NavX::zeroGyroYaw); //this is a method reference 
+    //final JoystickButton zeroYawButton = new JoystickButton(driverController, Constants.zeroYawButton);
+    //zeroYawButton.whenPressed(NavX::zeroGyroYaw); //this is a method reference 
 
     //final JoystickButton zeroEncButton = new JoystickButton(driverController, Constants.zeroEncButton);
     //zeroEncButton.whenPressed(mecDriveTrain::resetEncoders);
