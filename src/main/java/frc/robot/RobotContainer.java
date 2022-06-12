@@ -290,13 +290,13 @@ public class RobotContainer {
     final JoystickButton closeToBallsButton = new JoystickButton(driverController, Constants.closeToBallsButton);
     closeToBallsButton.whileHeld(new ParallelCommandGroup(
       //new FeedBoth(feeders),
-      new SuckBalls(intake),
+      //new SuckBalls(intake),
       //new TrackTargetCenterPose(mecDriveTrain, turret, hood, shooter)
       //new TrackTargetCenterPose(true, mecDriveTrain, turret, hood, shooter)
       //new Shoot(shooter)
-      new TrackTargetFeed(feeders, turret),
-      new TrackTargetHood(hood),
-      new TrackTargetShooter(shooter),
+      //new TrackTargetFeed(feeders, turret),
+      //new TrackTargetHood(hood),
+      //new TrackTargetShooter(shooter),
       new TrackTargetTurret(true, turret)
     ));
     closeToBallsButton.whenReleased(() -> {
@@ -308,7 +308,7 @@ public class RobotContainer {
     });
     
 
-    final JoystickButton farAwayButton = new JoystickButton(driverController, Constants.farAwayButton);
+    /*final JoystickButton farAwayButton = new JoystickButton(driverController, Constants.farAwayButton);
     farAwayButton.whileHeld(new ParallelCommandGroup(
       //new FeedBoth(feeders),
       new SuckBalls(intake),
@@ -326,7 +326,7 @@ public class RobotContainer {
       turret.stopMotor();
       hood.stopMotor();
       shooter.stopMotors();
-    });
+    });*/
 
     /*farAwayButton.and(closeToBallsButton).whileActiveContinuous(new ParallelCommandGroup(
       new SuckBalls(intake),
@@ -338,8 +338,8 @@ public class RobotContainer {
 
 
 
-    //final JoystickButton zeroTurretButton = new JoystickButton(driverController, Constants.zeroTurretButton);
-    //zeroTurretButton.whenPressed(turret::resetEncoder);
+    final JoystickButton zeroTurretButton = new JoystickButton(driverController, Constants.zeroTurretButton);
+    zeroTurretButton.whenPressed(turret::resetEncoder);
     //final JoystickButton zero
     //zeroTurretButton.whenPressed(NavX::zeroGyroYaw);
 

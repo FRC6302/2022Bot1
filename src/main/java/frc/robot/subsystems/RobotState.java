@@ -88,7 +88,8 @@ public class RobotState extends SubsystemBase {
     
     robotPose = getPoseEstimate();
     actualDistance = getActualDistance();
-    airTime = Data.getAirtime(actualDistance);
+    //airTime = Data.getAirtime(actualDistance);
+    airTime = Data.getAirtime(getEffectiveDistance());
 
     poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(
       actualDistance * 0.05, 
@@ -100,6 +101,7 @@ public class RobotState extends SubsystemBase {
     SmartDashboard.putNumber("pose y", robotPose.getY());
     
     field.setRobotPose(robotPose);
+    field.getObject("effective goal").setPose(getEffectiveGoalPose());
 
     SmartDashboard.putNumber("mecanum vx", getGlobalMecVx());
     SmartDashboard.putNumber("mecanum vy", getGlobalMecVy());
@@ -108,6 +110,7 @@ public class RobotState extends SubsystemBase {
     SmartDashboard.putNumber("effective distance", getEffectiveDistance());
     SmartDashboard.putNumber("actual distance", actualDistance);
     SmartDashboard.putNumber("offset angle deg", getOffsetAngleDeg(getEffectiveDistance()));
+
   }
 
   /*
@@ -117,11 +120,11 @@ public class RobotState extends SubsystemBase {
     speed, hood angle, and turret feedforward. 
   */
   public static double getEffectiveDistance() { 
-    double vx = getGlobalMecVx();
+    /*double vx = getGlobalMecVx();
     double vy = getGlobalMecVy();
     return Math.sqrt(actualDistance * actualDistance + airTime * airTime * (vx * vx + vy * vy) 
     - 2 * airTime * Math.sqrt(vx * vx + vy * vy) * Math.cos(Math.PI/2 + Math.atan2(-vy, -vx))
-    );
+    );*/
 
     /*Pose2d goalRel = getGoalRelPose();
 
@@ -133,6 +136,8 @@ public class RobotState extends SubsystemBase {
         0 - getGlobalMecVy() * airTime
       )
     );*/
+
+    return getEffectiveGoalPose().getTranslation().getDistance(robotPose.getTranslation());
   }
 
   public static double getOffsetAngleDeg(double effectiveDistance) {
@@ -144,6 +149,20 @@ public class RobotState extends SubsystemBase {
         / (getActualDistance() * effectiveDistance)
       )
     );
+  }
+
+  /*where the robot is effectively shooting if it were still instead of moving. This pose be different from the actual goal 
+  pose when robot is moving but the same when the robot is still*/
+  public static Pose2d getEffectiveGoalPose() {
+    /*return new Pose2d(
+      0 - getGlobalMecVx() * airTime,
+      0 - getGlobalMecVy() * airTime, 
+      new Rotation2d());*/
+
+    return new Pose2d(
+      Constants.goalLocation.getX() - getGlobalMecVx() * airTime, 
+      Constants.goalLocation.getY() - getGlobalMecVy() * airTime,
+      new Rotation2d());
   }
 
   public static double getActualDistance() {

@@ -210,8 +210,8 @@ public class TrackTargetLeadingPose extends CommandBase {
     offsetAngle = RobotState.getOffsetAngleDeg(effectiveDistance);
 
     turret.setMotorPosPID(robotPose, angleToTarget + offsetAngle - robotPose.getRotation().getDegrees(), vx, vy, angV, effectiveDistance);
-    hood.setMotorPosPID(effectiveDistance, 0);
-    shooter.setMotorsVelPID(effectiveDistance);
+    //hood.setMotorPosPID(effectiveDistance, 0);
+    //shooter.setMotorsVelPID(effectiveDistance);
 
   }
 

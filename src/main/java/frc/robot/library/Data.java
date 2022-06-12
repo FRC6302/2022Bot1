@@ -9,7 +9,8 @@ import edu.wpi.first.math.util.Units;
 /** class for storing all of data that we got from testing our shooter/hood */
 public class Data {
 
-  private static double[][] distanceAngleData = { 
+  //comp
+  /*private static double[][] distanceAngleData = { 
     {1.981, Units.degreesToRadians(20)}, //{distance in meters, angle in degrees} format
     {3.048, Units.degreesToRadians(26)}, 
     {4.572, Units.degreesToRadians(32)},
@@ -17,6 +18,17 @@ public class Data {
     {7.62, Units.degreesToRadians(44)},
     {9.144, Units.degreesToRadians(46)},
     {10.668, Units.degreesToRadians(48)}
+  };*/
+
+  //8th grade night
+  private static double[][] distanceAngleData = { 
+    {1.981, Units.degreesToRadians(20)}, //{distance in meters, angle in degrees} format
+    {3.048, Units.degreesToRadians(30)}, 
+    {4.572, Units.degreesToRadians(40)},
+    {6.096, Units.degreesToRadians(40)},
+    {7.62, Units.degreesToRadians(40)},
+    {9.144, Units.degreesToRadians(40)},
+    {10.668, Units.degreesToRadians(40)}
   };
 
   private static double[][] distanceTimeData = { 

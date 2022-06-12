@@ -150,9 +150,9 @@ public class TrackTargetCenterPose extends CommandBase {
       //shooter.setMotorsDefaultVolts();
     //}
 
-    if (Robot.robotContainer.getOperatorButton(Constants.missTargetButton).getAsBoolean()) {
+    /*if (Robot.robotContainer.getOperatorButton(Constants.missTargetButton).getAsBoolean()) {
       
-    }
+    }*/
 
 
     

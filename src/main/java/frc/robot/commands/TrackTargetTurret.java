@@ -68,9 +68,15 @@ public class TrackTargetTurret extends CommandBase {
  
     distance = RobotState.getActualDistance();
  
+    //not leading shot
     angleToTarget = Units.radiansToDegrees(Math.atan2(
       robotPose.getY() - Constants.goalLocation.getY(), 
       robotPose.getX() - Constants.goalLocation.getX())) - 180;
+
+    //leading shot
+    angleToTarget = Units.radiansToDegrees(Math.atan2(
+      robotPose.getY() - RobotState.getEffectiveGoalPose().getY(), 
+      robotPose.getX() - RobotState.getEffectiveGoalPose().getX())) - 180;
 
     vx = RobotState.getGlobalMecVx();
     vy = RobotState.getGlobalMecVy();

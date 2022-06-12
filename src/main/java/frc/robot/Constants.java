@@ -148,7 +148,7 @@ public final class Constants {
   public static final double limelightLatency = 0.025; //20 ms
 
   //limelight goal
-  public static final double limelightGoalMountDegreeOffset = 36.5; //the angle the limelight is pointing relative to the ground, 0 = parallel to floor
+  public static final double limelightGoalMountDegreeOffset = 32;//22;// 36.5; //the angle the limelight is pointing relative to the ground, 0 = parallel to floor
 
   //limelight balls
   
@@ -275,7 +275,7 @@ public final class Constants {
 
   //robot construction
   public static final double limelightToRobotCenterRadius = Units.inchesToMeters(9.5);
-  public static final double limelightToTargetHeight = Units.inchesToMeters(103 - 25.0625);
+  public static final double limelightToTargetHeight = Units.inchesToMeters(62.5 - 25.0625); //Units.inchesToMeters(103 - 25.0625);
   public static final double limelightToBallCenterHeight = Units.inchesToMeters(40 - 4.25); //find out what ball height to use
   public static final double robotWheelToWheelWidth = Units.inchesToMeters(22.5);
   public static final double robotWheelToWheelLength = Units.inchesToMeters(20 + 5./16.);
@@ -292,18 +292,18 @@ public final class Constants {
   public static final int driveNormalButton = aButton;
   public static final int missTargetButton = yButton;
   public static final int shootButton2 = bButton;
-  public static final int turnTurretButton = rightBumper; //
-  public static final int zeroTurretButton = xButton;
+  public static final int turnTurretButton = rightBumper; 
+  public static final int zeroTurretButton = xButton; //
   public static final int raiseHoodButton = yButton; 
-  public static final int raiseHood2Button = leftBumper; //
+  public static final int raiseHood2Button = leftBumper; 
   public static final int feedBothButton = aButton;
   public static final int intakeButton = aButton;
   public static final int closeToBallsButton = aButton; //
-  public static final int farAwayButton = bButton;
+  public static final int farAwayButton = bButton; //
   public static final int turnTurret2Button = yButton;
-  public static final int zeroHoodButton = yButton;
+  public static final int zeroHoodButton = yButton; //
   public static final int moveClimbersButton = rightBumper;
-  public static final int reverseButton = bButton; //
+  public static final int reverseButton = bButton; 
 
 
 

@@ -36,7 +36,13 @@
       "/LiveWindow/Ungrouped/PIDController[25]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[26]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[27]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[28]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[29]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[30]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[31]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[32]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[33]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[3]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[4]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[5]": "PIDController",
@@ -251,6 +257,38 @@
                 1.0
               ],
               "id": "NT:/SmartDashboard/raw distance"
+            }
+          ]
+        }
+      ]
+    },
+    "Plot <6>": {
+      "plots": [
+        {
+          "axis": [
+            {
+              "autoFit": true
+            }
+          ],
+          "height": 332,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/turret constrained angle"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/turret setpoint"
             }
           ]
         }
