@@ -12,5 +12,6 @@ This project has the framework and correct math for shooting while moving, but I
 3. be able to score consistently from any distance while not moving (our biggest problem lol)
 4. upgrade the pose estimator kalman filter to the better version
 5. figure how to get more consistent limelight data
+6. incorporate an acceleration factor to correct for robot acceleration while shooting
 
 -Smashley
