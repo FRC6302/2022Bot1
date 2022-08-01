@@ -11,6 +11,7 @@ import frc.robot.subsystems.LimelightGoal;
 import frc.robot.subsystems.MecDriveTrain;
 import frc.robot.subsystems.RobotState;
 
+//command i made where you drive around and the robot auto turns to look at the target. Would only use if you didn't have a turret
 public class DriveMecTrackTarget extends CommandBase {
   private MecDriveTrain mecDriveTrain;
 

@@ -22,6 +22,8 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.util.WPIUtilJNI;
 import java.util.function.BiConsumer;
 
+//COPY PASTED FROM WPILIB BECAUSE IT WASN'T RELEASED YET AND WORKS BETTER THAN THE RELEASED VERSION OF THE CLASS
+
 /**
  * This class wraps an {@link UnscentedKalmanFilter Unscented Kalman Filter} to fuse
  * latency-compensated vision measurements with mecanum drive encoder velocity measurements. It will

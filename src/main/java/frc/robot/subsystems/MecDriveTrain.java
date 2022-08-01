@@ -62,7 +62,7 @@ public class MecDriveTrain extends SubsystemBase {
     Constants.kvMecFeedForward,
     Constants.kaMecFeedForward);
 
-  PIDController pidController = new PIDController(Constants.kpMecV, 0, 0);
+  //PIDController pidController = new PIDController(Constants.kpMecV, 0, 0);
 
   //robot width wheel-to-wheel is 0.584 m, length wheel-to-wheel is 0.521 m
   //0.584/2 = 0.292, 0.521/2 = 0.2605
@@ -97,7 +97,8 @@ public class MecDriveTrain extends SubsystemBase {
 
   private Field2d field = new Field2d();*/
 
-  private final UnscentedKalmanFilter<N1, N1, N1> vxFilter = new UnscentedKalmanFilter<>(
+  //trying to figure how to get kalman filter for robot vx, don't know what i'm doing
+  /*private final UnscentedKalmanFilter<N1, N1, N1> vxFilter = new UnscentedKalmanFilter<>(
     Nat.N1(), 
     Nat.N1(), 
     (x, u) -> u,
@@ -105,6 +106,7 @@ public class MecDriveTrain extends SubsystemBase {
     VecBuilder.fill(5), 
     VecBuilder.fill(5), 
     Constants.loopTime);
+  */
     
   private final double distancePerPulse = (Math.PI * 0.1524 / 2048) / 1; //mec wheel diam is 6 in or 0.1524 m
 
@@ -156,6 +158,7 @@ public class MecDriveTrain extends SubsystemBase {
     //encTest.setPositionConversionFactor(1);
     //encTest.setVelocityConversionFactor(1);
     
+    //don't remember why i put this
     motorL1.setCANTimeout(Constants.sparkCANTimeoutMs);
     motorL2.setCANTimeout(Constants.sparkCANTimeoutMs);
     motorR1.setCANTimeout(Constants.sparkCANTimeoutMs);
@@ -229,32 +232,45 @@ public class MecDriveTrain extends SubsystemBase {
     return mecDrive.driveCartesianIK(ySpeed, xSpeed, zRotation, gyroAngle);
   }*/
 
+  //this method combines setMotorsFieldRel() and setMotorsRobotRel(), it's ugly tho
   public void setMotors(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
     MecanumDriveWheelSpeeds mecanumDriveWheelSpeeds =
       RobotState.getMecKinematics().toWheelSpeeds(
         fieldRelative
           ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, NavX.getGyroRotation2d())
           : new ChassisSpeeds(xSpeed, ySpeed, rot));
+
     mecanumDriveWheelSpeeds.desaturate(Constants.maxMecAttainableWheelSpeed);
+
     setSpeeds(mecanumDriveWheelSpeeds); 
   }
 
   public void setMotorsFieldRel(double xSpeed, double ySpeed, double rot) {
+    /* you create a ChassisSpeeds object from the field-relative speed arguments, and convert it into a MecanumDriveWheelSpeeds.
+    The MecanumDriveKinematics to do this is located in RobotState so you have to call it from there */
     MecanumDriveWheelSpeeds mecanumDriveWheelSpeeds =
       RobotState.getMecKinematics().toWheelSpeeds(
         ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, NavX.getGyroRotation2d()));
+
     mecanumDriveWheelSpeeds.desaturate(Constants.maxMecAttainableWheelSpeed);
+
     setSpeeds(mecanumDriveWheelSpeeds); 
   }
 
   public void setMotorsRobotRel(double xSpeed, double ySpeed, double rot) {
+    /* you create a ChassisSpeeds object from the robot-relative speed arguments, and convert it into a MecanumDriveWheelSpeeds.
+    The MecanumDriveKinematics to do this is located in RobotState so you have to call it from there */
     MecanumDriveWheelSpeeds mecanumDriveWheelSpeeds =
       RobotState.getMecKinematics().toWheelSpeeds(
         new ChassisSpeeds(xSpeed, ySpeed, rot));
+
     mecanumDriveWheelSpeeds.desaturate(Constants.maxMecAttainableWheelSpeed);
+
     setSpeeds(mecanumDriveWheelSpeeds); 
   }
 
+  /*takes in the MecanumDriveWheelSpeeds (generated in other methods) and converts it into actual motor commands. Having a 
+    method to do this saves me repeating the same code in the various driving methods*/
   public void setSpeeds(MecanumDriveWheelSpeeds speeds) {
     /*motorL1.setVoltage(simpleFeedforward.calculate(speeds.frontLeftMetersPerSecond) 
       + pidController.calculate(getEncL1Rate(), speeds.frontLeftMetersPerSecond));
@@ -296,6 +312,7 @@ public class MecDriveTrain extends SubsystemBase {
   }
 
   double maxMecSpeed = 9;
+  //setting the motors using the simple mecanum formulas. Pass in desired robot-relative speeds and get motor commands
   public void setMotorsSimple(double xSpeed, double ySpeed, double rotSpeed) {
     /*motorL1.set(ControlMode.PercentOutput, (xSpeed - ySpeed - rotSpeed) / maxMecSpeed);
     motorL2.set(ControlMode.PercentOutput, (xSpeed + ySpeed - rotSpeed) / maxMecSpeed);

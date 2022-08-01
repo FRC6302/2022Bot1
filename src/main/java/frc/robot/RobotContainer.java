@@ -287,6 +287,7 @@ public class RobotContainer {
     //final JoystickButton missButton = new JoystickButton(operatorController, Constants.missTargetButton);
     //missButton.whileHeld(new MissTarget(mecDriveTrain, turret, hood, shooter));
 
+    //button to hold when you're near balls, automatically picks them up and shoots them
     final JoystickButton closeToBallsButton = new JoystickButton(driverController, Constants.closeToBallsButton);
     closeToBallsButton.whileHeld(new ParallelCommandGroup(
       //new FeedBoth(feeders),
@@ -308,6 +309,7 @@ public class RobotContainer {
     });
     
 
+    //button to hold to pick up balls and hold them until you get into shooting range
     /*final JoystickButton farAwayButton = new JoystickButton(driverController, Constants.farAwayButton);
     farAwayButton.whileHeld(new ParallelCommandGroup(
       //new FeedBoth(feeders),

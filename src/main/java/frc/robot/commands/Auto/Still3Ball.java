@@ -71,7 +71,7 @@ public class Still3Ball extends ParallelCommandGroup {
             new WaitCommand(1), //gives time for shooter to get the right speed
             new FeedTimed(feeders, 3)
           ),
-          new TrackTargetTurret(false, turret) //LL doesnt work if too close
+          new TrackTargetTurret(false, turret) //LL doesnt work if too close to goal
         ),
 
         parallel(

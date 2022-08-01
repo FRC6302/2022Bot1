@@ -67,8 +67,8 @@ public class TrackTargetCenter extends CommandBase {
       turretAngle = turret.getAngle();
 
       //velocities with respect to target
-      paraV = RobotState.getParaV(turretAngle - x);
-      perpV = RobotState.getPerpV(turretAngle - x);
+      //paraV = RobotState.getParaV(turretAngle - x);
+      //perpV = RobotState.getPerpV(turretAngle - x);
       
       angV = RobotState.getAngV();
 
@@ -89,7 +89,7 @@ public class TrackTargetCenter extends CommandBase {
     }
     else //this runs when the target is not in view of camera
     {
-      paraV = RobotState.getParaV(turretAngle);
+      //paraV = RobotState.getParaV(turretAngle);
       distance = LimelightGoal.getTargetDistance();
       /*the distance value here is calculated internally from lastX and lastY, so it doesnt matter that
       the target isnt in view*/

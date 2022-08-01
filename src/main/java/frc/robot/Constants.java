@@ -124,7 +124,7 @@ public final class Constants {
   public static final double kvMecFeedForward = 2.7664;
   public static final double kaMecFeedForward = 0.41056;
 
-  //TODO: tune these by graphing desired position and actual pos on glass
+  //tune these by graphing desired position and actual pos on glass
   public static final double kpMecPosXController = 2; //determined through testing
   public static final double kpMecPosYController = 2;
   public static final double kpMecThetaController = 2;

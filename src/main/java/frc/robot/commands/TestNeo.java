@@ -7,6 +7,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.NeoTest;
 
+//command I made for testing Neos to make sure they weren't broken
 public class TestNeo extends CommandBase {
   NeoTest neoTest;
 

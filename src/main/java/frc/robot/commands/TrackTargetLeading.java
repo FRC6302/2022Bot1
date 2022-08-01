@@ -15,7 +15,7 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Turret;
 
 /* tracks target like TrackTargetStationary command but accounts for the robots movement by leading the shot
-so that you can shoot while moving*/
+so that you can shoot while moving. Doesn't work, don't bother reading this file */
 public class TrackTargetLeading extends CommandBase {
   MecDriveTrain mecDriveTrain;
   Turret turret;

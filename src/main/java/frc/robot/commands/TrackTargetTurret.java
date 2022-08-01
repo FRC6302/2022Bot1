@@ -13,6 +13,7 @@ import frc.robot.subsystems.NavX;
 import frc.robot.subsystems.RobotState;
 import frc.robot.subsystems.Turret;
 
+//command for the turret to always track the goal as we drive around the field
 public class TrackTargetTurret extends CommandBase {
   Turret turret;
 
@@ -25,10 +26,10 @@ public class TrackTargetTurret extends CommandBase {
 
   double gyroYaw = 0;
 
-  double x = 0,turretAngle = 0;
+  double x = 0, turretAngle = 0;
 
-  double turretSetpoint = 0;
 
+  //sometimes you want to ignore what the limelight is saying if it's giving bad data. If this bool is false, we won't use vision to update the odometry
   boolean updateVisionOdom = true;
 
   /** Creates a new TrackTargetTurret. */
@@ -37,6 +38,7 @@ public class TrackTargetTurret extends CommandBase {
     this.updateVisionOdom = updateVisionOdom;
 
     // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(turret);
   }
 
   // Called when the command is initially scheduled.

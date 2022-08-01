@@ -151,7 +151,7 @@ public class RobotState extends SubsystemBase {
     );
   }
 
-  /*where the robot is effectively shooting if it were still instead of moving. This pose be different from the actual goal 
+  /*where the robot is effectively shooting if it were still instead of moving. This pose will be different from the actual goal 
   pose when robot is moving but the same when the robot is still*/
   public static Pose2d getEffectiveGoalPose() {
     /*return new Pose2d(
@@ -206,31 +206,7 @@ public class RobotState extends SubsystemBase {
     originRel.getRotation());
   }
 
-  public  static double getParaV(double turretAngleDeg) {
-    //converts from robot-relative velocities directly to target relative velocities
-    //double vz = curChassisSpeeds.vxMetersPerSecond; //velocity in the foward direction, relative to robot
-    //double vx = -curChassisSpeeds.vyMetersPerSecond; //velocity towards the right, relative to robot
-    double theta = Math.toRadians(90 - turretAngleDeg);
-    //double output = vx * Math.cos(theta) + vz * Math.sin(theta);
-
-    double output = -curChassisSpeeds.vyMetersPerSecond * Math.cos(theta) + curChassisSpeeds.vxMetersPerSecond * Math.sin(theta);
-
-    SmartDashboard.putNumber("paraV", output);
-    return output;
-  }
-
-  public static double getPerpV(double turretAngleDeg) {
-    //converts from robot-relative velocities directly to target relative velocities
-    //double vz = curChassisSpeeds.vxMetersPerSecond; //velocity in the foward direction, relative to robot
-    //double vx = -curChassisSpeeds.vyMetersPerSecond; //velocity towards the right, relative to robot
-    double theta = Math.toRadians(90 - turretAngleDeg);
-
-    //double output = -vx * Math.sin(theta) + vz * Math.cos(theta);
-    double output = curChassisSpeeds.vyMetersPerSecond * Math.sin(theta) + curChassisSpeeds.vxMetersPerSecond * Math.cos(theta);
-
-    SmartDashboard.putNumber("perpV", output);
-    return output;
-  }
+  
 
   public static double getAngV() {
     double output = Math.toDegrees(curChassisSpeeds.omegaRadiansPerSecond);
@@ -266,4 +242,36 @@ public class RobotState extends SubsystemBase {
   public static double getGlobalMecVy() {
     return new Translation2d(getRobotRelVx(), getRobotRelVy()).rotateBy(NavX.getGyroRotation2d()).getY();
   }
+
+
+
+
+
+  //i never actually used either of these methods with anything that worked, safe to ignore
+  public  static double getParaV(double turretAngleDeg) {
+    //converts from robot-relative velocities directly to target relative velocities
+    //double vz = curChassisSpeeds.vxMetersPerSecond; //velocity in the foward direction, relative to robot
+    //double vx = -curChassisSpeeds.vyMetersPerSecond; //velocity towards the right, relative to robot
+    double theta = Math.toRadians(90 - turretAngleDeg);
+    //double output = vx * Math.cos(theta) + vz * Math.sin(theta);
+
+    double output = -curChassisSpeeds.vyMetersPerSecond * Math.cos(theta) + curChassisSpeeds.vxMetersPerSecond * Math.sin(theta);
+
+    SmartDashboard.putNumber("paraV", output);
+    return output;
+  }
+  public static double getPerpV(double turretAngleDeg) {
+    //converts from robot-relative velocities directly to target relative velocities
+    //double vz = curChassisSpeeds.vxMetersPerSecond; //velocity in the foward direction, relative to robot
+    //double vx = -curChassisSpeeds.vyMetersPerSecond; //velocity towards the right, relative to robot
+    double theta = Math.toRadians(90 - turretAngleDeg);
+
+    //double output = -vx * Math.sin(theta) + vz * Math.cos(theta);
+    double output = curChassisSpeeds.vyMetersPerSecond * Math.sin(theta) + curChassisSpeeds.vxMetersPerSecond * Math.cos(theta);
+
+    SmartDashboard.putNumber("perpV", output);
+    return output;
+  }
+
+
 }

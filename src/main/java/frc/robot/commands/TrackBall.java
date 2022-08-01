@@ -19,6 +19,7 @@ import frc.robot.subsystems.LimelightBall;
 import frc.robot.subsystems.MecDriveTrain;
 import frc.robot.subsystems.RobotState;
 
+//command for tracking balls and driving to pick them up. Untested
 public class TrackBall extends CommandBase {
   MecDriveTrain mecDriveTrain;
   Pose2d latestBallPose = new Pose2d();

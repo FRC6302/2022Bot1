@@ -11,9 +11,12 @@ import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.subsystems.MecDriveTrain;
 
+//command for driving around
 public class DriveMec extends CommandBase {
   private MecDriveTrain mecDriveTrain;
 
+  /*during competition, moving the joysticks around too fast would cause the whole robot to jitter for some reason. 
+   So I artificially capped the joystick speed. If you put the argument numbers any lower, driving will feel clunky/delayed */
   private SlewRateLimiter xLimiter = new SlewRateLimiter(10);
   private SlewRateLimiter yLimiter = new SlewRateLimiter(10);
   private SlewRateLimiter zLimiter = new SlewRateLimiter(20);

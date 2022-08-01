@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Feeders;
 import frc.robot.subsystems.Turret;
 
+//controls the feeder
 public class TrackTargetFeed extends CommandBase {
   Feeders feeders;
   Turret turret;
@@ -28,6 +29,7 @@ public class TrackTargetFeed extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    //don't feed balls while the turret is resetting, or a ball will be shot in some random direction
     if (turret.getIsResetting()) {
       feeders.stopBothMotors();
     }

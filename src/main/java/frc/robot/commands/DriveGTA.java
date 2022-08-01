@@ -9,6 +9,7 @@ import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.subsystems.DriveTrain;
 
+//unused. for a non-mecanum robot
 public class DriveGTA extends CommandBase {
   private final DriveTrain driveTrain = DriveTrain.getInstance();
   private double scaledStickInput;

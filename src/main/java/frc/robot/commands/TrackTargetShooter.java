@@ -30,6 +30,9 @@ public class TrackTargetShooter extends CommandBase {
   public void execute() {
     distance = RobotState.getActualDistance();
 
+    //for shooting while moving
+    //distance = RobotState.getEffectiveDistance();
+
     shooter.setMotorsVelPID(distance);
   }
 

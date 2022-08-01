@@ -21,7 +21,7 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Turret;
 
 /* tracks target like TrackTargetStationary command but accounts for the robots movement by leading the shot
-so that you can shoot while moving*/
+so that you can shoot while moving. Doesn't work, you can ignore this file */
 public class TrackTargetLeadingPose extends CommandBase {
   MecDriveTrain mecDriveTrain;
   Turret turret;
@@ -129,7 +129,7 @@ public class TrackTargetLeadingPose extends CommandBase {
       + vx * (poseY - Constants.goalLocation.getY()));
 
     //temp = airTime * (vy * Math.sin(gyroYaw + turretAngle - x) + vx * Math.cos(gyroYaw + turretAngle - x));
-    //TODO: compare these temp values and make sure they are close
+    //compare these temp values and make sure they are close
 
     //this effectiveDistance calculation uses the offset angle prediction from previous loop
     //effectiveDistance = temp / (actualDistance * Math.sin(offsetAngle));
@@ -178,7 +178,7 @@ public class TrackTargetLeadingPose extends CommandBase {
     gyroYaw = NavX.getGyroYaw();
     turretAngle = turret.getRobotRelAngle();
 
-    //TODO: add debouncer here
+    //add debouncer here
     if (LimelightGoal.getTargetFound()) { //runs when the LL can see the target
       actualDistance = LimelightGoal.getTargetDistance();
       x = LimelightGoal.getX();
@@ -190,7 +190,7 @@ public class TrackTargetLeadingPose extends CommandBase {
     //robotToGoal = new Transform2d(robotPose, goalPose);
     //distance = Math.sqrt(Math.pow(robotToGoal.getX(), 2) + Math.pow(robotToGoal.getY(), 2)); 
     actualDistance = Constants.goalLocation.getDistance(robotPose.getTranslation());
-    //TODO: get actual tx based on pose estimate?
+    //get actual tx based on pose estimate?
     //difference between turret pose and 
     //it should be the same though if the rest of this works right?
 

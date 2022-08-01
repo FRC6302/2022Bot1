@@ -29,6 +29,9 @@ public class TrackTargetHood extends CommandBase {
   public void execute() {
     distance = RobotState.getActualDistance();
 
+    //for shooting while moving
+    //distance = RobotState.getEffectiveDistance();
+
     hood.setMotorPosPID(distance, 0);
   }
 

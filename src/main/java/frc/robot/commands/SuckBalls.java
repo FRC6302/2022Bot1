@@ -33,6 +33,7 @@ public class SuckBalls extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    //there's definitely a less stupid way to do this but i don't feel like it
     if (speed != 0) {
       intake.setMotor(speed);
     }

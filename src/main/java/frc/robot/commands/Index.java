@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ColorSensor;
 
+//USUSED
 public class Index extends CommandBase {
   double ballsPickedUp = 0, ballsShot = 0, ballsHolding = 0;
 

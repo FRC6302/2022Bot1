@@ -111,7 +111,7 @@ public class TrackTargetCenterPose extends CommandBase {
     //robotToGoal = new Transform2d(robotPose, goalPose);
     //distance = Math.sqrt(Math.pow(robotToGoal.getX(), 2) + Math.pow(robotToGoal.getY(), 2)); 
     distance = Constants.goalLocation.getDistance(robotPose.getTranslation());
-    //TODO: get actual tx based on pose estimate?
+    //get actual tx based on pose estimate?
     //difference between turret pose and 
     //it should be the same though if the rest of this works right?
 
