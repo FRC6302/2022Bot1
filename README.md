@@ -15,7 +15,7 @@ Most important/coolest files:
 Notes:
 1. I wrote descriptions for most files (that aren't self explanatory) at the top of them
 2. originally I used TrackTargetCenterPose.java for controlling basically everything on the robot except the drive, but realized I needed more flexibility and the ability to only have some subsystems running but not others. So I split that file up into TrackTargetTurret.java, TrackTargetShooter.java, etc. 
-3. on that note, there are a lot of files and code that is just leftover from all my trials and I didn't want to delete just in case. I tried to leave a comment there if that was the case
+3. on that note, there are a lot of unused files and code that is just leftover from all my trials and that I didn't want to delete, just in case I ever needed it again. It should all be either commented out or have a note saying that it is unused.
 4. RobotState.java doesn't correspond to any actual hardware like most other subsystems, I just made it a subsystem so it would automatically update every loop with the periodic() method. There's probably a better way to do it but I like this one.
 5. 
 
