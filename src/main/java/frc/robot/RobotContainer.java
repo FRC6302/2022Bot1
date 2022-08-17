@@ -516,7 +516,7 @@ public class RobotContainer {
   }
 
 
-  public void updateShooterVelocities() {
+  /*public void updateShooterVelocities() {
     shooter.updateVelocities();
-  }
+  }*/
 }

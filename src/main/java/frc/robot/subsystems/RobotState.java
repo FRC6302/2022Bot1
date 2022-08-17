@@ -109,7 +109,7 @@ public class RobotState extends SubsystemBase {
 
     SmartDashboard.putNumber("effective distance", getEffectiveDistance());
     SmartDashboard.putNumber("actual distance", actualDistance);
-    SmartDashboard.putNumber("offset angle deg", getOffsetAngleDeg(getEffectiveDistance()));
+    //SmartDashboard.putNumber("offset angle deg", getOffsetAngleDeg(getEffectiveDistance()));
 
   }
 
@@ -140,7 +140,7 @@ public class RobotState extends SubsystemBase {
     return getEffectiveGoalPose().getTranslation().getDistance(robotPose.getTranslation());
   }
 
-  public static double getOffsetAngleDeg(double effectiveDistance) {
+  /*public static double getOffsetAngleDeg(double effectiveDistance) {
     //Pose2d goalRel = getGoalRelPose();
     Pose2d pose = new Pose2d(robotPose.getX() - Constants.goalLocation.getX(), robotPose.getY() - Constants.goalLocation.getY(), robotPose.getRotation());
     return Units.radiansToDegrees( 
@@ -149,7 +149,7 @@ public class RobotState extends SubsystemBase {
         / (getActualDistance() * effectiveDistance)
       )
     );
-  }
+  }*/
 
   /*where the robot is effectively shooting if it were still instead of moving. This pose will be different from the actual goal 
   pose when robot is moving but the same when the robot is still*/

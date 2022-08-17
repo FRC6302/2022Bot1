@@ -203,7 +203,7 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
-    updateVelocities();
+    //updateVelocities();
 
 
     // This method will be called once per scheduler run
@@ -300,7 +300,8 @@ public class Shooter extends SubsystemBase {
     motorShooterBottom.set(speed);
   }
 
-  public void updateVelocities() {
+  //unused
+  /*public void updateVelocities() {
     //averages the last few velocities calculated from the encoder position data
     averagedTopV = topVelocityFilter.calculate((getTopEncPos() - topPrevPos) / (Timer.getFPGATimestamp() - prevTime));
     averagedBottomV = bottomVelocityFilter.calculate((getBottomEncPos() - bottomPrevPos) / (Timer.getFPGATimestamp() - prevTime));
@@ -311,7 +312,7 @@ public class Shooter extends SubsystemBase {
     prevTime = Timer.getFPGATimestamp();
 
     //NetworkTableInstance.getDefault().flush();
-  }
+  }*/
 
   public double getTopShooterEncVel() {
     //multiplying by 10 because to turn 100 ms to 1 sec because it reports with per 100 ms units
